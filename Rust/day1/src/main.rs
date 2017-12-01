@@ -6,7 +6,7 @@ const PUZZLE: &'static str = include_str!("PUZZLE.txt");
 
 fn main() {
     println!("day 1.1: {}", summenize(PUZZLE, 1));
-    println!("day 1.2: {}", summenize(PUZZLE, PUZZLE.len() / 2));
+    println!("day 1.2: {}", summenize(PUZZLE, PUZZLE.len() >> 1));
 }
 
 /// take an &str, loop over the chars,
