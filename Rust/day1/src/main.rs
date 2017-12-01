@@ -1,17 +1,16 @@
 const PUZZLE: &'static str = include_str!("PUZZLE.txt");
 
 fn main() {
-    println!("day 1.1: {}", summenize(PUZZLE.chars(), 1));
-    println!("day 1.2: {}", summenize(PUZZLE.chars(), PUZZLE.len() / 2));
+    println!("day 1.1: {}", summenize(PUZZLE, 1));
+    println!("day 1.2: {}", summenize(PUZZLE, PUZZLE.len() / 2));
 }
 
-///take an Iterator, zip with an endless version of itself that skips for `skip`.
-fn summenize<'a, I>(iter: I, skip: usize) -> u32
-where
-    I: Iterator<Item = char> + Clone,
-{
-    iter.clone()
-        .zip(iter.cycle().skip(skip))
+///take an &str, loop over the chars,
+/// and zip with an endless version of itself that skips for `skip`.
+fn summenize(input: &str, skip: usize) -> u32 {
+    input
+        .chars()
+        .zip(input.chars().cycle().skip(skip))
         .filter(|&(first, second)| first == second)
         .map(|(first, _)| first.to_digit(10).unwrap())
         .sum()
