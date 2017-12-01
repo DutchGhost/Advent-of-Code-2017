@@ -5,7 +5,7 @@ fn main() {
     println!("day 1.2: {}", summenize(PUZZLE, PUZZLE.len() / 2));
 }
 
-///take an &str, loop over the chars,
+/// take an &str, loop over the chars,
 /// and zip with an endless version of itself that skips for `skip`.
 fn summenize(input: &str, skip: usize) -> u32 {
     input
