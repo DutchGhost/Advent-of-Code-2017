@@ -11,7 +11,6 @@ fn summenize(input: &str, skip: usize) -> u32 {
     input
         .chars()
         .zip(input.chars().cycle().skip(skip))
-        .filter(|&(first, second)| first == second)
-        .map(|(first, _)| first.to_digit(10).unwrap())
+        .filter_map(|(first, second)| if first == second { first.to_digit(10) } else { None })
         .sum()
 }
