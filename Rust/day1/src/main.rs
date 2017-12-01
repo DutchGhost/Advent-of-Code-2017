@@ -6,7 +6,7 @@ fn main() {
 }
 
 /// take an &str, loop over the chars,
-/// and zip with an endless version of itself that skips for `skip`.
+/// and zip with an infinite version of itself that skips for `skip`.
 fn summenize(input: &str, skip: usize) -> u32 {
     input
         .chars()
