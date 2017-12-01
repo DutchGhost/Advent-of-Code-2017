@@ -13,6 +13,7 @@ fn main() {
     println!("day 1.1: {}", summenize(to_num(PUZZLE.chars()), 1));
     println!("day 1.2: {}", summenize(to_num(PUZZLE.chars()), PUZZLE.len() / 2));
 }
+
 ///take an Iterator, zip with an endless version of itself that skips for `skip`.
 fn summenize<'a, I>(iter: I, skip: usize) -> u32
 where
