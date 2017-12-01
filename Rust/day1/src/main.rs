@@ -1,3 +1,7 @@
+extern crate itertools;
+
+use itertools::Itertools;
+
 const PUZZLE: &'static str = include_str!("PUZZLE.txt");
 
 fn main() {
@@ -10,7 +14,7 @@ fn main() {
 fn summenize(input: &str, skip: usize) -> u32 {
     input
         .chars()
-        .zip(input.chars().cycle().skip(skip))
+        .zip(input.chars().cycle().dropping(skip))
         .filter_map(|(first, second)| if first == second { first.to_digit(10) } else { None })
         .sum()
 }
