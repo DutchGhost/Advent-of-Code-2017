@@ -1,3 +1,13 @@
+trait Sub {
+    fn sub(self) -> u32;
+}
+
+impl Sub for (u32, u32) {
+    fn sub(self) -> u32 {
+        self.0 - self.1
+    }
+}
+
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 fn to_num(s: &str) -> Vec<u32> {
@@ -35,10 +45,9 @@ fn evenly(vec: &[u32]) -> Option<Option<u32>> {
 }
 
 fn difference(nums: &[u32]) -> u32 {
-    //nums.iter().max().unwrap() - nums.iter().min().unwrap()
-    nums.iter().fold((std::u32::MAX, 0u32), |&(min, max), &item,| {
-        (max(max, item), min(min, item))
-    })
+    nums.iter().fold((0u32, std::u32::MAX), |(max, min), item,| {
+        (std::cmp::max(max, *item), std::cmp::min(min, *item))
+    }).sub()
 }
 
 fn solve() -> (u32, u32) {
