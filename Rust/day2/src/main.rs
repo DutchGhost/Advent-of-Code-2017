@@ -21,17 +21,6 @@ fn remainder(a: &u32, b: &u32) -> Option<u32> {
     None
 }
 fn evenly(vec: &[u32]) -> Option<Option<u32>> {
-    /*
-    for (idx, first) in vec.iter().enumerate() {
-        for second in vec[..idx].iter() {
-            if let Some(result) = remainder(first, second) {
-                return result
-            }
-        }
-    }
-    unreachable!("no way!")
-    */
-    
     // The inner Iterator can result in a None, if nothing so far is divisible.
     vec.iter()
         .enumerate()
@@ -51,9 +40,7 @@ fn difference(nums: &[u32]) -> u32 {
 
 fn solve() -> (u32, u32) {
     let parsed = PUZZLE.lines().map(|line| to_num(line)).collect::<Vec<_>>();
-
     let part1 = parsed.iter().map(|nums| difference(nums)).sum::<u32>();
-
     let part2 = parsed.iter().filter_map(|nums| evenly(nums).unwrap()).sum::<u32>();
 
     (part1, part2)
