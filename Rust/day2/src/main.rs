@@ -21,17 +21,16 @@ fn is_divisible(a: &u32, b: &u32) -> Option<u32> {
         None
     }
 }
-fn evenly(vec: &[u32]) -> Option<Option<u32>> {
+fn evenly(vec: &[u32]) -> Option<u32> {
     // The inner Iterator can result in a None, if nothing so far is divisible.
     vec.iter()
         .enumerate()
-        .map(|(idx, num1)| {
+        .filter_map(|(idx, num1)| {
             vec[..idx]
                 .iter()
                 .filter_map(|num2| is_divisible(num1, num2))
                 .next()
         })
-        .filter(|item| item.is_some())
         .next()
 }
 
@@ -44,7 +43,7 @@ fn difference(nums: &[u32]) -> u32 {
 fn solve() -> (u32, u32) {
     let parsed = PUZZLE.lines().map(|line| to_num(line)).collect::<Vec<_>>();
     let part1 = parsed.iter().map(|nums| difference(nums)).sum::<u32>();
-    let part2 = parsed.iter().filter_map(|nums| evenly(nums).unwrap()).sum::<u32>();
+    let part2 = parsed.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
 
     (part1, part2)
 }
