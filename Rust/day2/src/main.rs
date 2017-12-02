@@ -7,10 +7,13 @@ fn to_num(s: &str) -> Vec<u32> {
 }
 
 fn evenly(vec: &[u32]) -> u32 {
-    for first in vec.iter() {
-        for second in vec.iter().rev().filter(|item| item != &first) {
+    for (idx, first) in vec.iter().enumerate() {
+        for second in vec[..idx].iter() {
             if first % second == 0 {
                 return first / second;
+            }
+            else if second % first == 0 {
+                return second / first;
             }
         }
     }
