@@ -35,7 +35,10 @@ fn evenly(vec: &[u32]) -> Option<Option<u32>> {
 }
 
 fn difference(nums: &[u32]) -> u32 {
-    nums.iter().max().unwrap() - nums.iter().min().unwrap()
+    //nums.iter().max().unwrap() - nums.iter().min().unwrap()
+    nums.iter().fold((std::u32::MAX, 0u32), |&(min, max), &item,| {
+        (max(max, item), min(min, item))
+    })
 }
 
 fn solve() -> (u32, u32) {
