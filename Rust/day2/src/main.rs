@@ -16,8 +16,7 @@ fn is_divisible(a: &u32, b: &u32) -> Option<u32> {
     let (num1, num2) = sort(a, b);
     if num1 % num2 == 0 {
         Some(num1 / num2)
-    }
-    else {
+    } else {
         None
     }
 }
@@ -35,9 +34,11 @@ fn evenly(vec: &[u32]) -> Option<u32> {
 }
 
 fn difference(nums: &[u32]) -> u32 {
-    nums.iter().fold((0u32, std::u32::MAX), |(max, min), item,| {
-        (std::cmp::max(max, *item), std::cmp::min(min, *item))
-    }).sub()
+    nums.iter()
+        .fold((0u32, std::u32::MAX), |(max, min), item| {
+            (std::cmp::max(max, *item), std::cmp::min(min, *item))
+        })
+        .sub()
 }
 
 fn solve() -> (u32, u32) {
@@ -56,16 +57,16 @@ fn main() {
 
 trait Sub<T>
 where
-    T: std::ops::Sub<T>
+    T: std::ops::Sub<T>,
 {
     fn sub(self) -> <T as std::ops::Sub>::Output;
 }
 
-impl <T>Sub<T> for (T, T)
+impl<T> Sub<T> for (T, T)
 where
-    T: std::ops::Sub<T>
+    T: std::ops::Sub<T>,
 {
-     fn sub(self) -> <T as std::ops::Sub>::Output {
+    fn sub(self) -> <T as std::ops::Sub>::Output {
         self.0 - self.1
     }
 }
