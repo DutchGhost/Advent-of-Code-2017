@@ -1,9 +1,15 @@
-trait Sub {
-    fn sub(self) -> u32;
+trait Sub<T>
+where
+    T: std::ops::Sub<T>
+{
+    fn sub(self) -> <T as std::ops::Sub>::Output;
 }
 
-impl Sub for (u32, u32) {
-    fn sub(self) -> u32 {
+impl <T>Sub<T> for (T, T)
+where
+    T: std::ops::Sub<T>
+{
+     fn sub(self) -> <T as std::ops::Sub>::Output {
         self.0 - self.1
     }
 }
