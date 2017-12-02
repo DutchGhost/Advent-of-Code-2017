@@ -8,7 +8,7 @@ fn to_num(s: &str) -> Vec<u32> {
 
 /// gets the biggest out of the nums.
 /// returns None if the bigger one can not be equally devided by the smaller one.
-fn remainder(a: &u32, b: &u32) -> Option<u32> {
+fn is_divisible(a: &u32, b: &u32) -> Option<u32> {
     if a > b {
         if a % b == 0 {
             return Some(a / b);
@@ -27,7 +27,7 @@ fn evenly(vec: &[u32]) -> Option<Option<u32>> {
         .map(|(idx, num1)| {
             vec[..idx]
                 .iter()
-                .filter_map(|num2| remainder(num1, num2))
+                .filter_map(|num2| is_divisible(num1, num2))
                 .next()
         })
         .filter(|item| item.is_some())
