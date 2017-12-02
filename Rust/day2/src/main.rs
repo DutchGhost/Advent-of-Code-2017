@@ -31,6 +31,8 @@ fn evenly(vec: &[u32]) -> Option<Option<u32>> {
     }
     unreachable!("no way!")
     */
+    
+    // The inner Iterator can result in a None, if nothing so far is divisible.
     vec.iter()
         .enumerate()
         .map(|(idx, num1)| {
