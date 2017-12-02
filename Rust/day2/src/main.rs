@@ -6,18 +6,30 @@ fn to_num(s: &str) -> Vec<u32> {
         .collect::<Vec<_>>()
 }
 
+/// gets the biggest out of the nums.
+/// returns None if the bigger one can not be equally devided by the smaller one.
+fn remainder(a: u32, b: u32) -> Option<(u32, u32)> {
+    if a > b {
+        if a % b == 0 {
+            return Some((a, b))
+        }
+    }
+    else {
+        if b % a == 0 {
+            return Some((b, a))
+        }
+    }
+    None
+}
 fn evenly(vec: &[u32]) -> u32 {
     for (idx, first) in vec.iter().enumerate() {
         for second in vec[..idx].iter() {
-            if first % second == 0 {
-                return first / second;
-            }
-            else if second % first == 0 {
-                return second / first;
+            if let Some((num1, num2)) = remainder(*first, *second) {
+                return num1 / num2
             }
         }
     }
-    unreachable!()
+    unreachable!("no way!")
 }
 
 fn difference(nums: &[u32]) -> u32 {
