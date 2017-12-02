@@ -1,19 +1,3 @@
-trait Sub<T>
-where
-    T: std::ops::Sub<T>
-{
-    fn sub(self) -> <T as std::ops::Sub>::Output;
-}
-
-impl <T>Sub<T> for (T, T)
-where
-    T: std::ops::Sub<T>
-{
-     fn sub(self) -> <T as std::ops::Sub>::Output {
-        self.0 - self.1
-    }
-}
-
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 fn to_num(s: &str) -> Vec<u32> {
@@ -69,4 +53,20 @@ fn main() {
 
     println!("day 2.1: {}", part1);
     println!("day 2.2: {}", part2);
+}
+
+trait Sub<T>
+where
+    T: std::ops::Sub<T>
+{
+    fn sub(self) -> <T as std::ops::Sub>::Output;
+}
+
+impl <T>Sub<T> for (T, T)
+where
+    T: std::ops::Sub<T>
+{
+     fn sub(self) -> <T as std::ops::Sub>::Output {
+        self.0 - self.1
+    }
 }
