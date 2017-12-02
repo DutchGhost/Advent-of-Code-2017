@@ -22,19 +22,20 @@ fn to_num(s: &str) -> Vec<u32> {
         .collect::<Vec<_>>()
 }
 
+fn sort<'a>(a: &'a u32, b: &'a u32) -> (&'a u32, &'a u32) {
+    if a > b { (a, b) } else { (b, a) }
+}
+
 /// gets the biggest out of the nums.
 /// returns None if the bigger one can not be equally devided by the smaller one.
 fn is_divisible(a: &u32, b: &u32) -> Option<u32> {
-    if a > b {
-        if a % b == 0 {
-            return Some(a / b);
-        }
-    } else {
-        if b % a == 0 {
-            return Some(b / a);
-        }
+    let (num1, num2) = sort(a, b);
+    if num1 % num2 == 0 {
+        Some(num1 / num2)
     }
-    None
+    else {
+        None
+    }
 }
 fn evenly(vec: &[u32]) -> Option<Option<u32>> {
     // The inner Iterator can result in a None, if nothing so far is divisible.
