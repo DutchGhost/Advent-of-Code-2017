@@ -27,5 +27,11 @@ fn main() {
             })
             .sum::<u32>()
     );
-    println!("day 1.2: {}", PUZZLE.lines().map(|line| to_num(line)).map(|line| evenly(line)).sum::<u32>());
+    println!(
+        "day 1.2: {}",
+        PUZZLE
+            .lines()
+            .map(|line| evenly(to_num(line)))
+            .sum::<u32>()
+    );
 }
