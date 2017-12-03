@@ -20,6 +20,12 @@ pub struct Spiral {
     direction: Direction,
 }
 
+pub struct SpecialSpiral {
+    point: Point,
+    direction: Direction,
+    storage: Vec<(i64, Point)>
+}
+
 impl Spiral {
     pub fn new() -> Spiral {
         Spiral {
@@ -36,7 +42,7 @@ impl Spiral {
                 for _ in 0..2 {
                     for must_move in 0..number_of_moves {
                         yield (n, Point {x: self.point.x, y: self.point.y});
-                        self.spiral();
+                        spiral(&self.direction, &mut self.point);
                         n += 1;
 
                         if must_move == number_of_moves - 1 {
@@ -45,23 +51,6 @@ impl Spiral {
                     }
                 }
                 number_of_moves += 1;
-            }
-        }
-    }
-
-    fn spiral(&mut self) {
-        match self.direction {
-            Direction::Up => {
-                self.point.y += 1;
-            },
-            Direction::Down => {
-                 self.point.y -= 1;
-            }
-            Direction::Left => {
-                self.point.x -= 1;
-            },
-            Direction::Right => {
-                self.point.x += 1;
             }
         }
     }
@@ -90,12 +79,6 @@ impl Direction {
     }
 }
 
-pub struct SpecialSpiral {
-    point: Point,
-    direction: Direction,
-    storage: Vec<(i64, Point)>
-}
-
 impl SpecialSpiral {
     pub fn new() -> SpecialSpiral {
         SpecialSpiral {
@@ -114,7 +97,7 @@ impl SpecialSpiral {
                         let to_yield = self.adjecents().iter().sum();
                         self.storage.push((to_yield, Point {x: self.point.x, y: self.point.y}));
                         yield to_yield;
-                        self.spiral();
+                        spiral(&self.direction, &mut self.point);
                         if must_move == number_of_moves - 1 {
                             self.direction.moved();
                         }
@@ -153,20 +136,21 @@ impl SpecialSpiral {
         }
         results
     }
-    fn spiral(&mut self) {
-        match self.direction {
-            Direction::Up => {
-                self.point.y += 1;
-            },
-            Direction::Down => {
-                 self.point.y -= 1;
-            }
-            Direction::Left => {
-                self.point.x -= 1;
-            },
-            Direction::Right => {
-                self.point.x += 1;
-            }
+}
+
+fn spiral(direction: &Direction, point: &mut Point) {
+    match direction {
+        &Direction::Up => {
+            point.y += 1;
+        },
+        &Direction::Down => {
+             point.y -= 1;
+        }
+        &Direction::Left => {
+            point.x -= 1;
+        },
+        &Direction::Right => {
+            point.x += 1;
         }
     }
 }
