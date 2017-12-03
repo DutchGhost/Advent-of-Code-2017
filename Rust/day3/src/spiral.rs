@@ -46,7 +46,7 @@ impl Spiral {
                         n += 1;
 
                         if must_move == number_of_moves - 1 {
-                            self.direction.moved();
+                            self.direction.change();
                         }
                     }
                 }
@@ -69,7 +69,7 @@ impl Direction {
         Direction::Right
     }
 
-    fn moved(&mut self) {
+    fn change(&mut self) {
         mem::replace(self, match *self {
             Direction::Up => Direction::Left,
             Direction::Left => Direction::Down,
@@ -99,7 +99,7 @@ impl SpecialSpiral {
                         yield to_yield;
                         spiral(&self.direction, &mut self.point);
                         if must_move == number_of_moves - 1 {
-                            self.direction.moved();
+                            self.direction.change();
                         }
                     }
                 }
