@@ -3,7 +3,7 @@ const PUZZLE: &'static str = include_str!("PUZZLE.txt");
 fn main() {
     println!("day 1.1: {}", summenize(PUZZLE, 1));
     println!("day 1.2: {}", summenize(PUZZLE, PUZZLE.len() >> 1));
-   
+
     println!("fast: {}", optimized(PUZZLE, PUZZLE.len() >> 1));
 }
 
@@ -20,10 +20,11 @@ fn summenize(input: &str, skip: usize) -> u32 {
 /// We devide the str in half, check for each element.
 /// at the end we bitshift by 1 to the left (multiply by 2),
 /// every item we found in the first half, will also be the same fore the second half
-fn optimized(input: &str, skip: usize) -> u32 {
-    input[..skip]
+fn optimized(input: &str, half: usize) -> u32 {
+    let (head, tail) = input.split_at(half);
+    head
         .chars()
-        .zip(input[skip..].chars())
+        .zip(tail.chars())
         .filter_map(|(first, second)| if first == second { first.to_digit(10)} else { None })
         .sum::<u32>() << 1
 }
