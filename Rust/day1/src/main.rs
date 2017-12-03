@@ -1,5 +1,4 @@
 const PUZZLE: &'static str = include_str!("PUZZLE.txt");
-use std::time::Instant;
 
 fn main() {
     println!("day 1.1: {}", summenize(PUZZLE, 1));
