@@ -35,7 +35,7 @@ impl Spiral {
     }
 
     fn spiral_gen<'g, 'a: 'g>(&'a mut self) -> impl Generator<Yield = (i64, Point), Return = ()> + 'g {
-        let mut n = 1;
+        let mut value = 1;
         let mut number_of_moves = 1;
         move || {
             loop {
@@ -46,11 +46,11 @@ impl Spiral {
                         
                         //yield the current number, with it's position,
                         //so we can calculate the absolute distance to the first field.
-                        yield (n, Point {x: self.point.x, y: self.point.y});
+                        yield (value, Point {x: self.point.x, y: self.point.y});
                         
                         //now 'spiral', (aka set the new postion), and increment the numer
                         spiral(&self.direction, &mut self.point);
-                        n += 1;
+                        value += 1;
 
                         //after the last step in a given direction, change the direction.
                         if must_move == number_of_moves - 1 {
@@ -66,7 +66,7 @@ impl Spiral {
     pub fn part1(&mut self, input: i64) -> i64 {
         let spiral_iterator = GeneratorAdaptor::new(self.spiral_gen());
         spiral_iterator
-            .filter(|&(n, _)| n == input)
+            .filter(|&(value, _)| value == input)
             .map(|(_, point)| point.x.abs() + point.y.abs())
             .next()
             .unwrap()
@@ -106,14 +106,14 @@ impl SpecialSpiral {
                     for must_move in 0..number_of_moves {
 
                         //get the 'adjacent' fields, and sum them up.
-                        let to_yield = self.adjacents().iter().sum();
+                        let value = self.adjacents().iter().sum();
 
                         //store the value of the field, and the coordinates,
                         //the field might become an adjacent field for another field in the future.
-                        self.storage.push((to_yield, Point {x: self.point.x, y: self.point.y}));
+                        self.storage.push((value, Point {x: self.point.x, y: self.point.y}));
 
                         //yield it
-                        yield to_yield;
+                        yield value;
 
                         //now 'spiral' (aka, set the new postion)
                         spiral(&self.direction, &mut self.point);
@@ -133,7 +133,7 @@ impl SpecialSpiral {
         let special_spiralizer = GeneratorAdaptor::new(self.special_spiral_generator());
 
         special_spiralizer
-            .filter(|n| n > &input)
+            .filter(|value| value > &input)
             .next()
             .unwrap()
     }
@@ -142,13 +142,13 @@ impl SpecialSpiral {
         let valids = [(0, 1), (1, 0), (1, 1)];
 
         let mut results: Vec<i64> = Vec::new();
-        for &(ref n, ref p) in self.storage.iter() {
+        for &(ref value, ref p) in self.storage.iter() {
             let diff_x = (p.x - self.point.x).abs();
             let diff_y = (p.y - self.point.y).abs();
 
             // get all the neighboors
             if valids.contains(&(diff_x, diff_y)) {
-                results.push(n.clone());
+                results.push(value.clone());
             }
         }
 
