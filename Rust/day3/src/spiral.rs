@@ -105,8 +105,8 @@ impl SpecialSpiral {
                 for _ in 0..2 {
                     for must_move in 0..number_of_moves {
 
-                        //get the 'adjacent' fields, and sum them up.
-                        let value = self.adjacents().iter().sum();
+                        //get the value for the current field.
+                        let value = self.adjacents();
 
                         //store the value of the field, and the coordinates,
                         //the field might become an adjacent field for another field in the future.
@@ -138,25 +138,23 @@ impl SpecialSpiral {
             .unwrap()
     }
 
-    fn adjacents(&mut self) -> Vec<i64> {
+    fn adjacents(&mut self) -> i64 {
         let valids = [(0, 1), (1, 0), (1, 1)];
+        
+        let mut result = 0;
 
-        let mut results: Vec<i64> = Vec::new();
         for &(ref value, ref p) in self.storage.iter() {
             let diff_x = (p.x - self.point.x).abs();
             let diff_y = (p.y - self.point.y).abs();
 
             // get all the neighboors
             if valids.contains(&(diff_x, diff_y)) {
-                results.push(value.clone());
+                result += value;
             }
         }
 
         //if there are no neighboors, the value of the field becomes just 1
-        if results.len() == 0 {
-            results.push(1i64);
-        }
-        results
+        if result == 0 { 1 } else { result }
     }
 }
 
