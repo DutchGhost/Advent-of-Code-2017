@@ -27,7 +27,7 @@ fn evenly(vec: &[u32]) -> Option<u32> {
         .filter_map(|(idx, num1)| {
             vec[..idx]
                 .iter()
-                .(|num2| is_divisible(num1, num2))
+                .filter_map(|num2| is_divisible(num1, num2))
                 .next()
         })
         .next()
