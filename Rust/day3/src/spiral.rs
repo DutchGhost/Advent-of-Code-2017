@@ -39,12 +39,20 @@ impl Spiral {
         let mut number_of_moves = 1;
         move || {
             loop {
+                //in a spiral, there is continuously 2 times the same number of steps,
+                //and after those 2 times, the number of steps is incremented with 1.
                 for _ in 0..2 {
                     for must_move in 0..number_of_moves {
+                        
+                        //yield the current number, with it's position,
+                        //so we can calculate the absolute distance to the first field.
                         yield (n, Point {x: self.point.x, y: self.point.y});
+                        
+                        //now 'spiral', (aka set the new postion), and increment the numer
                         spiral(&self.direction, &mut self.point);
                         n += 1;
 
+                        //after the last step in a given direction, change the direction.
                         if must_move == number_of_moves - 1 {
                             self.direction.change();
                         }
@@ -92,12 +100,25 @@ impl SpecialSpiral {
         move || {
             let mut number_of_moves = 1;
             loop {
+                //in a spiral, there is continuously 2 times the same number of steps,
+                //and after those 2 times, the number of steps is incremented with 1.
                 for _ in 0..2 {
                     for must_move in 0..number_of_moves {
-                        let to_yield = self.adjecents().iter().sum();
+
+                        //get the 'adjacent' fields, and sum them up.
+                        let to_yield = self.adjacents().iter().sum();
+
+                        //store the value of the field, and the coordinates,
+                        //the field might become an adjacent field for another field in the future.
                         self.storage.push((to_yield, Point {x: self.point.x, y: self.point.y}));
+
+                        //yield it
                         yield to_yield;
+
+                        //now 'spiral' (aka, set the new postion)
                         spiral(&self.direction, &mut self.point);
+                        
+                        //after the last step in a given direction, change the direction.
                         if must_move == number_of_moves - 1 {
                             self.direction.change();
                         }
@@ -117,7 +138,7 @@ impl SpecialSpiral {
             .unwrap()
     }
 
-    fn adjecents(&mut self) -> Vec<i64> {
+    fn adjacents(&mut self) -> Vec<i64> {
         let valids = [(0, 1), (1, 0), (1, 1)];
 
         let mut results: Vec<i64> = Vec::new();
@@ -131,6 +152,7 @@ impl SpecialSpiral {
             }
         }
 
+        //if there are no neighboors, the value of the field becomes just 1
         if results.len() == 0 {
             results.push(1i64);
         }
