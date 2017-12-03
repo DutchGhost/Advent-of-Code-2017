@@ -89,10 +89,11 @@ impl Direction {
 
 impl SpecialSpiral {
     pub fn new() -> SpecialSpiral {
+        let vec = vec![(1, Point{x: 0, y: 0})];
         SpecialSpiral {
             point: Point{x: 0, y: 0},
             direction: Direction::new(),
-            storage: Vec::new(),
+            storage: vec
         }
     }
 
@@ -104,7 +105,11 @@ impl SpecialSpiral {
                 //and after those 2 times, the number of steps is incremented with 1.
                 for _ in 0..2 {
                     for must_move in 0..number_of_moves {
-
+                        
+                        //since we've already innited the first field (at location x = 0, y = 0) with a value of 1,
+                        //we can move directly and set the new coordinates
+                        spiral(&self.direction, &mut self.point);
+                        
                         //get the value for the current field.
                         let value = self.adjacents();
 
@@ -115,9 +120,6 @@ impl SpecialSpiral {
                         //yield it
                         yield value;
 
-                        //now 'spiral' (aka, set the new postion)
-                        spiral(&self.direction, &mut self.point);
-                        
                         //after the last step in a given direction, change the direction.
                         if must_move == number_of_moves - 1 {
                             self.direction.change();
@@ -139,22 +141,15 @@ impl SpecialSpiral {
     }
 
     fn adjacents(&mut self) -> i64 {
+        
         let valids = [(0, 1), (1, 0), (1, 1)];
         
-        let mut result = 0;
-
-        for &(ref value, ref p) in self.storage.iter() {
-            let diff_x = (p.x - self.point.x).abs();
-            let diff_y = (p.y - self.point.y).abs();
-
-            // get all the neighboors
-            if valids.contains(&(diff_x, diff_y)) {
-                result += value;
-            }
-        }
-
-        //if there are no neighboors, the value of the field becomes just 1
-        if result == 0 { 1 } else { result }
+        self.storage
+            .iter()
+            .map(|&(value, ref p)| (value, ((p.x - self.point.x).abs(), (p.y - self.point.y).abs())))
+            .filter(|&(value, coordinate)| valids.contains(&coordinate))
+            .map(|(value, _)| value)
+            .sum()
     }
 }
 
