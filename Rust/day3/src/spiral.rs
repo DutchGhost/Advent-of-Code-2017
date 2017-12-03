@@ -130,7 +130,7 @@ impl SpecialSpiral {
     }
     
     pub fn part2(&mut self, input: i64) -> i64 {
-        let mut special_spiralizer = GeneratorAdaptor::new(self.special_spiral_generator());
+        let special_spiralizer = GeneratorAdaptor::new(self.special_spiral_generator());
 
         special_spiralizer
             .filter(|n| n > &input)
