@@ -48,7 +48,7 @@ impl Spiral {
                         //so we can calculate the absolute distance to the first field.
                         yield (value, Point {x: self.point.x, y: self.point.y});
                         
-                        //now 'spiral', (aka set the new postion), and increment the numer
+                        //now 'spiral', (aka set the new postion), and increment the number
                         spiral(&self.direction, &mut self.point);
                         value += 1;
 
