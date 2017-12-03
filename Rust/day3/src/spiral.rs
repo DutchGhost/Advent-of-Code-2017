@@ -64,11 +64,10 @@ impl Spiral {
     }
 
     pub fn part1(&mut self, input: i64) -> i64 {
-        let spiral_iterator = GeneratorAdaptor::new(self.spiral_gen());
+        let mut spiral_iterator = GeneratorAdaptor::new(self.spiral_gen());
         spiral_iterator
-            .filter(|&(value, _)| value == input)
+            .find(|&(value, _)| value == input)
             .map(|(_, point)| point.x.abs() + point.y.abs())
-            .next()
             .unwrap()
     }
 }
@@ -133,11 +132,10 @@ impl SpecialSpiral {
     }
     
     pub fn part2(&mut self, input: i64) -> i64 {
-        let special_spiralizer = GeneratorAdaptor::new(self.special_spiral_generator());
+        let mut special_spiralizer = GeneratorAdaptor::new(self.special_spiral_generator());
 
         special_spiralizer
-            .filter(|value| value > &input)
-            .next()
+            .find(|value| value > &input)
             .unwrap()
     }
 
