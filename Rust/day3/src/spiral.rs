@@ -132,12 +132,10 @@ impl SpecialSpiral {
     pub fn part2(&mut self, input: i64) -> i64 {
         let mut special_spiralizer = GeneratorAdaptor::new(self.special_spiral_generator());
 
-        while let Some(n) = special_spiralizer.next() {
-            if n > input {
-                return n;
-            }
-        }
-        0
+        special_spiralizer
+            .filter(|n| n > &input)
+            .next()
+            .unwrap()
     }
 
     fn adjecents(&mut self) -> Vec<i64> {
