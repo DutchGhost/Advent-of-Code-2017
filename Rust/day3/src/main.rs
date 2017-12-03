@@ -7,9 +7,10 @@ mod spiral;
 use spiral::{Spiral, SpecialSpiral};
 
 fn main() {
+    let input: = 361527;
+
     let mut spiralizer = Spiral::new();
     let mut specialspiralizer = SpecialSpiral::new();
-    let start = Instant::now();
     println!("{}", spiralizer.part1(input));
     println!("{}", specialspiralizer.part2(input));
 }
