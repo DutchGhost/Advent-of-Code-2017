@@ -1,10 +1,11 @@
 #![feature(conservative_impl_trait)]
 #![feature(generator_trait, generators)]
 
-use std::ops::{GeneratorState, Generator};
-use std::mem;
+mod genitter;
+use genitter::GeneratorAdaptor;
 
-use std::io::{self, Write};
+use std::ops::Generator;
+use std::mem;
 
 #[derive(Debug)]
 enum Direction {
@@ -14,6 +15,72 @@ enum Direction {
     Right,
 }
 
+#[derive(Clone, Copy)]
+struct Point {
+    x: i64,
+    y: i64,
+}
+
+struct Spiral {
+    point: Point,
+    direction: Direction,
+}
+
+impl Spiral {
+    fn new() -> Spiral {
+        Spiral {
+            point: Point {x: 0, y: 0},
+            direction: Direction::new(),
+        }
+    }
+
+    fn spiral_gen<'g, 'a: 'g>(&'a mut self) -> impl Generator<Yield = (i64, Point), Return = ()> + 'g {
+        let mut n = 1;
+        let mut number_of_moves = 1;
+        move || {
+            loop {
+                for _ in 0..2 {
+                    for must_move in 0..number_of_moves {
+                        yield (n, self.point);
+                        self.spiral();
+                        n += 1;
+
+                        if must_move == number_of_moves - 1 {
+                            self.direction.moved();
+                        }
+                    }
+                }
+                number_of_moves += 1;
+            }
+        }
+    }
+
+    fn spiral(&mut self) {
+        match self.direction {
+            Direction::Up => {
+                self.point.y += 1;
+            },
+            Direction::Down => {
+                 self.point.y -= 1;
+            }
+            Direction::Left => {
+                self.point.x -= 1;
+            },
+            Direction::Right => {
+                self.point.x += 1;
+            }
+        }
+    }
+
+    fn part1(&mut self, input: i64) -> i64 {
+        let spiral_iterator = GeneratorAdaptor::new(self.spiral_gen());
+        spiral_iterator
+            .filter(|&(n, _)| n == input)
+            .map(|(_, point)| point.x.abs() + point.y.abs())
+            .next()
+            .unwrap()
+    }
+}
 impl Direction {
     fn new() -> Direction {
         Direction::Right
@@ -29,61 +96,8 @@ impl Direction {
     }
 }
 
-fn spiral(n: &mut i64, x: &mut i64, y: &mut i64, direction: &Direction) {
-    match direction {
-        &Direction::Up => {
-            *n += 1;
-            *y += 1;
-        },
-        &Direction::Down => {
-            *n += 1;
-            *y -= 1;
-        }
-        &Direction::Left => {
-            *n += 1;
-            *x -= 1;
-        },
-        &Direction::Right => {
-            *n += 1;
-            *x += 1;
-        }
-    }
-}
-
-fn spiral_generator(stop: i64) -> impl Generator<Yield = (i64, i64, i64), Return = ()> {
-    move || {
-        let mut n = 1;
-        let mut number_of_moves = 1;
-        let mut x = 0;
-        let mut y = 0;
-        let mut direction = Direction::new();
-        'outer: loop {
-            for _ in 0..2 {
-                for must_change in 0..number_of_moves {
-                    yield (n, x, y);
-                    if n == stop {
-                        break 'outer;
-                    }
-                    spiral(&mut n, &mut x, &mut y, &direction);
-                    
-                    //we only change direction after the last move in a given direction
-                    if must_change == number_of_moves - 1 {
-                        direction.moved();
-                    }
-                }
-            }
-            number_of_moves += 1;
-        }
-    }
-}
-
 fn main() {
-    let mut gen = spiral_generator(361527);
-    let mut summed = 0;
-
-    while let GeneratorState::Yielded((n, x, y)) = gen.resume() {
-        summed = x.abs() + y.abs();
-    }
-
-    println!("{}", summed);
+    let input = 361527;
+    let mut spiralizer = Spiral::new();
+    println!("{}", spiralizer.part1(input));
 }
