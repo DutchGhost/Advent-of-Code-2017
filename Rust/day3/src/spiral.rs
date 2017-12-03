@@ -3,7 +3,6 @@ use genitter::GeneratorAdaptor;
 use std::ops::Generator;
 use std::mem;
 
-#[derive(Debug, Clone)]
 enum Direction {
     Up,
     Down,
@@ -11,13 +10,11 @@ enum Direction {
     Right,
 }
 
-#[derive(Clone, Copy, Debug)]
 struct Point {
     x: i64,
     y: i64,
 }
 
-#[derive(Clone)]
 pub struct Spiral {
     point: Point,
     direction: Direction,
@@ -38,7 +35,7 @@ impl Spiral {
             loop {
                 for _ in 0..2 {
                     for must_move in 0..number_of_moves {
-                        yield (n, self.point);
+                        yield (n, Point {x: self.point.x, y: self.point.y});
                         self.spiral();
                         n += 1;
 
@@ -93,7 +90,6 @@ impl Direction {
     }
 }
 
-#[derive(Clone)]
 pub struct SpecialSpiral {
     point: Point,
     direction: Direction,
@@ -116,7 +112,7 @@ impl SpecialSpiral {
                 for _ in 0..2 {
                     for must_move in 0..number_of_moves {
                         let to_yield = self.adjecents().iter().sum();
-                        self.storage.push((to_yield, self.point));
+                        self.storage.push((to_yield, Point {x: self.point.x, y: self.point.y}));
                         yield to_yield;
                         self.spiral();
                         if must_move == number_of_moves - 1 {
@@ -142,13 +138,13 @@ impl SpecialSpiral {
         let valids = [(0, 1), (1, 0), (1, 1)];
 
         let mut results: Vec<i64> = Vec::new();
-        for &(n, p) in self.storage.iter() {
+        for &(ref n, ref p) in self.storage.iter() {
             let diff_x = (p.x - self.point.x).abs();
             let diff_y = (p.y - self.point.y).abs();
 
             // get all the neighboors
             if valids.contains(&(diff_x, diff_y)) {
-                results.push(n);
+                results.push(n.clone());
             }
         }
 
