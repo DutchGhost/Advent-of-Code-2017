@@ -88,6 +88,7 @@ impl Direction {
 }
 
 impl SpecialSpiral {
+    //the first field at coordinate x = 0, y = 0 is initialized here, with value 1.
     pub fn new() -> SpecialSpiral {
         let vec = vec![(1, Point{x: 0, y: 0})];
         SpecialSpiral {
