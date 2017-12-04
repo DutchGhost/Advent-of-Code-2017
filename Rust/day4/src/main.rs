@@ -1,4 +1,7 @@
+extern crate permutohedron;
 const PUZZLE: &'static str = include_str!("Input.txt");
+
+use permutohedron::heap_recursive;
 
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -88,4 +91,37 @@ fn main() {
     let (part1, part2) = combined(PUZZLE);
     println!("{}", part1);
     println!("{}", part2);
+
+    let n = PUZZLE.lines().filter(|line| anagram(line)).count();
+    println!("{}", n);
+}
+
+fn number_of_permutations(mut vec: &mut Vec<char>, line: &str) -> Vec<String> {
+    let mut v = Vec::new();
+    heap_recursive(&mut vec, |permutation| {
+        v.push(permutation.iter().collect::<String>());
+    });
+    v
+}
+
+//we have line, we get the words out it. We also store the words in a vector.
+//we get the permutations.
+//if the permutations of a word are more than 2 times in a vector, its done.
+fn anagram(line: &str) -> bool {
+    let v = line.split_whitespace().map(|word| word.to_string()).collect::<Vec<_>>();
+    for word in line.split_whitespace() {
+        let mut tmp = word.chars().collect::<Vec<_>>();
+        let permutations = number_of_permutations(&mut tmp, line);
+            
+        //get the occurence of a permutation in the vector.
+        for item in line.split_whitespace() {
+            let i = permutations.iter().filter(|perm| perm == &item).count() as i64;
+            if i > 0 {
+                println!("{} is {} times in the vector, but mutated\n{:?}", item, i, v);
+                return false
+            }
+        }
+        //if occurence == 2 {println!("{:?}, {}, {:?}", v, word, permutations.iter().find(|elem| elem.iter().collect::<String>() == word));return false;}
+    }
+    true
 }
