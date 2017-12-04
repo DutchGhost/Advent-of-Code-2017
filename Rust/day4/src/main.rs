@@ -1,39 +1,49 @@
-extern crate permutohedron;
-use permutohedron::heap_recursive;
-
-use std::collections::HashMap;
-use std::str;
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-fn main() {
-    let mut n = 0;
-    for line in PUZZLE.lines() {
-        let mut map = HashMap::new();
-        for word in line.split_whitespace() {
-    
-            *map.entry(word).or_insert(0) += 1;
-        }
-        if map.values().all(|value| value == &1) {
-            n += 1;
-        }
-    }
-    println!("{}", n);
+use std::collections::HashMap;
 
-    let mut m = 0;
-    for line in PUZZLE.lines() {
-        //let mut tmp = Vec::new();
-        let mut map = HashMap::new();
+fn part1(input: &str) -> i32 {
+    let mut valids = 0;
+    let mut map = HashMap::new();
+    
+    for line in input.lines() {
+        let mut count = 0;
+        
         for word in line.split_whitespace() {
-            let mut arr = word.chars().collect::<Vec<_>>();
-            arr.sort();
-            *map.entry(arr).or_insert(1) += 1;
+            *map.entry(word).or_insert(0) += 1;
+            count += 1;
         }
-        for (key, value) in map.iter() {
-            println!("{:?}, {}", key, value);
+        
+        if map.keys().count() == count {
+            valids += 1;
         }
-        if map.values().all(|value| value == &2) {
-            m += 1;
-        }
+        map.drain();
     }
-    println!("{}", m)
+    valids
+}
+
+fn part2(input: &str) -> i64 {
+    let mut valids = 0;
+    let mut map = HashMap::new();
+    
+    for line in input.lines() {
+        let mut count = 0;
+        
+        for word in line.split_whitespace() {
+            let mut chars = word.chars().collect::<Vec<_>>();
+            chars.sort();
+            *map.entry(chars).or_insert(1) += 1;
+            count += 1;
+        }
+        
+        if map.keys().count() == count {
+            valids += 1;
+        }
+        map.drain();
+    }
+    valids
+}
+fn main() {
+    println!("{}", part1(PUZZLE));
+    println!("{}", part2(PUZZLE));
 }
