@@ -32,7 +32,7 @@ fn part1(input: &str) -> i32 {
 /// and store the characters of the words in a vector.
 /// Then sort the vector, and put in the HashSet.
 /// If the number of elements in the HashSet equals the lenght of the line,
-/// it's a vlid line
+/// it's a valid line
 fn part2(input: &str) -> i64 {
     let mut valids = 0;
     let mut map = HashSet::new();
