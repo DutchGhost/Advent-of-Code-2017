@@ -1,6 +1,7 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 fn part1(input: &str) -> i32 {
     let mut valids = 0;
@@ -51,8 +52,8 @@ fn part2(input: &str) -> i64 {
 }
 
 fn combined(input: &str) -> (i32, i32) {
-    let mut map1 = HashMap::new();
-    let mut map2 = HashMap::new();
+    let mut map1 = HashSet::new();
+    let mut map2 = HashSet::new();
 
     let (mut valids1, mut valids2) = (0, 0);
 
@@ -62,16 +63,16 @@ fn combined(input: &str) -> (i32, i32) {
             let mut chars = word.chars().collect::<Vec<_>>();
             chars.sort();
 
-            *map1.entry(word).or_insert(0) += 1;
-            *map2.entry(chars).or_insert(0) += 1;
+            map1.insert(word);
+            map2.insert(chars);
             count += 1;
         }
 
-        if map1.keys().count() == count {
+        if map1.iter().count() == count {
             valids1 += 1;
         }
 
-        if map2.keys().count() == count {
+        if map2.iter().count() == count {
             valids2 += 1
         }
         map1.drain();
