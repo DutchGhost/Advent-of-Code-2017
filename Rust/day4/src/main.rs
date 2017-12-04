@@ -9,20 +9,20 @@ use std::collections::HashSet;
 /// its a valid line.
 fn part1(input: &str) -> i32 {
     let mut valids = 0;
-    let mut map = HashSet::with_capacity(11);
+    let mut set = HashSet::with_capacity(11);
     
     for line in input.lines() {
         let mut count = 0;
         
         for word in line.split_whitespace() {
-            map.insert(word);
+            set.insert(word);
             count += 1;
         }
 
-        if map.iter().count() == count {
+        if set.iter().count() == count {
             valids += 1;
         }
-        map.drain();
+        set.drain();
     }
     valids
 }
@@ -35,7 +35,7 @@ fn part1(input: &str) -> i32 {
 /// it's a valid line
 fn part2(input: &str) -> i64 {
     let mut valids = 0;
-    let mut map = HashSet::with_capacity(11);
+    let mut set = HashSet::with_capacity(11);
     
     for line in input.lines() {
         let mut count = 0;
@@ -43,21 +43,21 @@ fn part2(input: &str) -> i64 {
         for word in line.split_whitespace() {
             let mut chars = word.chars().collect::<Vec<_>>();
             chars.sort();
-            map.insert(chars);
+            set.insert(chars);
             count += 1;
         }
-        
-        if map.iter().count() == count {
+
+        if set.iter().count() == count {
             valids += 1;
         }
-        map.drain();
+        set.drain();
     }
     valids
 }
 
 fn combined(input: &str) -> (i32, i32) {
-    let mut map1 = HashSet::with_capacity(11);
-    let mut map2 = HashSet::with_capacity(11);
+    let mut set1 = HashSet::with_capacity(11);
+    let mut set2 = HashSet::with_capacity(11);
 
     let (mut valids1, mut valids2) = (0, 0);
 
@@ -67,20 +67,20 @@ fn combined(input: &str) -> (i32, i32) {
             let mut chars = word.chars().collect::<Vec<_>>();
             chars.sort();
 
-            map1.insert(word);
-            map2.insert(chars);
+            set1.insert(word);
+            set2.insert(chars);
             count += 1;
         }
 
-        if map1.iter().count() == count {
+        if set1.iter().count() == count {
             valids1 += 1;
         }
 
-        if map2.iter().count() == count {
+        if set2.iter().count() == count {
             valids2 += 1
         }
-        map1.drain();
-        map2.drain();
+        set1.drain();
+        set2.drain();
     }
 
     (valids1, valids2)
