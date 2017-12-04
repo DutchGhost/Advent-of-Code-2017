@@ -96,7 +96,7 @@ fn main() {
     println!("{}", n);
 }
 
-fn number_of_permutations(mut vec: &mut Vec<char>, line: &str) -> Vec<String> {
+fn permutations(mut vec: &mut Vec<char>, line: &str) -> Vec<String> {
     let mut v = Vec::new();
     heap_recursive(&mut vec, |permutation| {
         v.push(permutation.iter().collect::<String>());
@@ -105,13 +105,13 @@ fn number_of_permutations(mut vec: &mut Vec<char>, line: &str) -> Vec<String> {
 }
 
 //we have line, we get the words out it. We also store the words in a vector.
-//we get the permutations.
-//if the permutations of a word are more than 2 times in a vector, its done.
+//we get the permutations of each word,
+//if the permutations of a word are more than 1 times in the vector, its NOT a valid line.
 fn anagram(line: &str) -> bool {
     let v = line.split_whitespace().map(|word| word.to_string()).collect::<Vec<_>>();
     for word in line.split_whitespace() {
         let mut tmp = word.chars().collect::<Vec<_>>();
-        let permutations = number_of_permutations(&mut tmp, line);
+        let permutations = permutations(&mut tmp, line);
             
         //get the occurence of a permutation in the vector.
         for item in line.split_whitespace() {
