@@ -56,7 +56,6 @@ fn combined(input: &str) -> (i32, i32) {
 
     let (mut valids1, mut valids2) = (0, 0);
 
-
     for line in input.lines() {
         let mut count = 0;
         for word in line.split_whitespace() {
