@@ -8,44 +8,23 @@ fn parse(input: &str) -> Vec<i64> {
 }
 
 
-fn part1(mut jumps: Vec<i64>) -> i64 {
+fn part<F>(mut jumps: Vec<i64>, updater: F) -> i64
+where
+    F: Fn(i64) -> i64
+{
     let mut n = 0;
-    let mut prev: i64 = 0;
     let mut pc: i64 = 0;
-    let mut lenght = jumps.len();
 
-    while pc < lenght as i64 {
-        pc += jumps[pc as usize];
-        jumps[prev as usize] += 1;
-        prev = pc;
-        n += 1;
-    }
-
-    n
-}
-
-fn part2(mut jumps: Vec<i64>) -> i64 {
-    let mut n = 0;
-    let mut prev: i64 = 0;
-    let mut pc: i64 = 0;
-    let mut lenght = jumps.len();
-
-    while pc < lenght as i64 {
-        pc += jumps[pc as usize];
-
-        let mut current = jumps.get_mut(prev as usize).unwrap();
-        if *current >= 3 {
-            *current -= 1
-        } else {
-            *current += 1
-        }
-        prev = pc;
+    while let Some(idx) = jumps.get_mut(pc as usize) {
+        pc += *idx;
+        *idx += updater(*idx);
         n += 1;
     }
     n
 }
+
 fn main() {
-    let mut jumps = parse(PUZZLE);
-    println!("{}", part1(jumps.clone()));
-    println!("{}", part2(jumps.clone()));
+    let data = parse(PUZZLE);
+    println!("{}", part(data.clone(), |item| 1));
+    println!("{}", part(data, |item| if item >= 3 { -1} else { 1 }));
 }
