@@ -3,7 +3,7 @@ const PUZZLE: &'static str = include_str!("Input.txt");
 fn parse(input: &str) -> Vec<i64> {
     input
         .lines()
-        .map(|line| line.parse::<i64>().expect("this should not happend"))
+        .map(|line| line.parse::<i64>().expect("this should not happen!"))
         .collect::<Vec<_>>()
 }
 
@@ -26,5 +26,5 @@ where
 fn main() {
     let data = parse(PUZZLE);
     println!("day 5.1: {}", run(data.clone(), |_| 1));
-    println!("day 5.2: {}", run(data, |item| if item >= 3 { -1} else { 1 }));
+    println!("day 5.2: {}", run(data, |item| if item >= 3 { -1 } else { 1 }));
 }
