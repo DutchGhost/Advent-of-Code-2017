@@ -15,9 +15,9 @@ where
     let mut n = 0;
     let mut pc: i64 = 0;
 
-    while let Some(idx) = jumps.get_mut(pc as usize) {
-        pc += *idx;
-        *idx += updater(*idx);
+    while let Some(offset) = jumps.get_mut(pc as usize) {
+        pc += *offset;
+        *offset += updater(*offset);
         n += 1;
     }
     n
@@ -26,5 +26,5 @@ where
 fn main() {
     let data = parse(PUZZLE);
     println!("day 5.1: {}", run(data.clone(), |_| 1));
-    println!("day 5.2: {}", run(data, |item| if item >= 3 { -1 } else { 1 }));
+    println!("day 5.2: {}", run(data, |offset| if offset >= 3 { -1 } else { 1 }));
 }
