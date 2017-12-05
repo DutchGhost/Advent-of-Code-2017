@@ -8,7 +8,7 @@ fn parse(input: &str) -> Vec<i64> {
 }
 
 
-fn part<F>(mut jumps: Vec<i64>, updater: F) -> i64
+fn run<F>(mut jumps: Vec<i64>, updater: F) -> i64
 where
     F: Fn(i64) -> i64
 {
@@ -25,6 +25,6 @@ where
 
 fn main() {
     let data = parse(PUZZLE);
-    println!("{}", part(data.clone(), |item| 1));
-    println!("{}", part(data, |item| if item >= 3 { -1} else { 1 }));
+    println!("day 5.1: {}", run(data.clone(), |item| 1));
+    println!("day 5.2: {}", run(data, |item| if item >= 3 { -1} else { 1 }));
 }
