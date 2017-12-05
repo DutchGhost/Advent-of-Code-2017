@@ -5,7 +5,7 @@ use std::collections::HashSet;
 /// Iterate over the lines,
 /// in each lines iterate over the words.
 /// Collect the characters in a vector,
-/// apply transform on this vector. this sorts it, or does nothing.
+/// apply transform on this vector. this eiter sorts it, or does nothing.
 /// then put the vector in the hashset.
 /// if the number of elements in the HashSet equals the lenght of the line,
 /// its a valid line.
@@ -20,7 +20,7 @@ where
         let mut count = 0;
         
         for mut word in line.split_whitespace() {
-            
+
             let mut chars = word.chars().collect::<Vec<_>>();
             
             transformer(&mut chars);
