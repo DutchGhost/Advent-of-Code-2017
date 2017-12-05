@@ -3,7 +3,6 @@ use genitter::GeneratorAdaptor;
 use std::ops::Generator;
 use std::mem;
 
-#[derive(Clone)]
 enum Direction {
     Up,
     Down,
@@ -11,13 +10,12 @@ enum Direction {
     Right,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone)]
 struct Point {
     x: i64,
     y: i64,
 }
 
-#[derive(Clone)]
 pub struct Spiral {
     point: Point,
     direction: Direction,
@@ -48,7 +46,7 @@ impl Spiral {
                     for must_chage_direction in 0..number_of_steps {
                         
                         //yield the value directly.
-                        yield (value, self.point);
+                        yield (value, (&self.point).clone());
 
                         //update the coordinates.
                         self.direction.step(&mut self.point);
@@ -77,10 +75,10 @@ impl Spiral {
         let value = self.storage
             .iter()
             .map(|&(value, ref p)| (value, ((p.x - self.point.x).abs(), (p.y - self.point.y).abs())))
-            .filter(|&(value, coordinate)| valids.contains(&coordinate))
+            .filter(|&(_, coordinate)| valids.contains(&coordinate))
             .map(|(value, _)| value)
             .sum();
-        self.storage.push((value, self.point));
+        self.storage.push((value, self.point.clone()));
         value
     }
 
