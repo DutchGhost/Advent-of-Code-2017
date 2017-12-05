@@ -26,18 +26,18 @@ fn part1(mut jumps: Vec<i64>) -> i64 {
 
 fn part2(mut jumps: Vec<i64>) -> i64 {
     let mut n = 0;
-    let mut prev = 0;
+    let mut prev: i64 = 0;
     let mut pc: i64 = 0;
     let mut lenght = jumps.len();
 
     while pc < lenght as i64 {
         pc += jumps[pc as usize];
 
-        if jumps[prev as usize] >= 3 {
-            jumps[prev as usize] -= 1;
-        }
-        else {
-            jumps[prev as usize] +=1;
+        let mut current = jumps.get_mut(prev as usize).unwrap();
+        if *current >= 3 {
+            *current -= 1
+        } else {
+            *current += 1
         }
         prev = pc;
         n += 1;
