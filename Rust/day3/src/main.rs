@@ -4,13 +4,13 @@
 mod genitter;
 
 mod spiral;
-use spiral::{Spiral, SpecialSpiral};
+use spiral::Spiral;
 
 fn main() {
     let input = 361527;
 
-    let mut spiralizer = Spiral::new();
-    let mut specialspiralizer = SpecialSpiral::new();
-    println!("{}", spiralizer.part1(input));
-    println!("{}", specialspiralizer.part2(input));
+    let mut part1 = Spiral::new();
+    let mut part2 = Spiral::new();
+    println!("{}", part1.part1(input));
+    println!("{}", part2.part2(input));
 }
