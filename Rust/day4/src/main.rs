@@ -12,7 +12,6 @@ use std::collections::HashSet;
 fn solve<F>(input: &str, mut transformer: F) -> i64
 where
     F: FnMut(&mut [char])
-    //FnMut(&mut Vec<char>) or Fn(&mut Vec<char>)????
 {
     let mut valids = 0;
     let mut set = HashSet::with_capacity(11);
