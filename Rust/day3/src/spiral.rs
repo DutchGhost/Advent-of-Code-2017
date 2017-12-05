@@ -69,21 +69,18 @@ impl Spiral {
         }
     }
 
-    fn adjacents(&mut self) -> i64 {    
+    //returns the sum of the value's of the current point's adjecent point's.
+    //also inserts the current value with the current coordinate to the storage.
+    fn sum_of_adjecents(&mut self) -> i64 {    
         let valids = [(0, 1), (1, 0), (1, 1)];
         
-        self.storage
+        let value = self.storage
             .iter()
             .map(|&(value, ref p)| (value, ((p.x - self.point.x).abs(), (p.y - self.point.y).abs())))
             .filter(|&(value, coordinate)| valids.contains(&coordinate))
             .map(|(value, _)| value)
-            .sum()
-    }
-
-    fn squaresum(&mut self) -> i64 {
-        let value = self.adjacents();
+            .sum();
         self.storage.push((value, self.point));
-
         value
     }
 
@@ -105,7 +102,7 @@ impl Spiral {
     //return the first value that is bigger than the input.
     pub fn part2(&mut self, input: i64) -> i64 {
         let spiral = self.spiral(|ref mut spiral, _| {
-            spiral.squaresum()
+            spiral.sum_of_adjecents()
         });
 
         let mut spiralizer = GeneratorAdaptor::new(spiral);
