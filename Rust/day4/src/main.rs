@@ -37,7 +37,8 @@ where
     valids
 }
 
+fn noop<T: ?Sized>(_: &mut T) {}
 fn main() {
-    println!("part 1: {}", solve(PUZZLE, |_| {}));
+    println!("part 1: {}", solve(PUZZLE, noop));
     println!("part 2: {}", solve(PUZZLE, |word| word.sort()))
 }
