@@ -8,9 +8,10 @@ use spiral::Spiral;
 
 fn main() {
     let input = 361527;
+    let mut spiral = Spiral::new();
+    println!("{}", spiral.part1(input));
 
-    let mut part1 = Spiral::new();
-    let mut part2 = Spiral::new();
-    println!("{}", part1.part1(input));
-    println!("{}", part2.part2(input));
+    spiral.reset();
+    
+    println!("{}", spiral.part2(input));
 }

@@ -32,6 +32,10 @@ impl Spiral {
             storage: vec
         }
     }
+    pub fn reset(&mut self) {
+        self.point = Point {x: 0, y: 0};
+        self.direction = Direction::new();
+    }
 
     fn spiral<'g, 'a: 'g, F>(&'a mut self, next_value: F) -> impl Generator<Yield = (i64, Point), Return = ()> + 'g
     where
