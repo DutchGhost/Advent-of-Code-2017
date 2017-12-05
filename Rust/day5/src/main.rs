@@ -25,6 +25,6 @@ where
 
 fn main() {
     let data = parse(PUZZLE);
-    println!("day 5.1: {}", run(data.clone(), |item| 1));
+    println!("day 5.1: {}", run(data.clone(), |_| 1));
     println!("day 5.2: {}", run(data, |item| if item >= 3 { -1} else { 1 }));
 }
