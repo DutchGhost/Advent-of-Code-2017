@@ -9,9 +9,10 @@ use std::collections::HashSet;
 /// then put the vector in the hashset.
 /// if the number of elements in the HashSet equals the lenght of the line,
 /// its a valid line.
-fn solve<F>(input: &str, transformer: F) -> i64
+fn solve<F>(input: &str, mut transformer: F) -> i64
 where
-    F: Fn(&mut Vec<char>)
+    F: FnMut(&mut Vec<char>)
+    //FnMut(&mut Vec<char>) or Fn(&mut Vec<char>)????
 {
     let mut valids = 0;
     let mut set = HashSet::with_capacity(11);
