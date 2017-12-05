@@ -117,6 +117,7 @@ impl Spiral {
             .filter(|&(_, coordinate)| valids.contains(&coordinate))
             .map(|(value, _)| value)
             .sum();
+            
         self.storage.push((value, self.point.clone()));
         value
     }
