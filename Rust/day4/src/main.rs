@@ -11,7 +11,7 @@ use std::collections::HashSet;
 /// its a valid line.
 fn solve<F>(input: &str, mut transformer: F) -> i64
 where
-    F: FnMut(&mut Vec<char>)
+    F: FnMut(&mut [char])
     //FnMut(&mut Vec<char>) or Fn(&mut Vec<char>)????
 {
     let mut valids = 0;
@@ -20,7 +20,7 @@ where
     for line in input.lines() {
         let mut count = 0;
         
-        for word in line.split_whitespace() {
+        for mut word in line.split_whitespace() {
             
             let mut chars = word.chars().collect::<Vec<_>>();
             
