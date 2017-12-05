@@ -10,10 +10,44 @@ enum Direction {
     Right,
 }
 
+impl Direction {
+    fn new() -> Direction {
+        Direction::Right
+    }
+
+    fn change(&mut self) {
+        mem::replace(self, match *self {
+            Direction::Up => Direction::Left,
+            Direction::Left => Direction::Down,
+            Direction::Down => Direction::Right,
+            Direction::Right => Direction::Up,
+        });
+    }
+}
+
 #[derive(Clone)]
 struct Point {
     x: i64,
     y: i64,
+}
+
+impl Point {
+    fn update(&mut self, direction: &Direction) {
+        match direction {
+            &Direction::Up => {
+                self.y += 1;
+            },
+            &Direction::Down => {
+                self.y -= 1;
+            }
+            &Direction::Left => {
+                self.x -= 1;
+            },
+            &Direction::Right => {
+                self.x += 1;
+            }
+        }
+    }
 }
 
 pub struct Spiral {
@@ -54,7 +88,7 @@ impl Spiral {
                         yield (value, to_yield);
 
                         //update the coordinates.
-                        self.direction.step(&mut self.point);
+                        self.point.update(&mut self.direction);
 
                         //get the new value.
                         value = next_value(self, value);
@@ -114,37 +148,5 @@ impl Spiral {
             .find(|&(value, _)| value > input)
             .map(|(value, _)| value)
             .unwrap()
-    }
-}
-
-impl Direction {
-    fn new() -> Direction {
-        Direction::Right
-    }
-
-    fn change(&mut self) {
-        mem::replace(self, match *self {
-            Direction::Up => Direction::Left,
-            Direction::Left => Direction::Down,
-            Direction::Down => Direction::Right,
-            Direction::Right => Direction::Up,
-        });
-    }
-
-    fn step(&self, point: &mut Point) {
-        match self {
-            &Direction::Up => {
-                point.y += 1;
-            },
-            &Direction::Down => {
-                point.y -= 1;
-            }
-            &Direction::Left => {
-                point.x -= 1;
-            },
-            &Direction::Right => {
-                point.x += 1;
-            }
-        }
     }
 }
