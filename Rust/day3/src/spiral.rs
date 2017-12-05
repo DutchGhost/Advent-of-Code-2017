@@ -46,7 +46,8 @@ impl Spiral {
                     for must_chage_direction in 0..number_of_steps {
                         
                         //yield the value directly.
-                        yield (value, (&self.point).clone());
+                        let to_yield = self.point.clone();
+                        yield (value, to_yield);
 
                         //update the coordinates.
                         self.direction.step(&mut self.point);
