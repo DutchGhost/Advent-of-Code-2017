@@ -29,7 +29,8 @@ fn cycle(memory: &[i32]) -> (usize, i32) {
         .iter()
         .enumerate()
         .map(|(idx, bank)| (idx, *bank))
-        .max_by_key(|&(idx, bank)| (bank, -(idx as i64))).unwrap()
+        .max_by_key(|&(idx, bank)| (bank, -(idx as i64)))
+        .unwrap()
 }
 
 fn solve(input: &str) -> (i32, i32) {
