@@ -1,4 +1,4 @@
-use std::collections::hash_map::*;
+use std::collections::HashMap;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
 
