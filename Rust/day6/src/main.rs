@@ -8,6 +8,12 @@ fn parse(s: &str) -> Vec<i32> {
         .collect::<Vec<_>>()
 }
 
+/// loop from 0 to the lenght,
+/// and cycle.
+/// at first, skip for the index plus one,
+/// 
+/// take as many items as needed (value)
+/// and add one to each element of the vector.
 fn redistribute(memory: &mut [i32], idx: usize, value: i32) {
     memory[idx] = 0;
 
@@ -31,19 +37,15 @@ fn solve(input: &str) -> (i32, i32) {
     let mut cache: HashMap<Vec<i32>, i32> = HashMap::new();
 
     let mut n = 0;
-    loop {
+    while let None = cache.get(&memory) {
         let (idx, value) = cycle(&memory);
 
+        cache.insert(memory.clone(), n);
         redistribute(&mut memory, idx, value);
+        
         n += 1;
-
-        match cache.entry(memory.clone()) {
-            Entry::Occupied(map) => {
-                return (n, n - map.get());
-            },
-            Entry::Vacant(memory) => memory.insert(n),
-        };
     }
+    (n, n - cache.get(&memory).unwrap())
 }
 
 fn main() {
