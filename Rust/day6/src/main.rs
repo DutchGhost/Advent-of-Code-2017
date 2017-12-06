@@ -53,10 +53,7 @@ fn solve(input: &str) -> (i32, i32) {
 }
 
 fn main() {
-    use std::time::Instant;
-    let t = Instant::now();
     let (part1, part2) = solve(PUZZLE);
     println!("part 1: {}", part1);
     println!("part 2: {}", part2);
-    println!("{:?}", t.elapsed());
 }
