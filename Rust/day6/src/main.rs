@@ -6,27 +6,28 @@ fn parse(s: &str) -> Vec<i32> {
         .collect::<Vec<_>>()
 }
 
-fn redistribute(memory: &mut [i32], idx: i64, mut value: i32) {
-    let mut index = idx + 1;
+fn redistribute(memory: &mut [i32], mut idx: i64, mut value: i32) {
     
-    let lenght = memory.len();
     memory[idx as usize] = 0;
+    
+    idx += 1;
+    let lenght = memory.len();
 
     while value > 0 {
 
-        index = index % lenght as i64;
-        memory[index as usize] += 1;
+        idx = idx % lenght as i64;
+        memory[idx as usize] += 1;
         
         value -= 1;
-        index += 1;
+        idx += 1;
     }
     
 }
 fn main() {
     let mut memory = parse(PUZZLE);
-    let mut cache: Vec<Vec<i32>> = Vec::new();
+    let mut cache: Vec<(i64, Vec<i32>)> = Vec::new();
 
-    let mut n = 0;
+    let mut part1 = 0;
 
     loop {
         //println!("{:?}", memory);
@@ -37,25 +38,14 @@ fn main() {
             .max_by_key(|&(idx, bank)| (bank, -idx)).unwrap();
 
         redistribute(&mut memory, idx, value);
-        n += 1;
+        part1 += 1;
 
-        if cache.iter().filter(|cached| *cached == &memory).count() == 1 {
+        if cache.iter().filter(|&&(_, ref cached)| *cached == memory).count() == 1 {
+            println!("part 2: {}", cache.iter().filter(|&&(_, ref cached)| *cached == memory).map(|&(n, _)| part1 - n).next().unwrap());
             break;
         }
-        
-        cache.push(memory.clone());
+
+        cache.push((part1, memory.clone()));
     }
-    println!("{}", n);
+    println!("part 1: {}", part1);
 }
-
-/*
-    PART 2:
-            if cache.iter().filter(|&&(_, ref cached)| cached == &memory).count() < 1 {
-            cache.push((n, memory.clone()));
-            n += 1
-        }
-        else {
-            println!("{:?}", cache.iter().filter(|&&(_, ref cached)| cached == &memory).map(|&(num, _)| n - num).next());
-            break;
-        }
-*/
