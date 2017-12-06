@@ -41,7 +41,7 @@ fn solve(input: &str) -> (i32, i32) {
     let mut cache: HashMap<Vec<i32>, i32> = HashMap::new();
 
     let mut n = 0;
-    while let None = cache.get(&memory) {
+    while !cache.contains_key(&memory) {
         let (idx, value) = cycle(&memory);
 
         cache.insert(memory.clone(), n);
