@@ -8,12 +8,10 @@ fn parse(s: &str) -> Vec<i32> {
         .collect::<Vec<_>>()
 }
 
-/// loop from 0 to the lenght,
-/// and cycle.
+/// Loop from 0 to the lenght of the slice, repeat it using cycle().
 /// at first, skip for the index plus one,
-/// 
-/// take as many items as needed (value)
-/// and add one to each element of the vector.
+/// then take as many items as needed (the number of items we need is value!)
+/// and add one to each element of the slice.
 fn redistribute(memory: &mut [i32], idx: usize, value: i32) {
     memory[idx] = 0;
 
@@ -24,8 +22,10 @@ fn redistribute(memory: &mut [i32], idx: usize, value: i32) {
         .for_each(|idx| memory[idx] += 1);
 }
 
-/// max_by_key takes the last, using .rev() escapes from this,
-/// since the 'last' is actually the first one in a tie this way!
+/// max_by_key returns the last max value... using .rev() escapes from this,
+/// since the 'last' max is actually the first max in a tie this way!
+/// (in a list with [1, [3], 3, 2] it will return the item marked in parentheses
+/// because for the iterator it's the last max value) 
 fn cycle(memory: &[i32]) -> (usize, i32) {
     memory
         .iter()
