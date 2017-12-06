@@ -37,15 +37,13 @@ fn main() {
             .max_by_key(|&(idx, bank)| (bank, -idx)).unwrap();
 
         redistribute(&mut memory, idx, value);
+        n += 1;
 
-        if cache.iter().filter(|cached| *cached == &memory).count() < 1 {
-            cache.push(memory.clone());
-            n += 1
-        }
-        else {
-            n += 1;
+        if cache.iter().filter(|cached| *cached == &memory).count() == 1 {
             break;
         }
+        
+        cache.push(memory.clone());
     }
     println!("{}", n);
 }
