@@ -30,7 +30,6 @@ fn main() {
     let mut part1 = 0;
 
     loop {
-        //println!("{:?}", memory);
         let (idx, value) = memory
             .iter()
             .enumerate()
