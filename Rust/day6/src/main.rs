@@ -42,9 +42,9 @@ fn solve(input: &str) -> (i32, i32) {
 
     let mut n = 0;
     while !cache.contains_key(&memory) {
-        let (idx, value) = cycle(&memory);
-
         cache.insert(memory.clone(), n);
+        
+        let (idx, value) = cycle(&memory);
         redistribute(&mut memory, idx, value);
         
         n += 1;
