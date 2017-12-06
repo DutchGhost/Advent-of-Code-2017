@@ -24,12 +24,15 @@ fn redistribute(memory: &mut [i32], idx: usize, value: i32) {
         .for_each(|idx| memory[idx] += 1);
 }
 
+/// max_by_key takes the last, using .rev() escapes from this,
+/// since the 'last' is actually the first one in a tie this way!
 fn cycle(memory: &[i32]) -> (usize, i32) {
     memory
         .iter()
         .enumerate()
+        .rev()
+        .max_by_key(|&(_, bank)| bank)
         .map(|(idx, bank)| (idx, *bank))
-        .max_by_key(|&(idx, bank)| (bank, -(idx as i64)))
         .unwrap()
 }
 
@@ -50,7 +53,10 @@ fn solve(input: &str) -> (i32, i32) {
 }
 
 fn main() {
+    use std::time::Instant;
+    let t = Instant::now();
     let (part1, part2) = solve(PUZZLE);
     println!("part 1: {}", part1);
     println!("part 2: {}", part2);
+    println!("{:?}", t.elapsed());
 }
