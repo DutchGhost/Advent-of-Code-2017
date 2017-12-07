@@ -21,7 +21,7 @@ fn parse(input: &str) -> HashMap<String, String> {
 }
 
 fn main() {
-    //childs pointing to a parent. K is the child, V the parent.
+    //childs are pointing to a parent. K is the child, V the parent.
     let mut set = parse(PUZZLE);
 
     for (k, v) in set.iter() {
