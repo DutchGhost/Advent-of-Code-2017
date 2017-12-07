@@ -61,14 +61,14 @@ fn main() {
     let parsed = parse(PUZZLE);
     let mut map = HashMap::new();
     for item in parsed.iter() {
-        let (key, opt_value) = parent_child(item);
+        let (parent, childs) = parent_child(item);
 
-        match opt_value {
-            Some(values) => {
-                insert_parents(values, &mut map, &parsed[..])
+        match childs {
+            Some(childs) => {
+                insert_parents(childs, &mut map, &parsed[..])
             }
             None => {
-                insert_parents(vec![key], &mut map, &parsed[..])
+                insert_parents(vec![parent], &mut map, &parsed[..])
             }
         }
     }
