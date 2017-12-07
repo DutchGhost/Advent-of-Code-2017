@@ -14,7 +14,7 @@ fn parse(input: &str) -> Vec<Vec<String>> {
         .collect::<Vec<_>>()
 }
 
-fn key_value(vec: &[String]) -> (String, Option<Vec<String>>) {
+fn parent_child(vec: &[String]) -> (String, Option<Vec<String>>) {
     let (head, tail) = vec.split_first().unwrap();
 
     if tail.is_empty() {
@@ -26,23 +26,23 @@ fn key_value(vec: &[String]) -> (String, Option<Vec<String>>) {
 
 //for each value in the given values, insert it's parent in the map.
 //a parent is a key that points to the value
-fn insert_parents(childs: Vec<String>, map: &mut HashMap<String, String>, rows: &[Vec<String>]) {
+fn insert_parents(childs_to_insert: Vec<String>, map: &mut HashMap<String, String>, rows: &[Vec<String>]) {
     //loop over all the items that need a parent
-    for child in childs {
+    for child in childs_to_insert {
 
         //loop over all the lines from the input
         'inner: for line in rows.iter() {
 
             //parse the line to a key and value
-            let (key, value) = key_value(line);
+            let (parent, current_childs) = parent_child(line);
 
             //if the value was none, we dont care (the 'child' would be it's own parent)
             match value {
                 None => continue,
 
                 //if it was Some, 
-                Some(values) => {
-                    for v in values.iter() {
+                Some(current_childs) => {
+                    for current_child in values.iter() {
                         
                         //if one of the CURRENT child's from the CURRENT 'parent' points to the child
                         //we found a parent inserted.
