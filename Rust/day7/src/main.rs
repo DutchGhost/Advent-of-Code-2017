@@ -37,17 +37,17 @@ fn insert_parents(childs_to_insert: Vec<String>, map: &mut HashMap<String, Strin
             let (parent, current_childs) = parent_child(line);
 
             //if the value was none, we dont care (the 'child' would be it's own parent)
-            match value {
+            match current_childs {
                 None => continue,
 
                 //if it was Some, 
-                Some(current_childs) => {
-                    for current_child in values.iter() {
+                Some(childs) => {
+                    for current_child in childs.iter() {
                         
                         //if one of the CURRENT child's from the CURRENT 'parent' points to the child
                         //we found a parent inserted.
-                        if v == &child {
-                            map.insert(child, key);
+                        if current_child == &child {
+                            map.insert(child, parent);
                             break 'inner;
                         }
                     }
@@ -61,7 +61,7 @@ fn main() {
     let parsed = parse(PUZZLE);
     let mut map = HashMap::new();
     for item in parsed.iter() {
-        let (key, opt_value) = key_value(item);
+        let (key, opt_value) = parent_child(item);
 
         match opt_value {
             Some(values) => {
