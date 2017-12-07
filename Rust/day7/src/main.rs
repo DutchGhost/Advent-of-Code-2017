@@ -24,37 +24,11 @@ fn key_value(vec: &[String]) -> (String, Option<Vec<String>>) {
 }
 
 
-fn insert_single_parent(s: String, map: &mut HashMap<String, String>, rows: &[Vec<String>]) {
-    //loop over all the lines in the input
-    'outer: for line in rows.iter() {
-
-        //get the key and values of the line
-        let (key, value) = key_value(line);
-        match value {
-            None => continue,
-
-            //if there is Some value,
-            Some(values) => {
-
-                //iterate over the values
-                for v in values.iter() {
-
-                    //if the current value equals the thing we're looking, for insert it into the map.
-                    if v == &s {
-                        map.insert(s, key);
-                        break 'outer;
-                    }
-                }
-            }
-        }
-    }
-}
-
 //for each value in the given values, insert it's parent in the map.
 //a parent is a key that points to the value
-fn insert_multiple_parents(values: Vec<String>, map: &mut HashMap<String, String>, rows: &[Vec<String>]) {
+fn insert_parents(childs: Vec<String>, map: &mut HashMap<String, String>, rows: &[Vec<String>]) {
     //loop over all the items that need a parent
-    for val in values {
+    for child in childs {
 
         //loop over all the lines from the input
         'inner: for line in rows.iter() {
@@ -62,16 +36,18 @@ fn insert_multiple_parents(values: Vec<String>, map: &mut HashMap<String, String
             //parse the line to a key and value
             let (key, value) = key_value(line);
 
-            //if the value was none, we dont care
+            //if the value was none, we dont care (the 'child' would be it's own parent)
             match value {
                 None => continue,
 
-                //if it was some, 
+                //if it was Some, 
                 Some(values) => {
                     for v in values.iter() {
-                        //if one of the CURRENT values from the CURRENT key is the value, we found the key to be inserted.
-                        if v == &val {
-                            map.insert(val, key);
+                        
+                        //if one of the CURRENT child's from the CURRENT 'parent' points to the child
+                        //we found a parent inserted.
+                        if v == &child {
+                            map.insert(child, key);
                             break 'inner;
                         }
                     }
@@ -80,6 +56,7 @@ fn insert_multiple_parents(values: Vec<String>, map: &mut HashMap<String, String
         }
     }
 }
+
 fn main() {
     let parsed = parse(PUZZLE);
     let mut map = HashMap::new();
@@ -88,14 +65,17 @@ fn main() {
 
         match opt_value {
             Some(values) => {
-                insert_multiple_parents(values, &mut map, &parsed[..])
+                insert_parents(values, &mut map, &parsed[..])
             }
             None => {
-                insert_single_parent(key, &mut map, &parsed[..])
+                insert_parents(vec![key], &mut map, &parsed[..])
             }
         }
     }
+    //loop over the map
     for (k, v) in map.iter() {
+        //see if a given's child parent is in the map.
+        //if it is, continue. Otherwise, it's the first element of the tree.
         match map.get(v) {
             Some(_) => continue,
             None => {println!("{}", v); break},
