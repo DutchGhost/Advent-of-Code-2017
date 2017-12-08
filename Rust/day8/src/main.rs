@@ -56,15 +56,15 @@ fn main() {
 
     for line in parsed {
         let n = line[6].parse::<i64>().unwrap();
-        let operator = Operator::new(&map, line.iter().nth(5).unwrap().to_string(), line.iter().nth(4).unwrap().to_string(), n);
+        let operator = Operator::new(&map, line[5].to_string(), line[4].to_string(), n);
 
         if operator.eval() {
-            match &*(line.iter().nth(1).unwrap().to_string()) {
+            match &*(line[1].to_string()) {
                 "inc" => {
-                    *map.entry(line.iter().nth(0).unwrap().to_string()).or_insert(0) += line.iter().nth(2).unwrap().parse::<i64>().unwrap();
+                    *map.entry(line[0].to_string()).or_insert(0) += line[2].parse::<i64>().unwrap();
                 }
                 "dec" => {
-                    *map.entry(line.iter().nth(0).unwrap().to_string()).or_insert(0) -= line.iter().nth(2).unwrap().parse::<i64>().unwrap();
+                    *map.entry(line[0].to_string()).or_insert(0) -= line[2].parse::<i64>().unwrap();
                 }
                 _ => panic!("CAN NOT DO THIS"),
             }
