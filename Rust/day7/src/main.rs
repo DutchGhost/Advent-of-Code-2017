@@ -1,7 +1,16 @@
+#![feature(slice_patterns)]
 use std::collections::HashMap;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
+mod Node;
 
+//for each [Node0] -> [Node1, Node2, Node3],
+//store:
+//  node1 -> node0,
+//  node2 -> node0,
+//  node3 -> node0
+//in the HashMap.
+//The only node that's only a value in the hashmap, is the root!
 fn parse(input: &str) -> HashMap<String, String> {
     let mut map = HashMap::new();
     for line in input.lines() {
@@ -21,7 +30,6 @@ fn parse(input: &str) -> HashMap<String, String> {
 }
 
 fn main() {
-    //childs are pointing to a parent. K is the child, V the parent.
     let mut set = parse(PUZZLE);
 
     for (k, v) in set.iter() {
