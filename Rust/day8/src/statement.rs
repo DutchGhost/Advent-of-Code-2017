@@ -35,7 +35,6 @@ impl Operator {
             &Operator::NotEqual(a, b) => a != b,
             &Operator::GreaterthanOrEqualto(a, b) => a >= b,
             &Operator::SmallerthanOrEqualto(a, b) => a <= b,
-
         }
     }
 }
