@@ -17,9 +17,17 @@ fn main() {
     let parsed = parse(PUZZLE);
     let mut map = Registers::new();
 
-    for line in parsed {
-        let statement = Statement::new(line, &map);
-        statement.eval(&mut map);
+    // for line in parsed {
+    //     let statement = Statement::new(line, &map);
+    //     statement.eval(&mut map);
+    // }
+
+    for line in PUZZLE.lines() {
+        let statement = Statement::from_s(line, &map);
+        match statement {
+            Ok(s) => s.eval(&mut map),
+            Err(e) => println!("{}", e.discription()),
+        }
     }
 
     let (part1, part2) = map.max();

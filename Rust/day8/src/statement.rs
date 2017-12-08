@@ -1,6 +1,11 @@
 use std::collections::HashMap;
 use std::cmp::max;
 
+pub trait from_str_and_hashmap<'r> {
+    type Err;
+    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, Self::Err>;
+}
+
 //A register
 #[derive(Eq, Hash, PartialEq, Clone)]
 pub struct Register<'r> {
@@ -113,10 +118,10 @@ where
     'a: 'b,
     'a: 'm,
 {
-    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Statement<'r> {
+    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r>, parseError> {
         match line.as_slice() {
             &[register, instruction, value, cmpregister, operator, otherval] => {
-                Statement {
+                Ok(Statement {
                     instruction: Instruction::new(instruction, Register::new(register), value),
                     operator: Operator::new(
                         Register::new(cmpregister),
@@ -124,9 +129,9 @@ where
                         otherval.parse::<i32>().expect("Failed to parse the number to compare with."),
                         registers,
                     ),
-                }
+                })
             },
-            _ => panic!("Failed to parse the input."),
+            _ => Err(parseError::new("Could not match on the slice.")),
         }
     }
 
@@ -135,6 +140,28 @@ where
     }
 }
 
+pub struct parseError {
+    discription: String,
+}
+
+impl parseError {
+    pub fn new<'a>(s: &'a str) -> parseError {
+        parseError {
+            discription: String::from(s),
+        }
+    }
+    pub fn discription(self) -> String {
+        self.discription
+    }
+}
+impl <'r>from_str_and_hashmap<'r> for Statement<'r> {
+    type Err = parseError;
+
+    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, parseError> {
+        let v = s.split_whitespace().collect::<Vec<_>>();
+        Statement::new(v, map)
+    }
+}
 /*
     NOTE:
         an if-statement has an expression, and a instruction.
