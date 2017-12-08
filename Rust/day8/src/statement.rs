@@ -56,8 +56,8 @@ impl <'i, 'r>Registers<'r> {
     fn update(&mut self, operator: &Operator, instruction: Instruction<'r>) {
         if operator.cmp() {
             match instruction {
-                Instruction::Operation(register, value, func) => {
-                    *self.registers.entry(register.clone()).or_insert(0) += func(value);
+                Instruction::Operation(register, value, operation) => {
+                    *self.registers.entry(register.clone()).or_insert(0) += operation(value);
                     self.max = max(self.max, self.registers.get(&register).unwrap().clone());
                 }
             }
