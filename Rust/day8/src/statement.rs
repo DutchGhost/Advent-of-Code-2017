@@ -3,14 +3,14 @@ use std::collections::HashMap;
 enum Operator {
     Equal(i32, i32),
     NotEqual(i32, i32),
-    Greaterthen(i32, i32),
-    Smallerthen(i32, i32),
-    GreaterthenOrEqualto(i32, i32),
-    SmallerthenOrEqualto(i32, i32),
+    Greaterthan(i32, i32),
+    Smallerthan(i32, i32),
+    GreaterthanOrEqualto(i32, i32),
+    SmallerthanOrEqualto(i32, i32),
 }
 
 impl Operator {
-    fn new(other: &str, operator: &str, cmp: i32, map: &HashMap<&str, i32>) -> Operator {
+    fn new<'a>(other: &'a str, operator: &'a str, cmp: i32, map: &HashMap<&'a str, i32>) -> Operator {
         let n = match map.get(other) {
             Some(item) => *item,
             None => 0,
@@ -19,10 +19,10 @@ impl Operator {
         match &*operator {
             "==" => Operator::Equal(n, cmp),
             "!=" => Operator::NotEqual(n, cmp),
-            ">" => Operator::Greaterthen(n, cmp),
-            "<" => Operator::Smallerthen(n, cmp),
-            "<=" => Operator::SmallerthenOrEqualto(n, cmp),
-            ">=" => Operator::GreaterthenOrEqualto(n, cmp),
+            ">" => Operator::Greaterthan(n, cmp),
+            "<" => Operator::Smallerthan(n, cmp),
+            "<=" => Operator::SmallerthanOrEqualto(n, cmp),
+            ">=" => Operator::GreaterthanOrEqualto(n, cmp),
             _ => panic!("I don't know this operator!"),
         }
     }
@@ -30,11 +30,11 @@ impl Operator {
     fn cmp(&self) -> bool {
         match self {
             &Operator::Equal(a, b) => a == b,
-            &Operator::Greaterthen(a, b) => a > b,
-            &Operator::Smallerthen(a, b) => a < b,
+            &Operator::Greaterthan(a, b) => a > b,
+            &Operator::Smallerthan(a, b) => a < b,
             &Operator::NotEqual(a, b) => a != b,
-            &Operator::GreaterthenOrEqualto(a, b) => a >= b,
-            &Operator::SmallerthenOrEqualto(a, b) => a <= b,
+            &Operator::GreaterthanOrEqualto(a, b) => a >= b,
+            &Operator::SmallerthanOrEqualto(a, b) => a <= b,
 
         }
     }
@@ -44,44 +44,31 @@ pub struct Statement<'a> {
     name: &'a str,
     operation: &'a str,
     value: i32,
-    other: &'a str,
     operator: Operator,
 }
 
-impl <'a, 'b, 'm>Statement<'a> {
+impl <'a, 'b, 'm>Statement<'a>
+where
+    'a: 'b,
+    'a: 'm
+{
 
     pub fn name(&self) -> &'a str {
         self.name
     }
 
-    pub fn new(line: Vec<&'a str>, map: &'b HashMap<&str, i32>) -> Statement<'a>
+    pub fn new(line: Vec<&'a str>, map: &'b HashMap<&'a str, i32>) -> Statement<'a>
     {
-        let mut it = line.into_iter();
-
-        //the name of the register,
-        let name = it.next().expect("Could not fetch the name");
-
-        //increment of decrement
-        let operation = it.next().expect("Could not fetch the operation");
-
-        //with how many must be incremented or decremented
-        let value = it.next().unwrap().parse::<i32>().expect("could not parse");
-
-        //the item to check
-        let other = it.next().expect("Could not get the register");
-
-        //greater then, smaller then, equal to, eqal or greater then..
-        let operator = it.next().expect("could not get the operator");
-
-        //the value it's compared with
-        let val = it.next().unwrap().parse::<i32>().expect("could not parse");
-
-        Statement {
-            name: name,
-            operation: operation,
-            value: value,
-            other: other,
-            operator: Operator::new(&other, operator, val, map),
+        match line.as_slice() {
+            &[name, operation, value, other, operator, val] => {
+                Statement {
+                    name: name,
+                    operation: operation,
+                    value: value.parse::<i32>().expect("Failed to parse value to increment or decrement"),
+                    operator: Operator::new(&other, operator, val.parse::<i32>().expect("Failed to parse number to compare with"), map)
+                }
+            }
+            _ => panic!()
         }
     }
 
