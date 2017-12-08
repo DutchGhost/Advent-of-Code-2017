@@ -3,20 +3,20 @@ use std::cmp::max;
 
 //A register
 #[derive(Eq, Hash, PartialEq, Clone)]
-pub struct Register<'a> {
-    name: &'a str
+pub struct Register<'r> {
+    name: &'r str
 }
 
 //Holds Registers, with their values
-pub struct Registers<'a> {
+pub struct Registers<'r> {
     max: i32,
-    registers: HashMap<Register<'a>, i32>,
+    registers: HashMap<Register<'r>, i32>,
 }
 
 //An Instruction. Increment(Register, Value) or Decrement(Register, Value).
-enum Instruction<'a> {
-    inc(Register<'a>, i32),
-    dec(Register<'a>, i32),
+enum Instruction<'r> {
+    inc(Register<'r>, i32),
+    dec(Register<'r>, i32),
 }
 
 //An operator, based on this a register's value is incremented or decremented
@@ -29,46 +29,66 @@ enum Operator {
     SmallerthanOrEqualto(i32, i32),
 }
 
+enum InstructionExt<'r>
+{
+    operator(Register<'r>, i32, Box<Fn(i32) -> i32>)
+}
+
+impl <'r>From<Instruction<'r>> for InstructionExt<'r>
+{
+    fn from(ins: Instruction<'r>) -> InstructionExt<'r> {
+        match ins {
+            Instruction::inc(register, value) => {
+                InstructionExt::operator(register, value, Box::new(Self::inc))
+            },
+            Instruction::dec(register, value) => {
+                return InstructionExt::operator(register, value, Box::new(Self::dec))
+            },
+        }
+    }
+}
+
+impl <'r>InstructionExt<'r>
+{
+    fn inc(v: i32) -> i32 {v}
+    fn dec(v: i32) -> i32 {-v}
+}
 //A statement. [instruction] [register] with [value] if [value of a register] [operator] [othervalue]
-pub struct Statement<'a> {
-    instruction: Instruction<'a>,
+pub struct Statement<'r> {
+    instruction: Instruction<'r>,
     operator: Operator,
 }
 
 
-impl <'a>Register<'a> {
-    fn new(name: &'a str) -> Register<'a> {
+impl <'r>Register<'r> {
+    fn new(name: &'r str) -> Register<'r> {
         Register {
             name: name
         }
     }
 }
 
-impl <'a>Registers<'a> {
-    pub fn new() -> Registers<'a> {
+impl <'i, 'r>Registers<'r> {
+    pub fn new() -> Registers<'r> {
         Registers {
             max: 0,
             registers: HashMap::new(),
         }
     }
 
-    fn get<'v, 's: 'v>(&'s self, k: &Register<'a>) -> Option<&'v i32> {
+    fn get<'v, 's: 'v>(&'s self, k: &Register<'r>) -> Option<&'v i32> {
         self.registers.get(k)
     }
 
-    fn update(&mut self, operator: &Operator, instruction: Instruction<'a>) {
+    fn update(&mut self, operator: &Operator, instruction: Instruction<'r>) {
         if operator.cmp() {
-            match instruction {
-                Instruction::inc(register, value) => {
-                    *self.registers.entry(register.clone()).or_insert(0) += value;
+            let ins = InstructionExt::from(instruction);
+            match ins {
+                InstructionExt::operator(register, value, func) => {
+                    *self.registers.entry(register.clone()).or_insert(0) += func(value);
                     self.max = max(self.max, self.registers.get(&register).unwrap().clone());
-                },
-                Instruction::dec(register, value) => {
-                    *self.registers.entry(register.clone()).or_insert(0) -= value;
-                    self.max = max(self.max, self.registers.get(&register).unwrap().clone())
-                },
-            };
-
+                }
+            }
         }
     }
 
@@ -77,8 +97,8 @@ impl <'a>Registers<'a> {
     }
 }
 
-impl <'a>Instruction<'a> {
-    fn new(ins: &'a str, register: Register<'a>, value: &'a str) -> Instruction<'a> {
+impl <'a, 'r, 'i>Instruction<'r> {
+    fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r> {
         match ins {
             "inc" => Instruction::inc(register, value.parse::<i32>().expect("Invalid incremental value")),
             "dec" => Instruction::dec(register, value.parse::<i32>().expect("Invalid decremental value")),
@@ -88,7 +108,7 @@ impl <'a>Instruction<'a> {
 }
 
 impl Operator {
-    fn new<'a>(cmpregister: Register<'a>, operator: &'a str, cmp: i32, registers: &Registers) -> Operator {
+    fn new<'r, 'a, 'rs>(cmpregister: Register<'r>, operator: &'a str, cmp: i32, registers: &Registers<'r>) -> Operator {
         let n = match registers.get(&cmpregister) {
             Some(item) => *item,
             None => 0,
@@ -117,12 +137,12 @@ impl Operator {
     }
 }
 
-impl<'a, 'b, 'm> Statement <'a>
+impl<'r, 'b, 'm, 'a> Statement <'r>
 where
     'a: 'b,
     'a: 'm,
 {
-    pub fn new(line: Vec<&'a str>, registers: &'b Registers) -> Statement<'a> {
+    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Statement<'r> {
         match line.as_slice() {
             &[register, instruction, value, cmpregister, operator, val] => {
                 Statement {
@@ -139,7 +159,7 @@ where
         }
     }
 
-    pub fn eval(self, registers: &'m mut Registers<'a>) {
+    pub fn eval(self, registers: &'m mut Registers<'r>) {
         registers.update(&self.operator, self.instruction);
     }
 }
