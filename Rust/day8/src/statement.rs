@@ -61,16 +61,16 @@ where
                 Statement {
                     register: register,
                     instruction: instruction,
-                    value: value.parse::<i32>().expect("Failed to parse value to increment or decrement"),
+                    value: value.parse::<i32>().expect("Failed to parse value to increment or decrement."),
                     operator: Operator::new(
                         &cmpregister,
                         operator,
-                        val.parse::<i32>().expect("Failed to parse number to compare with"),
+                        val.parse::<i32>().expect("Failed to parse the number to compare with."),
                         registers,
                     ),
                 }
-            }
-            _ => panic!(),
+            },
+            _ => panic!("Failed to parse the input."),
         }
     }
 
@@ -79,7 +79,7 @@ where
             match self.instruction {
                 "inc" => *registers.entry(self.register).or_insert(0) += self.value,
                 "dec" => *registers.entry(self.register).or_insert(0) -= self.value,
-                _ => panic!("Something when horribly terribly wrong."),
+                _ => panic!("Something went horribly terribly wrong."),
             }
         }
     }
