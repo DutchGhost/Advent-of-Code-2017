@@ -29,7 +29,7 @@ fn main() {
         }
     }
 
-    let part1 = map.iter().max_by_key(|&(_, n)| n).map(|(_, n)| n).unwrap();
+    let part1 = map.values().max().unwrap();
     println!("part 1: {}", part1);
     println!("part 2: {}", part2);
 }
