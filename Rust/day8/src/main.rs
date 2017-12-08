@@ -19,24 +19,15 @@ fn main() {
 
     let mut part2 = 0;
 
-    // for line in parsed {
-    //     let statement = Statement::new(line, &map);
-    //     statement.eval(&mut map);
+    for line in parsed {
+        let statement = Statement::new(line, &map);
+        statement.eval(&mut map);
 
-    //     if let Some(val) = map.get(statement.name()) {
-    //         part2 = std::cmp::max(part2, *val);
-    //     }
-    // }
+        if let Some(val) = map.get(statement.name()) {
+            part2 = std::cmp::max(part2, *val);
+        }
+    }
 
-    parsed
-        .into_iter()
-        .map(|line| Statement::new(line, &map))
-        .for_each(|statement| {
-            statement.eval(&mut map);
-            if let Some(val) = map.get(statement.name()) {
-                part2 = std::cmp::max(part2, *val);
-            }
-        });
     let part1 = map.iter().max_by_key(|&(_, n)| n).map(|(_, n)| n).unwrap();
     println!("part 1: {}", part1);
     println!("part 2: {}", part2);

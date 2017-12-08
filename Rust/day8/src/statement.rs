@@ -48,13 +48,14 @@ pub struct Statement<'a> {
     operator: Operator,
 }
 
-impl <'a>Statement<'a> {
+impl <'a, 'b, 'm>Statement<'a> {
 
     pub fn name(&self) -> &'a str {
         self.name
     }
 
-    pub fn new(line: Vec<&'a str>, map: &HashMap<&str, i32>) -> Statement<'a> {
+    pub fn new(line: Vec<&'a str>, map: &'b HashMap<&str, i32>) -> Statement<'a>
+    {
         let mut it = line.into_iter();
 
         //the name of the register,
@@ -84,7 +85,7 @@ impl <'a>Statement<'a> {
         }
     }
 
-    pub fn eval(&self, map: &mut HashMap<&'a str, i32>) {
+    pub fn eval(&self, map: &'m mut HashMap<&'a str, i32>) {
         if self.operator.cmp() {
             match self.operation {
                 "inc" => *map.entry(self.name).or_insert(0) += self.value,
