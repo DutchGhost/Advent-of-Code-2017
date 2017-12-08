@@ -7,7 +7,7 @@ use statement::Statement;
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 
-fn parse(input: &str) -> Vec<Vec<&str>> {
+fn parse<'a>(input: &'a str) -> Vec<Vec<&'a str>> {
     input
         .lines()
         .map(|line| line.split_whitespace().collect::<Vec<_>>())
@@ -24,7 +24,7 @@ fn main() {
         let statement = Statement::new(line, &map);
         statement.eval(&mut map);
 
-        if let Some(val) = map.get(statement.name()) {
+        if let Some(val) = map.get(statement.register()) {
             part2 = std::cmp::max(part2, *val);
         }
     }
