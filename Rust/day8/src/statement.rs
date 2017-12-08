@@ -90,8 +90,8 @@ impl Operator {
         match &operator {
             &"==" => Operator::Equal(n, cmp),
             &"!=" => Operator::NotEqual(n, cmp),
-            &">" => Operator::Greaterthan(n, cmp),
-            &"<" => Operator::Smallerthan(n, cmp),
+            &"<"  => Operator::Smallerthan(n, cmp),
+            &">"  => Operator::Greaterthan(n, cmp),
             &"<=" => Operator::SmallerthanOrEqualto(n, cmp),
             &">=" => Operator::GreaterthanOrEqualto(n, cmp),
             _ => panic!("I don't know this operator!"),
@@ -101,11 +101,11 @@ impl Operator {
     fn cmp(&self) -> bool {
         match self {
             &Operator::Equal(a, b) => a == b,
-            &Operator::Greaterthan(a, b) => a > b,
-            &Operator::Smallerthan(a, b) => a < b,
             &Operator::NotEqual(a, b) => a != b,
-            &Operator::GreaterthanOrEqualto(a, b) => a >= b,
+            &Operator::Smallerthan(a, b) => a < b,
+            &Operator::Greaterthan(a, b) => a > b,
             &Operator::SmallerthanOrEqualto(a, b) => a <= b,
+            &Operator::GreaterthanOrEqualto(a, b) => a >= b,
         }
     }
 }
