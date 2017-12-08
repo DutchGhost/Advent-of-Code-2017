@@ -1,24 +1,29 @@
-pub struct Node {
-    names: String,
-    weights: i64,
-    childs: Option<Vec<Node>>,
+#[derive(Debug)]
+pub struct node {
+    name: String,
+    weight: i64,
+    childs: Option<Vec<String>>,
 }
 
-impl From<Vec<String>> for Node {
-    fn from(v: Vec<String>) -> Node {
-        match v.as_slice() {
-            &[name, weight] => Node {
-                names: name,
-                weights: weight.replace("(", "").replace(")", "").parse().expect("Could not parse weight"),
+impl From<Vec<String>> for node {
+    fn from(v: Vec<String>) -> node {
+        let (head, tail) = v.as_slice().split_at(2);
+        if tail.is_empty() {
+            node {
+                name: head[0].to_string(),
+                weight: head[1].replace("(", "").replace(")", "").parse().expect(
+                    "Could not parse weight",
+                ),
                 childs: None,
-            },
-            //other should be the remaining stuff
-            &[name, weight, other] => Node {
-                names: name,
-                weights: weight,
-                childs: Some(other),
-            },
-            _ => panic!()
+            }
+        } else {
+            node {
+                name: head[0].to_string(),
+                weight: head[1].replace("(", "").replace(")", "").parse().expect(
+                    "Could not parse weight",
+                ),
+                childs: Some(tail.to_vec()),
+            }
         }
     }
 }
