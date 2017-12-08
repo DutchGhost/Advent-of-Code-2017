@@ -15,7 +15,7 @@ pub struct Registers<'r> {
 
 //An Instruction. Increment(Register, Value) or Decrement(Register, Value).
 enum Instruction<'r> {
-    Operation(Register<'r>, i32, Box<Fn(i32) -> i32>)
+    Operation(Box<Fn(i32) -> i32>, Register<'r>, i32)
 }
 
 //An operator, based on this a register's value is incremented or decremented
@@ -56,7 +56,7 @@ impl <'i, 'r>Registers<'r> {
     fn update(&mut self, operator: &Operator, instruction: Instruction<'r>) {
         if operator.cmp() {
             match instruction {
-                Instruction::Operation(register, value, operation) => {
+                Instruction::Operation(operation, register, value) => {
                     *self.registers.entry(register.clone()).or_insert(0) += operation(value);
                     self.max = max(self.max, self.registers.get(&register).unwrap().clone());
                 }
@@ -72,8 +72,8 @@ impl <'i, 'r>Registers<'r> {
 impl <'a, 'r, 'i>Instruction<'r> {
     fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r> {
         match ins {
-            "inc" => Instruction::Operation(register, value.parse::<i32>().expect("Invalid incremental value"), Box::new(Self::inc)),
-            "dec" => Instruction::Operation(register, value.parse::<i32>().expect("Invalid decremental value"), Box::new(Self::dec)),
+            "inc" => Instruction::Operation(Box::new(Self::inc), register, value.parse::<i32>().expect("Invalid incremental value")),
+            "dec" => Instruction::Operation(Box::new(Self::dec), register, value.parse::<i32>().expect("Invalid decremental value")),
             _ => panic!("unknown instruction"),
         }
     }
