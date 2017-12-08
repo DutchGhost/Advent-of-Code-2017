@@ -118,7 +118,7 @@ where
     'a: 'b,
     'a: 'm,
 {
-    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r>, parseError> {
+    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r>, StatementError> {
         match line.as_slice() {
             &[register, instruction, value, cmpregister, operator, otherval] => {
                 Ok(Statement {
@@ -131,7 +131,7 @@ where
                     ),
                 })
             },
-            _ => Err(parseError::new("Could not match on the slice.")),
+            _ => Err(StatementError::new("Could not match on the slice.")),
         }
     }
 
@@ -140,13 +140,13 @@ where
     }
 }
 
-pub struct parseError {
+pub struct StatementError {
     discription: String,
 }
 
-impl parseError {
-    pub fn new<'a>(s: &'a str) -> parseError {
-        parseError {
+impl StatementError {
+    pub fn new<'a>(s: &'a str) -> StatementError {
+        StatementError {
             discription: String::from(s),
         }
     }
@@ -155,9 +155,9 @@ impl parseError {
     }
 }
 impl <'r>from_str_and_hashmap<'r> for Statement<'r> {
-    type Err = parseError;
+    type Err = StatementError;
 
-    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, parseError> {
+    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, StatementError> {
         let v = s.split_whitespace().collect::<Vec<_>>();
         Statement::new(v, map)
     }
