@@ -37,9 +37,7 @@ pub struct Statement<'r> {
 
 impl <'r>Register<'r> {
     fn new(name: &'r str) -> Register<'r> {
-        Register {
-            name: name
-        }
+        Register { name: name }
     }
 }
 
