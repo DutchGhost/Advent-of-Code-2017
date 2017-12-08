@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 
 mod statement;
-use statement::Statement;
+use statement::*;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
 
@@ -16,20 +16,14 @@ fn parse<'a>(input: &'a str) -> Vec<Vec<&'a str>> {
 
 fn main() {
     let parsed = parse(PUZZLE);
-    let mut map = HashMap::new();
-
-    let mut part2 = 0;
+    let mut map = Registers::new();
 
     for line in parsed {
         let statement = Statement::new(line, &map);
         statement.eval(&mut map);
-
-        if let Some(val) = map.get(statement.register()) {
-            part2 = std::cmp::max(part2, *val);
-        }
     }
 
-    let part1 = map.values().max().unwrap();
+    let (part1, part2) = map.max();
     println!("part 1: {}", part1);
     println!("part 2: {}", part2);
 }
