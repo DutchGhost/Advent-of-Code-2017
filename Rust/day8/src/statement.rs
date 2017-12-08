@@ -115,13 +115,13 @@ where
 {
     pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Statement<'r> {
         match line.as_slice() {
-            &[register, instruction, value, cmpregister, operator, val] => {
+            &[register, instruction, value, cmpregister, operator, otherval] => {
                 Statement {
                     instruction: Instruction::new(instruction, Register::new(register), value),
                     operator: Operator::new(
                         Register::new(cmpregister),
                         operator,
-                        val.parse::<i32>().expect("Failed to parse the number to compare with."),
+                        otherval.parse::<i32>().expect("Failed to parse the number to compare with."),
                         registers,
                     ),
                 }
