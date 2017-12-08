@@ -62,15 +62,11 @@ where
                 Statement {
                     register: register,
                     instruction: instruction,
-                    value: value.parse::<i32>().expect(
-                        "Failed to parse value to increment or decrement",
-                    ),
+                    value: value.parse::<i32>().expect("Failed to parse value to increment or decrement"),
                     operator: Operator::new(
                         &cmpregister,
                         operator,
-                        val.parse::<i32>().expect(
-                            "Failed to parse number to compare with",
-                        ),
+                        val.parse::<i32>().expect("Failed to parse number to compare with"),
                         registers,
                     ),
                 }
