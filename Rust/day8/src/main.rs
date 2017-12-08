@@ -43,16 +43,18 @@ impl Operator {
     }
 }
 
-fn parse(input: &str) -> Vec<Vec<String>> {
+fn parse(input: &str) -> Vec<Vec<&str>> {
     input
         .lines()
-        .map(|line| line.split_whitespace().map(|word| word.to_string()).collect::<Vec<_>>())
+        .map(|line| line.split_whitespace().collect::<Vec<_>>())
         .collect()
 }
 
 fn main() {
     let parsed = parse(PUZZLE);
     let mut map = HashMap::new();
+
+    let mut max = 0;
 
     for line in parsed {
         let n = line[6].parse::<i64>().unwrap();
@@ -68,9 +70,14 @@ fn main() {
                 }
                 _ => panic!("CAN NOT DO THIS"),
             }
+            let tmp = map.iter().max_by_key(|&(_, val)| val).map(|(_, val)| val).unwrap();
+            if tmp > &max {
+                max = *tmp;
+            }
         }
     }
 
-    let i = map.iter().max_by_key(|&(_, val)| val);
-    println!("{:?}", i);
+    let i = map.iter().max_by_key(|&(_, val)| val).map(|(_, val)| val).unwrap();
+    println!("part 1: {}", i);
+    println!("part 2: {}", max);
 }
