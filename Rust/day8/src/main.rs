@@ -1,5 +1,4 @@
 #![feature(slice_patterns)]
-use std::collections::HashMap;
 
 mod statement;
 use statement::*;

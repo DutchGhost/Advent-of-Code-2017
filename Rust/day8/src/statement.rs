@@ -15,8 +15,7 @@ pub struct Registers<'r> {
 
 //An Instruction. Increment(Register, Value) or Decrement(Register, Value).
 enum Instruction<'r> {
-    inc(Register<'r>, i32),
-    dec(Register<'r>, i32),
+    Operation(Register<'r>, i32, Box<Fn(i32) -> i32>)
 }
 
 //An operator, based on this a register's value is incremented or decremented
@@ -29,30 +28,6 @@ enum Operator {
     SmallerthanOrEqualto(i32, i32),
 }
 
-enum InstructionExt<'r>
-{
-    operator(Register<'r>, i32, Box<Fn(i32) -> i32>)
-}
-
-impl <'r>From<Instruction<'r>> for InstructionExt<'r>
-{
-    fn from(ins: Instruction<'r>) -> InstructionExt<'r> {
-        match ins {
-            Instruction::inc(register, value) => {
-                InstructionExt::operator(register, value, Box::new(Self::inc))
-            },
-            Instruction::dec(register, value) => {
-                return InstructionExt::operator(register, value, Box::new(Self::dec))
-            },
-        }
-    }
-}
-
-impl <'r>InstructionExt<'r>
-{
-    fn inc(v: i32) -> i32 {v}
-    fn dec(v: i32) -> i32 {-v}
-}
 //A statement. [instruction] [register] with [value] if [value of a register] [operator] [othervalue]
 pub struct Statement<'r> {
     instruction: Instruction<'r>,
@@ -82,9 +57,8 @@ impl <'i, 'r>Registers<'r> {
 
     fn update(&mut self, operator: &Operator, instruction: Instruction<'r>) {
         if operator.cmp() {
-            let ins = InstructionExt::from(instruction);
-            match ins {
-                InstructionExt::operator(register, value, func) => {
+            match instruction {
+                Instruction::Operation(register, value, func) => {
                     *self.registers.entry(register.clone()).or_insert(0) += func(value);
                     self.max = max(self.max, self.registers.get(&register).unwrap().clone());
                 }
@@ -100,19 +74,18 @@ impl <'i, 'r>Registers<'r> {
 impl <'a, 'r, 'i>Instruction<'r> {
     fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r> {
         match ins {
-            "inc" => Instruction::inc(register, value.parse::<i32>().expect("Invalid incremental value")),
-            "dec" => Instruction::dec(register, value.parse::<i32>().expect("Invalid decremental value")),
+            "inc" => Instruction::Operation(register, value.parse::<i32>().expect("Invalid incremental value"), Box::new(Self::inc)),
+            "dec" => Instruction::Operation(register, value.parse::<i32>().expect("Invalid decremental value"), Box::new(Self::dec)),
             _ => panic!("unknown instruction"),
         }
     }
+    fn inc(value: i32) -> i32 { value }
+    fn dec(value: i32) -> i32 { -value }
 }
 
 impl Operator {
     fn new<'r, 'a, 'rs>(cmpregister: Register<'r>, operator: &'a str, cmp: i32, registers: &Registers<'r>) -> Operator {
-        let n = match registers.get(&cmpregister) {
-            Some(item) => *item,
-            None => 0,
-        };
+        let n = *registers.get(&cmpregister).unwrap_or(&0i32);
 
         match &operator {
             &"==" => Operator::Equal(n, cmp),
