@@ -23,7 +23,7 @@ fn solve(input: &str) -> (i64, i64) {
             '{' if !garbage => group += 1,
             '}' if !garbage => { score += group; group -= 1; }
             '<'             => { if garbage { gccount += 1; } garbage = true; }
-            _               =>  { gccount += 1; },
+            _               => { gccount += 1; },
         };
     }
     (score, gccount)
