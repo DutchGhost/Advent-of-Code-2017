@@ -1,10 +1,11 @@
+#![feature(test)]
+extern crate test;
 const PUZZLE: &'static str = include_str!("PUZZLE.txt");
+const BPUZZLE: &'static [u8; 2190] = include_bytes!("PUZZLE.txt");
 
 fn main() {
     println!("day 1.1: {}", summenize(PUZZLE, 1));
     println!("day 1.2: {}", summenize(PUZZLE, PUZZLE.len() >> 1));
-
-    println!("fast: {}", optimized(PUZZLE, PUZZLE.len() >> 1));
 }
 
 /// take an &str, loop over the chars,
@@ -27,4 +28,58 @@ fn optimized(input: &str, half: usize) -> u32 {
         .zip(tail.chars())
         .filter_map(|(first, second)| if first == second { first.to_digit(10)} else { None })
         .sum::<u32>() << 1
+}
+
+fn fastsummenize(input: &[u8; 2190], skip: usize) -> u32 {
+    input
+        .iter()
+        .zip(input.iter().cycle().skip(skip))
+        .filter_map(|(first, second)| if first == second { (*first as char).to_digit(10) } else { None })
+        .sum::<u32>()
+}
+
+fn fastoptimized(input: &[u8; 2190], half: usize) -> u32 {
+    let (head, tail) = input.split_at(half);
+    head
+        .iter()
+        .zip(tail.iter())
+        .filter_map(|(first, second)| if first == second { (*first as char).to_digit(10)} else { None })
+        .sum::<u32>() << 1
+}
+
+
+#[cfg(test)]
+mod tests {
+    use test::Bencher;
+    use super::*;
+    
+    #[bench]
+    fn bytes_summenize_part1(b: &mut Bencher) {
+        b.iter(|| fastsummenize(BPUZZLE, 1));
+    }
+
+    #[bench]
+    fn bytes_summenize_part2(b: &mut Bencher) {
+        b.iter(|| fastsummenize(BPUZZLE, BPUZZLE.len() >> 1));
+    }
+
+    #[bench]
+    fn bytes_fast_part2(b: &mut Bencher) {
+        b.iter(|| fastoptimized(BPUZZLE, BPUZZLE.len() >> 1));
+    }
+
+    #[bench]
+    fn str_summenize_part1(b: &mut Bencher) {
+        b.iter(|| summenize(PUZZLE, 1));
+    }
+
+    #[bench]
+    fn str_summenize_part2(b: &mut Bencher) {
+        b.iter(|| summenize(PUZZLE, PUZZLE.len() >> 1));
+    }
+
+    #[bench]
+    fn str_fast_part2(b: &mut Bencher) {
+        b.iter(|| optimized(PUZZLE, PUZZLE.len() >> 1));
+    }
 }
