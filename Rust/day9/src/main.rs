@@ -23,12 +23,14 @@ fn solve(input: &str) -> (i64, i64) {
             '{' if !garbage => level += 1,
             '}' if !garbage => { score += level; level -= 1; }
             '<'             => { if garbage { gccount += 1; } garbage = true; }
-            _               => if garbage { gccount += 1; },
+            _               =>  { gccount += 1; },
         };
     }
     (score, gccount)
 }
 
 fn main() {
-    println!("{:?}", solve(PUZZLE));
+    let (part1, part2) = solve(PUZZLE);
+    println!("part 1: {}", part1);
+    println!("part 2: {}", part2)
 }
