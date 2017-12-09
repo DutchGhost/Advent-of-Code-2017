@@ -3,6 +3,8 @@ extern crate regex;
 use regex::Regex;
 
 use std::collections::HashSet;
+use std::collections::HashMap;
+
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 #[derive(Debug, Hash, Eq, PartialEq, Clone)]
@@ -50,17 +52,38 @@ fn find_bottem(Towers: &Vec<Tower>) -> String {
     diff.clone()
 }
 
-// fn balance_towers(towers: Vec<Tower>) {
+fn balance_towers(towers: Vec<Tower>) {
 
-// }
+    let lookups = towers.iter().map(|tower| (tower.name.clone(), tower.clone())).collect::<HashMap<String, Tower>>();
+    let root = lookups.get(&find_bottem(&towers)).unwrap();
+    check(&root, &lookups);
+    
+}
 
-// fn check(tower: &Tower) {
-//     for name in tower.aboves.iter()
-// }
+fn check(tower: &Tower, lookup: &HashMap<String, Tower>) -> (i64, bool) {
+    let subchecks = tower.aboves
+        .iter()
+        .map(|name| (name.clone(), check(lookup.get(name).unwrap(), lookup)))
+        .collect::<HashMap<String, (i64, bool)>>();
+    let subcheck_weights = subchecks.values().map(|&(w, _)| w).collect::<HashSet<_>>();
+    let is_balanced = subcheck_weights.len() <= 1;
+    let mut weight = subchecks.values().map(|&(w, _)| w).sum();
+    weight += tower.weights;
+
+    if subcheck_weights.len() > 1 && subchecks.values().all(|&(_, is_balanced)| is_balanced) {
+        for (name, &(total_weight, is_balanced)) in subchecks.iter() {
+            let above_tower = lookup.get(name).unwrap();
+            
+            println!("{}, {}, {}", name, total_weight, above_tower.weights);
+        }
+    }
+    return (weight, is_balanced)
+}
 
 
 
 fn main() {
     let towers = PUZZLE.lines().map(|line| parse(line)).collect::<Vec<_>>();
     println!("{:?}", find_bottem(&towers));
+    balance_towers(towers);
 }
