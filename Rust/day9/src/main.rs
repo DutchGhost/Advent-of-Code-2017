@@ -17,13 +17,12 @@ fn solve(input: &str) -> (i64, i64) {
 
     while let Some(c) = cs.next() {
         match c {
-            '!' => {cs.next();},
-            '>' => garbage = false,
+            '!'             => { cs.next(); },
+            '>'             => garbage = false,
             '{' if !garbage => level += 1,
             '}' if !garbage => { score += level; level -= 1; }
-            '<' => { if garbage { gccount += 1; } garbage = true; }
-
-            _ => if garbage { gccount += 1; },
+            '<'             => { if garbage { gccount += 1; } garbage = true; }
+            _               => if garbage { gccount += 1; },
         };
     }
     (score, gccount)
