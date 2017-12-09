@@ -1,80 +1,57 @@
-use std::collections::HashMap;
+ #![feature(slice_patterns)]
+extern crate regex;
+use regex::Regex;
 
+use std::collections::HashSet;
 const PUZZLE: &'static str = include_str!("Input.txt");
-mod Node;
-use Node::node;
 
-//for each [Node0] -> [Node1, Node2, Node3],
-//store:
-//  node1 -> node0,
-//  node2 -> node0,
-//  node3 -> node0
-//in the HashMap.
-//The only node that's only a value in the hashmap, is the root!
-fn parse(input: &str) -> HashMap<String, String> {
-    let mut map = HashMap::new();
-    for line in input.lines() {
-        let parent_childs = line.split_whitespace()
-            .filter(|word| !(word == &"->" || word.contains(')')))
-            .map(|word| word.replace(",", ""))
-            .collect::<Vec<_>>();
-
-        let (head, tail) = parent_childs.split_first().unwrap();
-
-        for item in tail {
-            map.insert(item.clone(), head.clone());
-        }
-    }
-    map
+#[derive(Debug, Hash, Eq, PartialEq, Clone)]
+struct Tower {
+    name: String,
+    weights: i64,
+    aboves: Vec<String>
 }
 
-fn parse2(input: &str) -> Vec<Vec<String>> {
-    input
-        .lines()
-        .map(|line| {
-            line.split_whitespace()
-                .filter(|word| word != &"->")
-                .map(|word| {
-                    word.chars().filter(|c| !(c == &',')).collect::<String>()
-                })
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>()
+impl Tower {
+    fn new(name: &str, weights: &str, aboves: Vec<String>) -> Tower {
+        Tower {
+            name: name.to_string(), 
+            weights: weights.parse().expect("Could not parse weight"),
+            aboves: aboves,
+        }
+    }
+}
+
+fn parse(line: &str) -> Tower {
+    let parts = line.split("->").collect::<Vec<_>>();
+    let aboves = if parts.len() == 1 { Vec::new() } else {parts[1].split(",").map(|word| word.trim().to_string()).collect::<Vec<_>>()};
+    let re = Regex::new(r"([a-z]+) \(([0-9]+)\)").unwrap();
+
+    let capts = re.captures(parts[0]).unwrap();
+
+    Tower::new(capts.get(1).map_or("", |m| m.as_str()), capts.get(2).map_or("", |m| m.as_str()), aboves)
+
+}
+
+fn find_bottem(Towers: &Vec<Tower>) -> String {
+    let mut are_aboves = HashSet::new();
+    let mut have_aboves = HashSet::new();
+
+    for tower in Towers {
+        if tower.aboves.len() > 0 {
+            have_aboves.insert(tower.name.clone());
+        }
+        for above in tower.aboves.clone() {
+            are_aboves.insert(above);
+        }
+    }
+    
+    let diff = have_aboves.difference(&are_aboves).next().unwrap();
+    diff.clone()
+
 }
 
 fn main() {
-    let mut set = parse(PUZZLE);
-
-    for (k, v) in set.iter() {
-        if !set.contains_key(v) {
-            println!("part 1: {}", v);
-            break;
-        }
-    }
-
-    let mut parsed = parse2(PUZZLE);
-
-    for item in parsed {
-        println!("{:?}", node::from(item));
-    }
+    let towers = PUZZLE.lines().map(|line| parse(line)).collect::<Vec<_>>();
+    println!("{:?}", find_bottem(&towers));
 }
-
-/*
-           /     
-         ugml - ebii
-       /      \     
-      |         jptl
-      |        
-      |         pbga
-     /        /
-tknk --- padx - havc
-     \        \
-      |         qoyq
-      |             
-      |         ktlj
-       \      /     
-         fwft - cntj
-              \     
-                xhth
-
-*/
