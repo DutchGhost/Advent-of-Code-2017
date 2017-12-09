@@ -67,15 +67,22 @@ fn check(tower: &Tower, lookup: &HashMap<String, Tower>) -> (i64, bool) {
         .collect::<HashMap<String, (i64, bool)>>();
     let subcheck_weights = subchecks.values().map(|&(w, _)| w).collect::<HashSet<_>>();
     let is_balanced = subcheck_weights.len() <= 1;
-    let mut weight = subchecks.values().map(|&(w, _)| w).sum();
-    weight += tower.weights;
+    let weight = subchecks.values().map(|&(w, _)| w).sum::<i64>() + tower.weights;
 
     if subcheck_weights.len() > 1 && subchecks.values().all(|&(_, is_balanced)| is_balanced) {
+        let mut map = HashMap::new();
         for (name, &(total_weight, is_balanced)) in subchecks.iter() {
             let above_tower = lookup.get(name).unwrap();
-            
-            println!("{}, {}, {}", name, total_weight, above_tower.weights);
+            *map.entry(total_weight).or_insert(0) += above_tower.weights;
         }
+        let mut it = map.iter();
+        let mut list = [it.next().unwrap(), it.next().unwrap()];
+        list.sort_by_key(|&(w, _)| w);
+
+        let (w1, tw1) = list[0];
+        let (w2, tw2) = list[1];
+        println!("part 2: {}", tw2 + (w1 - w2));
+        
     }
     return (weight, is_balanced)
 }
@@ -84,6 +91,6 @@ fn check(tower: &Tower, lookup: &HashMap<String, Tower>) -> (i64, bool) {
 
 fn main() {
     let towers = PUZZLE.lines().map(|line| parse(line)).collect::<Vec<_>>();
-    println!("{:?}", find_bottem(&towers));
+    println!("part 1: {:?}", find_bottem(&towers));
     balance_towers(towers);
 }
