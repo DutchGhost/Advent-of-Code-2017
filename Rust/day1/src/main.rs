@@ -30,7 +30,7 @@ fn optimized(input: &str, half: usize) -> u32 {
         .sum::<u32>() << 1
 }
 
-fn fastsummenize(input: &[u8; 2190], skip: usize) -> u32 {
+fn bytes_summenize(input: &[u8; 2190], skip: usize) -> u32 {
     input
         .iter()
         .zip(input.iter().cycle().skip(skip))
@@ -38,7 +38,7 @@ fn fastsummenize(input: &[u8; 2190], skip: usize) -> u32 {
         .sum::<u32>()
 }
 
-fn fastoptimized(input: &[u8; 2190], half: usize) -> u32 {
+fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
     let (head, tail) = input.split_at(half);
     head
         .iter()
@@ -55,17 +55,17 @@ mod tests {
     
     #[bench]
     fn bytes_summenize_part1(b: &mut Bencher) {
-        b.iter(|| fastsummenize(BPUZZLE, 1));
+        b.iter(|| bytes_summenize(BPUZZLE, 1));
     }
 
     #[bench]
     fn bytes_summenize_part2(b: &mut Bencher) {
-        b.iter(|| fastsummenize(BPUZZLE, BPUZZLE.len() >> 1));
+        b.iter(|| bytes_summenize(BPUZZLE, BPUZZLE.len() >> 1));
     }
 
     #[bench]
     fn bytes_fast_part2(b: &mut Bencher) {
-        b.iter(|| fastoptimized(BPUZZLE, BPUZZLE.len() >> 1));
+        b.iter(|| bytes_optimized(BPUZZLE, BPUZZLE.len() >> 1));
     }
 
     #[bench]
