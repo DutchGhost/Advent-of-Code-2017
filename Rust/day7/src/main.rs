@@ -37,19 +37,28 @@ fn find_bottem(Towers: &Vec<Tower>) -> String {
     let mut are_aboves = HashSet::new();
     let mut have_aboves = HashSet::new();
 
-    for tower in Towers {
+    for tower in Towers.iter() {
         if tower.aboves.len() > 0 {
             have_aboves.insert(tower.name.clone());
         }
-        for above in tower.aboves.clone() {
-            are_aboves.insert(above);
+        for above in tower.aboves.iter() {
+            are_aboves.insert(above.clone());
         }
     }
     
     let diff = have_aboves.difference(&are_aboves).next().unwrap();
     diff.clone()
-
 }
+
+// fn balance_towers(towers: Vec<Tower>) {
+
+// }
+
+// fn check(tower: &Tower) {
+//     for name in tower.aboves.iter()
+// }
+
+
 
 fn main() {
     let towers = PUZZLE.lines().map(|line| parse(line)).collect::<Vec<_>>();
