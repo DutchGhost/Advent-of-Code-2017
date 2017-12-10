@@ -6,6 +6,7 @@ const BYTESPUZZLE: &[u8] = include_bytes!("Input.txt");
 //      Maybe by calling it 64 times in main or something,
 //      Also it should be able to take both a Vector<i64> and a Vector<u8>.
 //      And we only really need 1 function to generate the numbers.
+//      Also, maybe PUZZLE can be converted into a bytearray...??
 //-------------------------------------------------------------------------------
 
 mod p1solver;
