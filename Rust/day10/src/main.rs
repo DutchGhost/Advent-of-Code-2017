@@ -1,13 +1,5 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 const BYTESPUZZLE: &[u8] = include_bytes!("Input.txt");
-//-------------------------------------------------------------------------------
-//TODO:
-//  -   Make solve() be sharable over part 1 and part 2.
-//      Maybe by calling it 64 times in main or something,
-//      Also it should be able to take both a Vector<i64> and a Vector<u8>.
-//      And we only really need 1 function to generate the numbers.
-//      Also, maybe PUZZLE can be converted into a bytearray...??
-//-------------------------------------------------------------------------------
 
 fn parse_str(input: &str) -> Vec<u8> {
     input.split(",").map(|word| word.parse().expect("Failed to parse")).collect()    
@@ -35,7 +27,8 @@ fn solve(nums: &mut [u8], lenghts: &[u8], current_pos: &mut usize, skipsize: &mu
                 .take(*len as usize)
                 .unzip();
             
-        //for each indecie, get nums[indecie], and set it to newnum
+        //loop over the indecies zipped with the reversed of the selected.
+        //for each indecie, set nums[indecie] to newnum.
         indecies
             .into_iter()
             .zip(selected.into_iter().rev())
@@ -55,16 +48,16 @@ fn xor(nums: &[u8]) -> String {
         .collect()
 }
 fn main() {
-    let lenghts = parse_str(PUZZLE);
-    let mut nums_part_1 = nums();
-    println!("part 1: {}", solve(&mut nums_part_1, &lenghts, &mut 0, &mut 0));
+    let mut nums_part1 = nums();
+    let lenghts_part1 = parse_str(PUZZLE);
+    println!("part 1: {}", solve(&mut nums_part1, &lenghts_part1, &mut 0, &mut 0));
 
     let mut current_pos = 0;
     let mut skipsize = 0;
 
-    let lenghts_part_2 = parse_bytes(BYTESPUZZLE);
     let mut nums_part2 = nums();
-    (0..64).for_each(|_| { solve(&mut nums_part2, &lenghts_part_2, &mut current_pos, &mut skipsize);});
+    let lenghts_part2 = parse_bytes(BYTESPUZZLE);
+    (0..64).for_each(|_| { solve(&mut nums_part2, &lenghts_part2, &mut current_pos, &mut skipsize);});
 
     println!("{}", xor(&nums_part2));
 }
