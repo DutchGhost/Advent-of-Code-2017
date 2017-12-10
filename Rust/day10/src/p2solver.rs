@@ -29,11 +29,8 @@ impl Part2 {
                 //this is really nice to have. A list of indecies that should be changed.
                 let mut indecies = selected.iter().map(|&(idx, _)| idx).collect::<Vec<_>>();
                 
-                //reverse the selected items
-                selected.reverse();
-
                 //make it an iterator. We dont need the index anymore.
-                let mut selecteds = selected.into_iter().map(|(_, n)| n);
+                let mut selecteds = selected.into_iter().rev().map(|(_, n)| n);
                 
                 //for each indecie, get nums[indecie], and set it to selecteds.next().unwrap()
                 indecies
