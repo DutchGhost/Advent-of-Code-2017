@@ -18,7 +18,7 @@ impl Part2 {
         for _ in 0..64 {    
             for len in lenghts.iter() {
                 //the selected items from nums. wraps around. also gets the index.
-               let (indecies, selected): (Vec<usize>, Vec<u8>) = nums
+                let (indecies, selected): (Vec<usize>, Vec<u8>) = nums
                     .iter()
                     .enumerate()
                     .cycle()
@@ -27,17 +27,17 @@ impl Part2 {
                     .map(|(idx, n)| (idx, n))
                     .unzip();
              
-            //make it an iterator, and reverse it.
-            let mut selecteds = selected.into_iter().rev();
+                //make it an iterator, and reverse it.
+                let mut selecteds = selected.into_iter().rev();
             
-            //for each indecie, get nums[indecie], and set it to newnum
-            indecies
-                .into_iter()
-                .zip(selecteds)
-                .for_each(|(indecie, newnum)| nums[indecie] = newnum);
+                //for each indecie, get nums[indecie], and set it to newnum
+                indecies
+                    .into_iter()
+                    .zip(selecteds)
+                    .for_each(|(indecie, newnum)| nums[indecie] = newnum);
 
-            current_pos += ((*len as usize + skipsize) as usize) % numslenght;
-            skipsize += 1;
+                current_pos += ((*len as usize + skipsize) as usize) % numslenght;
+                skipsize += 1;
             }
         }
     }
