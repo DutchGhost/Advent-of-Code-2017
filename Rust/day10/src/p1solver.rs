@@ -1,21 +1,22 @@
 pub struct Part1;
 impl Part1 {
-    pub fn parse(input: &str) -> Vec<i64> {
+    pub fn parse(input: &str) -> Vec<u8> {
         input.split(",").map(|word| word.parse().expect("Failed to parse")).collect()    
     }
 
     //0 to 255 is 0..256!
-    pub fn nums() -> Vec<i64> {
-        (0..256).collect()
+    pub fn nums() -> Vec<u8> {
+        (0..).take(256).collect()
     }
 
-    pub fn solve(mut nums: Vec<i64>, lenghts: Vec<i64>) -> i64 {
+    pub fn solve(mut nums: Vec<u8>, lenghts: Vec<u8>) -> i64 {
+        println!("{:?}", nums);
         let numslenght = nums.len();
         let mut current_pos = 0;
         let mut skipsize = 0;
         for len in lenghts {
             //the selected items from nums. wraps around. also gets the index.
-            let (indecies, selected): (Vec<usize>, Vec<i64>) = nums
+            let (indecies, selected): (Vec<usize>, Vec<u8>) = nums
                     .iter()
                     .enumerate()
                     .cycle()
@@ -36,7 +37,6 @@ impl Part1 {
             current_pos += ((len + skipsize) as usize) % numslenght;
             skipsize += 1;
         }
-        println!("{} {}", nums[0], nums[1]);
-        nums[0] * nums[1]
+        nums[0] as i64 * nums[1] as i64
     }
 }
