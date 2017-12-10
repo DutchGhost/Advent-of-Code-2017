@@ -36,7 +36,7 @@ fn solve(mut nums: Vec<i64>, lenghts: Vec<i64>) -> i64 {
         //for each indecie, get nums[indecie], and set it to selecteds.next().unwrap()
         indecies
             .into_iter()
-            .for_each(|indecie| *nums.get_mut(indecie).unwrap() = selecteds.next().unwrap());
+            .for_each(|indecie| nums[indecie] = selecteds.next().unwrap());
 
         current_pos += ((len + skipsize) as usize) % NUMSLENGHT;
         skipsize += 1;
