@@ -36,6 +36,7 @@ impl Part1 {
             current_pos += ((len + skipsize) as usize) % numslenght;
             skipsize += 1;
         }
+        println!("{} {}", nums[0], nums[1]);
         nums[0] * nums[1]
     }
 }
