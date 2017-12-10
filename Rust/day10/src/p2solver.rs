@@ -24,7 +24,8 @@ impl Part2 {
                     .cycle()
                     .skip(current_pos)
                     .take(*len as usize)
-                    .map(|(idx, n)| (idx, n)).unzip();
+                    .map(|(idx, n)| (idx, n))
+                    .unzip();
              
             //make it an iterator, and reverse it.
             let mut selecteds = selected.into_iter().rev();
