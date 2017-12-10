@@ -33,16 +33,12 @@ fn solve(nums: &mut [u8], lenghts: &[u8], current_pos: &mut usize, skipsize: &mu
                 .cycle()
                 .skip(*current_pos)
                 .take(*len as usize)
-                .map(|(idx, n)| (idx, *n))
                 .unzip();
-                
-        //make it an iterator, and reverse it.
-        let mut selecteds = selected.into_iter().rev();
             
         //for each indecie, get nums[indecie], and set it to newnum
         indecies
             .into_iter()
-            .zip(selecteds)
+            .zip(selected.into_iter().rev())
             .for_each(|(indecie, newnum)| nums[indecie] = newnum);
 
         *current_pos += (*len as usize + *skipsize) % numslenght;
