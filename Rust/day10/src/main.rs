@@ -3,22 +3,22 @@ const BYTESPUZZLE: &[u8] = include_bytes!("Input.txt");
 
 mod p1solver;
 mod p2solver;
-use p1solver::part1;
-use p2solver::part2;
+use p1solver::Part1;
+use p2solver::Part2;
 
 
 fn main() {
-    let lenghts = part1::parse(PUZZLE);
-    let mut nums = part1::nums();
-    println!("{}", part1::solve(nums, lenghts));
+    let lenghts = Part1::parse(PUZZLE);
+    let nums = Part1::nums();
+    println!("part 1: {}", Part1::solve(nums, lenghts));
 
-    let lenths_part_2 = part2::parse(BYTESPUZZLE);
-    let mut nums_part2 = part2::nums();
-    part2::solve(&mut nums_part2, lenths_part_2);
-    let xored = part2::xor(&nums_part2);
-    for chunk in xored {
-        print!("{}",format!("{:02x}", chunk).to_lowercase() );
-    }
-
+    let lenths_part_2 = Part2::parse(BYTESPUZZLE);
+    let mut nums_part2 = Part2::nums();
+    Part2::solve(&mut nums_part2, lenths_part_2);
+    let xored = Part2::xor(&nums_part2)
+        .iter()
+        .map(|chunk| format!("{:02x}", chunk).to_lowercase())
+        .collect::<String>();
+    println!("part 2: {}", xored);
 
 }

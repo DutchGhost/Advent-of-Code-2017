@@ -1,5 +1,5 @@
-pub struct part1;
-impl part1 {
+pub struct Part1;
+impl Part1 {
     pub fn parse(input: &str) -> Vec<i64> {
         input.split(",").map(|word| word.parse().expect("Failed to parse")).collect()    
     }
@@ -10,7 +10,7 @@ impl part1 {
     }
 
     pub fn solve(mut nums: Vec<i64>, lenghts: Vec<i64>) -> i64 {
-        let NUMSLENGHT = nums.len();
+        let numslenght = nums.len();
         let mut current_pos = 0;
         let mut skipsize = 0;
         for len in lenghts {
@@ -37,7 +37,7 @@ impl part1 {
                 .into_iter()
                 .for_each(|indecie| nums[indecie] = selecteds.next().unwrap());
 
-            current_pos += ((len + skipsize) as usize) % NUMSLENGHT;
+            current_pos += ((len + skipsize) as usize) % numslenght;
             skipsize += 1;
         }
         nums[0] * nums[1]
