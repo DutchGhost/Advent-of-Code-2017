@@ -12,7 +12,7 @@ fn main() {
     let nums = Part1::nums();
     println!("part 1: {}", Part1::solve(nums, lenghts));
 
-    let lenths_part_2 = Part2::parse(BYTESPUZZLE);
+    let lenghts_part_2 = Part2::parse(BYTESPUZZLE);
     let mut nums_part2 = Part2::nums();
-    println!("{}", Part2::solve(&mut nums_part2, lenths_part_2));
+    println!("{}", Part2::solve(&mut nums_part2, lenghts_part_2));
 }
