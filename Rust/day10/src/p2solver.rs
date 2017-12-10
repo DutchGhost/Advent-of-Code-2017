@@ -38,7 +38,8 @@ impl Part2 {
                 //for each indecie, get nums[indecie], and set it to selecteds.next().unwrap()
                 indecies
                     .into_iter()
-                    .for_each(|indecie| nums[indecie] = selecteds.next().unwrap());
+                    .zip(selecteds)
+                    .for_each(|(indecie, newnum)| nums[indecie] = newnum);
                 current_pos += *len as usize + skipsize % numslenght;
                 skipsize += 1;
             }
