@@ -1,52 +1,22 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
+const BYTESPUZZLE: &[u8] = include_bytes!("Input.txt");
 
-fn parse(input: &str) -> Vec<i64> {
-    input.split(",").map(|word| word.parse().expect("Failed to parse")).collect()
-    
-}
+mod p1solver;
+mod p2solver;
+use p1solver::part1;
+use p2solver::part2;
 
-//0 to 255 is 0..256!
-fn nums() -> Vec<i64> {
-    (0..256).collect()
-}
-
-fn solve(mut nums: Vec<i64>, lenghts: Vec<i64>) -> i64 {
-    let NUMSLENGHT = nums.len();
-    let mut current_pos = 0;
-    let mut skipsize = 0;
-    for len in lenghts {
-        //the selected items from nums. wraps around. also gets the index.
-        let mut selected = nums
-            .iter()
-            .enumerate()
-            .cycle()
-            .skip(current_pos)
-            .take(len as usize)
-            .map(|(idx, n)| (idx, *n)).collect::<Vec<_>>();
-        
-        //this is really nice to have. A list of indecies that should be changed.
-        let mut indecies = selected.iter().map(|&(idx, _)| idx).collect::<Vec<_>>();
-        
-        //reverse the selected items
-        selected.reverse();
-
-        //make it an iterator. We dont need the index anymore.
-        let mut selecteds = selected.into_iter().map(|(_, n)| n);
-        
-        //for each indecie, get nums[indecie], and set it to selecteds.next().unwrap()
-        indecies
-            .into_iter()
-            .for_each(|indecie| nums[indecie] = selecteds.next().unwrap());
-
-        current_pos += ((len + skipsize) as usize) % NUMSLENGHT;
-        skipsize += 1;
-    }
-    nums[0] * nums[1]
-}
 
 fn main() {
-    let lenghts = parse(PUZZLE);
-    let mut nums = nums();
-    println!("{}", solve(nums, lenghts));
-   
+    let lenghts = part1::parse(PUZZLE);
+    let mut nums = part1::nums();
+    println!("{}", part1::solve(nums, lenghts));
+
+    let lenths_part_2 = part2::parse(BYTESPUZZLE);
+    let mut nums_part2 = part2::nums();
+    part2::solve(&mut nums_part2, lenths_part_2);
+    let xored = part2::xor(&nums_part2);
+    for chunk in xored {
+        println!("chunk {} xor {}", chunk, format!("{:X}", chunk));
+    }
 }
