@@ -1,5 +1,12 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 const BYTESPUZZLE: &[u8] = include_bytes!("Input.txt");
+//-------------------------------------------------------------------------------
+//TODO:
+//  -   Make solve() be sharable over part 1 and part 2.
+//      Maybe by calling it 64 times in main or something,
+//      Also it should be able to take both a Vector<i64> and a Vector<u8>.
+//      And we only really need 1 function to generate the numbers.
+//-------------------------------------------------------------------------------
 
 mod p1solver;
 mod p2solver;
