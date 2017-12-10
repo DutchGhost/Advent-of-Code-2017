@@ -19,12 +19,12 @@ impl Part2 {
             for len in lenghts.iter() {
                 //the selected items from nums. wraps around. also gets the index.
                let (indecies, selected): (Vec<usize>, Vec<u8>) = nums
-                .iter()
-                .enumerate()
-                .cycle()
-                .skip(current_pos)
-                .take(*len as usize)
-                .map(|(idx, n)| (idx, n)).unzip();
+                    .iter()
+                    .enumerate()
+                    .cycle()
+                    .skip(current_pos)
+                    .take(*len as usize)
+                    .map(|(idx, n)| (idx, n)).unzip();
              
             //make it an iterator, and reverse it.
             let mut selecteds = selected.into_iter().rev();

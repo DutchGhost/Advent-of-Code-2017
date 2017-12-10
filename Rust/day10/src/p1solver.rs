@@ -16,13 +16,13 @@ impl Part1 {
         for len in lenghts {
             //the selected items from nums. wraps around. also gets the index.
             let (indecies, selected): (Vec<usize>, Vec<i64>) = nums
-                .iter()
-                .enumerate()
-                .cycle()
-                .skip(current_pos)
-                .take(len as usize)
-                .map(|(idx, n)| (idx, *n)).unzip();
-             
+                    .iter()
+                    .enumerate()
+                    .cycle()
+                    .skip(current_pos)
+                    .take(len as usize)
+                    .map(|(idx, n)| (idx, *n)).unzip();
+                
             //make it an iterator, and reverse it.
             let mut selecteds = selected.into_iter().rev();
             
