@@ -14,9 +14,12 @@ fn main() {
 
     let lenths_part_2 = part2::parse(BYTESPUZZLE);
     let mut nums_part2 = part2::nums();
+    println!("MAIN NUMS {:?}", nums_part2);
     part2::solve(&mut nums_part2, lenths_part_2);
     let xored = part2::xor(&nums_part2);
     for chunk in xored {
-        println!("chunk {} xor {}", chunk, format!("{:X}", chunk));
+        println!("chunk {} xor {}", chunk, format!("{:x}", chunk));
     }
+
+
 }

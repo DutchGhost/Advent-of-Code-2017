@@ -4,21 +4,19 @@ impl part2 {
     pub fn parse(input: &'static [u8]) -> Vec<u8> {
         let test = "1,2,4".chars().map(|c| c as u8).collect::<Vec<_>>();
         let mut bytes: Vec<u8> = test.into_iter().map(|b| b).collect();
+        bytes.extend(&[17, 31, 73, 47, 23]);
         println!("{:?}", bytes);
-        [17, 31, 73, 47, 23].into_iter().for_each(|other| bytes.push(*other));
         bytes
     }
 
     pub fn nums() -> Vec<u8> {
-        let mut bytes: Vec<u8> = (0..251).collect();
-        [17, 31, 73, 47, 23].into_iter().for_each(|other| bytes.push(*other));
-        println!("{}", bytes.len());
-        bytes
+        (0u8..256u8).collect()
     }
 
     pub fn solve(nums: &mut Vec<u8>, lenghts: Vec<u8>) {
+        println!("NUMS: {:?}", nums);
         let NUMSLENGHT = nums.len();
-        let mut current_pos: usize = 0;
+        let mut current_pos: i64 = 0;
         let mut skipsize: i64 = 0;
         for i in 0..64 {    
             for len in lenghts.iter() {
@@ -27,7 +25,7 @@ impl part2 {
                     .iter()
                     .enumerate()
                     .cycle()
-                    .skip(current_pos)
+                    .skip(current_pos as usize)
                     .take(*len as usize)
                     .map(|(idx, n)| (idx, *n)).collect::<Vec<_>>();
                 
@@ -44,8 +42,8 @@ impl part2 {
                 indecies
                     .into_iter()
                     .for_each(|indecie| nums[indecie] = selecteds.next().unwrap());
-
-                current_pos += ((*len as i64 + skipsize) as usize) % NUMSLENGHT;
+                println!("LENNN{} {} {}", len, skipsize, NUMSLENGHT);
+                current_pos += ((*len as i64 + skipsize) % NUMSLENGHT as i64);
                 skipsize += 1;
             }
         }
