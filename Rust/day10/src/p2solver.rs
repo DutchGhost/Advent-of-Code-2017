@@ -18,27 +18,25 @@ impl Part2 {
         for _ in 0..64 {    
             for len in lenghts.iter() {
                 //the selected items from nums. wraps around. also gets the index.
-                let mut selected = nums
-                    .iter()
-                    .enumerate()
-                    .cycle()
-                    .skip(current_pos as usize)
-                    .take(*len as usize)
-                    .map(|(idx, n)| (idx, *n)).collect::<Vec<_>>();
-                
-                //this is really nice to have. A list of indecies that should be changed.
-                let mut indecies = selected.iter().map(|&(idx, _)| idx).collect::<Vec<_>>();
-                
-                //make it an iterator. We dont need the index anymore.
-                let mut selecteds = selected.into_iter().rev().map(|(_, n)| n);
-                
-                //for each indecie, get nums[indecie], and set it to selecteds.next().unwrap()
-                indecies
-                    .into_iter()
-                    .zip(selecteds)
-                    .for_each(|(indecie, newnum)| nums[indecie] = newnum);
-                current_pos += *len as usize + skipsize % numslenght;
-                skipsize += 1;
+               let (indecies, selected): (Vec<usize>, Vec<u8>) = nums
+                .iter()
+                .enumerate()
+                .cycle()
+                .skip(current_pos)
+                .take(*len as usize)
+                .map(|(idx, n)| (idx, n)).unzip();
+             
+            //make it an iterator, and reverse it.
+            let mut selecteds = selected.into_iter().rev();
+            
+            //for each indecie, get nums[indecie], and set it to newnum
+            indecies
+                .into_iter()
+                .zip(selecteds)
+                .for_each(|(indecie, newnum)| nums[indecie] = newnum);
+
+            current_pos += ((*len as usize + skipsize) as usize) % numslenght;
+            skipsize += 1;
             }
         }
     }

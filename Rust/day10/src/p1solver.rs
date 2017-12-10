@@ -15,21 +15,18 @@ impl Part1 {
         let mut skipsize = 0;
         for len in lenghts {
             //the selected items from nums. wraps around. also gets the index.
-            let mut selected = nums
+            let (indecies, selected): (Vec<usize>, Vec<i64>) = nums
                 .iter()
                 .enumerate()
                 .cycle()
                 .skip(current_pos)
                 .take(len as usize)
-                .map(|(idx, n)| (idx, *n)).collect::<Vec<_>>();
+                .map(|(idx, n)| (idx, *n)).unzip();
+             
+            //make it an iterator, and reverse it.
+            let mut selecteds = selected.into_iter().rev();
             
-            //this is really nice to have. A list of indecies that should be changed.
-            let mut indecies = selected.iter().map(|&(idx, _)| idx).collect::<Vec<_>>();
-            
-            //make it an iterator, and reverse it. We dont need the index anymore.
-            let mut selecteds = selected.into_iter().rev().map(|(_, n)| n);
-            
-            //for each indecie, get nums[indecie], and set it to selecteds.next().unwrap()
+            //for each indecie, get nums[indecie], and set it to newnum
             indecies
                 .into_iter()
                 .zip(selecteds)
