@@ -11,7 +11,7 @@ impl Part2 {
         (0..).take(256).collect()
     }
 
-    pub fn solve(nums: &mut Vec<u8>, lenghts: Vec<u8>) {
+    pub fn solve(nums: &mut Vec<u8>, lenghts: Vec<u8>) -> String {
         let numslenght = nums.len();
         let mut current_pos: usize = 0;
         let mut skipsize: usize = 0;
@@ -40,9 +40,10 @@ impl Part2 {
                 skipsize += 1;
             }
         }
-    }
-
-    pub fn xor(nums: &Vec<u8>) -> Vec<u8> {
-        nums.chunks(16).map(|chunk| chunk.iter().fold(0, |n, acc| n ^ acc)).collect()
+        nums
+            .chunks(16)
+            .map(|chunk| chunk.iter().fold(0, |n, acc| n ^ acc))
+            .map(|chunk| format!("{:02x}", chunk).to_lowercase())
+            .collect()
     }
 }

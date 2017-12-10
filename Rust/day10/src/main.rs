@@ -14,11 +14,5 @@ fn main() {
 
     let lenths_part_2 = Part2::parse(BYTESPUZZLE);
     let mut nums_part2 = Part2::nums();
-    Part2::solve(&mut nums_part2, lenths_part_2);
-    let xored = Part2::xor(&nums_part2)
-        .iter()
-        .map(|chunk| format!("{:02x}", chunk).to_lowercase())
-        .collect::<String>();
-    println!("part 2: {}", xored);
-
+    println!("{}", Part2::solve(&mut nums_part2, lenths_part_2));
 }
