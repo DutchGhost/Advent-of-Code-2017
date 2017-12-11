@@ -13,9 +13,7 @@ fn nums() -> Vec<usize> {
 }
 
 fn parse_bytes(input: &'static [u8]) -> Vec<usize> {
-    let mut bytes: Vec<usize> = input.into_iter().map(|b| *b as usize).collect();
-    bytes.extend(&[17, 31, 73, 47, 23]);
-    bytes
+    input.into_iter().chain([17, 31, 73, 47, 23].iter()).map(|b| *b as usize).collect()
 }
 
 fn solve(nums: &mut [usize], lenghts: &[usize], current_pos: &mut usize, skipsize: &mut usize) -> usize {
@@ -43,7 +41,7 @@ fn solve(nums: &mut [usize], lenghts: &[usize], current_pos: &mut usize, skipsiz
     nums[0] * nums[1]
 }
 
-fn xor(nums: &[usize]) -> String {
+fn dense(nums: &[usize]) -> String {
     nums
         .chunks(16)
         .map(|chunk| chunk.iter().fold(0, |n, acc| n ^ acc))
@@ -62,5 +60,5 @@ fn main() {
     let lenghts_part2 = parse_bytes(BYTESPUZZLE);
     (0..64).for_each(|_| { solve(&mut nums_part2, &lenghts_part2, &mut current_pos, &mut skipsize);});
 
-    println!("{}", xor(&nums_part2));
+    println!("part 2: {}", dense(&nums_part2));
 }
