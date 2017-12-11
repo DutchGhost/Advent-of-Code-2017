@@ -1,6 +1,5 @@
 //Don't know if I like this usized all over the place...
 //if go back to u8, change *b as usize in parse_bytes to *b
-
 const PUZZLE: &'static str = include_str!("Input.txt");
 const BYTESPUZZLE: &[u8] = include_bytes!("Input.txt");
 
@@ -12,31 +11,27 @@ fn nums() -> Vec<usize> {
     (0..).take(256).collect()
 }
 
-fn parse_bytes(input: &[u8]) -> Vec<usize> {
-    input.into_iter().chain([17, 31, 73, 47, 23].into_iter()).map(|b| *b as usize).collect()
+fn parse_bytes(input: &'static [u8]) -> Vec<usize> {
+    input.into_iter().chain([17, 31, 73, 47, 23].iter()).map(|b| *b as usize).collect()
 }
 
 fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize], cpos: &mut usize, skipsize: &mut usize) -> usize {
     let numslenght = nums.len();
-    let mut idx_nums = (Vec::with_capacity(200), Vec::with_capacity(200));
+    let mut idx_nums = Vec::with_capacity(200);
     for _ in 0..rounds {
         for len in lenghts.iter() {
-            //the selected items from nums. wraps around. also gets the index.
-            let b = nums
+            //the selected items from nums.
+            idx_nums.extend(nums
                     .iter()
-                    .enumerate()
                     .cycle()
                     .skip(*cpos)
-                    .take(*len)
-                    .unzip();
-            idx_nums = b;
+                    .take(*len));
                 
-            //loop over the indecis zipped with the reversed of the selected.
+            //loop over the indexes zipped with the reversed of the selected.
             //for each indecie, set nums[indecie] to newnum.
-            idx_nums.0
-                .drain(..)
-                .zip(idx_nums.1.drain(..).rev())
-                .for_each(|(indecie, newnum)| nums[indecie] = newnum);
+            (*cpos % numslenght..numslenght).chain(0..)
+                .zip(idx_nums.drain(..).rev())
+                .for_each(|(indecie, newnum)| nums[(indecie as i64).abs() as usize] = newnum);
 
             *cpos += (*len + *skipsize) % numslenght;
             *skipsize += 1;
