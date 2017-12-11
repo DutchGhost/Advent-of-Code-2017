@@ -4,7 +4,10 @@ const PUZZLE: &'static str = include_str!("Input.txt");
 const BYTESPUZZLE: &[u8] = include_bytes!("Input.txt");
 
 fn parse_str(input: &str) -> Vec<usize> {
-    input.split(",").map(|word| word.parse().expect("Failed to parse")).collect()    
+    input
+        .split(",")
+        .map(|word| word.parse().expect("Failed to parse"))
+        .collect()
 }
 
 fn nums() -> Vec<usize> {
@@ -12,37 +15,38 @@ fn nums() -> Vec<usize> {
 }
 
 fn parse_bytes(input: &'static [u8]) -> Vec<usize> {
-    input.into_iter().chain([17, 31, 73, 47, 23].iter()).map(|b| *b as usize).collect()
+    input
+        .into_iter()
+        .chain([17, 31, 73, 47, 23].iter())
+        .map(|b| *b as usize)
+        .collect()
 }
 
-fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize], cpos: &mut usize, skipsize: &mut usize) -> usize {
+fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
+    let mut cpos: usize = 0;
+    let mut skipsize: usize = 0;
     let numslenght = nums.len();
-    let mut idx_nums = Vec::with_capacity(200);
+    let mut selecteds = Vec::with_capacity(200);
+
     for _ in 0..rounds {
         for len in lenghts.iter() {
-            //the selected items from nums.
-            idx_nums.extend(nums
-                    .iter()
-                    .cycle()
-                    .skip(*cpos)
-                    .take(*len));
-                
-            //loop over the indexes zipped with the reversed of the selected.
-            //for each indecie, set nums[indecie] to newnum.
-            (*cpos % numslenght..numslenght).chain(0..)
-                .zip(idx_nums.drain(..).rev())
-                .for_each(|(indecie, newnum)| nums[(indecie as i64).abs() as usize] = newnum);
+            //extends idx_nums with the selected items frum nums.
+            selecteds.extend(nums.iter().cycle().skip(cpos).take(*len));
 
-            *cpos += (*len + *skipsize) % numslenght;
-            *skipsize += 1;
+            (cpos % numslenght..numslenght)
+                .chain(0..)
+                .zip(selecteds.drain(..).rev())
+                .for_each(|(idx, newnum)| nums[idx] = newnum);
+
+            cpos += (*len + skipsize) % numslenght;
+            skipsize += 1;
         }
     }
     nums[0] * nums[1]
 }
 
 fn dense(nums: &[usize]) -> String {
-    nums
-        .chunks(16)
+    nums.chunks(16)
         .map(|chunk| chunk.iter().fold(0, |n, acc| n ^ acc))
         .map(|chunk| format!("{:02x}", chunk).to_lowercase())
         .collect()
@@ -50,14 +54,11 @@ fn dense(nums: &[usize]) -> String {
 fn main() {
     let mut nums_part1 = nums();
     let lenghts_part1 = parse_str(PUZZLE);
-    println!("part 1: {}", solve(1, &mut nums_part1, &lenghts_part1, &mut 0, &mut 0));
-
-    let mut current_pos = 0;
-    let mut skipsize = 0;
+    println!("part 1: {}", solve(1, &mut nums_part1, &lenghts_part1));
 
     let mut nums_part2 = nums();
     let lenghts_part2 = parse_bytes(BYTESPUZZLE);
-    solve(64, &mut nums_part2, &lenghts_part2, &mut current_pos, &mut skipsize);
+    solve(64, &mut nums_part2, &lenghts_part2);
 
     println!("part 2: {}", dense(&nums_part2));
 }
