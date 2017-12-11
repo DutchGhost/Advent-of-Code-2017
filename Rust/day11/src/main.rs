@@ -25,12 +25,9 @@ where 's: 'split
     }
 }
 
-impl<'look, 'split, 'mutborrow> Iterator for Hex<'look, 'split>
-where   'split: 'mutborrow,
-        'look: 'mutborrow,
-{
+impl<'look, 'split> Iterator for Hex<'look, 'split> {
     type Item = (i64, i64);
-    fn next(&'mutborrow mut self) -> Option<Self::Item> {
+    fn next<'a>(&'a mut self) -> Option<Self::Item> {
         match self.iter.next() {
             Some(ins) => self.map.get(&ins).cloned(),
             None => None,
