@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-struct Hex<'a> {
-    map: HashMap<&'a str, (i64, i64)>,
-    iter: std::str::Split<'a, &'a str>,
+struct Hex<'look, 'split> {
+    map: HashMap<&'look str, (i64, i64)>,
+    iter: std::str::Split<'split, &'split str>,
 }
 
-impl<'a> Hex<'a> {
-    fn new(input: &'a str) -> Hex<'a> {
+impl<'look, 'split, 's> Hex<'look, 'split>
+where 's: 'split
+{
+    fn new(input: &'s str) -> Hex<'look, 'split> {
         let mut map = HashMap::new();
         map.insert("n", (0, 1));
         map.insert("nw", (-1, 1));
@@ -23,7 +25,7 @@ impl<'a> Hex<'a> {
     }
 }
 
-impl<'a> Iterator for Hex<'a> {
+impl<'look, 'split> Iterator for Hex<'look, 'split> {
     type Item = (i64, i64);
     fn next(&mut self) -> Option<Self::Item> {
         match self.iter.next() {
