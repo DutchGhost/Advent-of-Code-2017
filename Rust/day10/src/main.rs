@@ -33,13 +33,14 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     for _ in 0..rounds {
         for len in lenghts.iter() {
             selecteds.extend(nums.iter().cycle().skip(cpos).take(*len));
-
-            (cpos % numslenght..numslenght)
+            
+            (cpos..numslenght)
                 .chain(0..)
                 .zip(selecteds.drain(..).rev())
                 .for_each(|(idx, newnum)| nums[idx] = newnum);
 
-            cpos += (*len + skipsize) % numslenght;
+            cpos += (*len + skipsize);
+            cpos = cpos % numslenght;
             skipsize += 1;
         }
     }
