@@ -37,21 +37,16 @@ fn dist(x: i64, y: i64) -> i64 {
     let z = -(x + y);
     (x.abs()).max(y.abs()).max(z.abs())
 }
-fn solve(input: &str) -> (i64, i64) {
-    let (mut x, mut y) = (0, 0);
-    let mut max = 0;
-    let mut hex = Hex::new(input);
-    while let Some((newx, newy)) = hex.next() {
-        x += newx;
-        y += newy;
-        max = std::cmp::max(max, dist(x, y))
-    }
-    (dist(x, y), max)
+fn solve(input: &str) -> (i64, i64, i64) {
+    let hex = Hex::new(input);
+    hex.map(|(x, y)| (x, y)).fold((0, 0, 0), |(x, y, max), (newx, newy)| {
+        (x + newx, y + newy, std::cmp::max(max, dist(x, y)))
+    })
 }
 
 fn main() {
-    let (part1, part2) = solve(PUZZLE);
-    println!("part 1: {}", part1);
+    let (x, y, part2) = solve(PUZZLE);
+    println!("part 1: {}", dist(x, y));
     println!("part 2: {}", part2)
 
 }
