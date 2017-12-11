@@ -18,12 +18,11 @@ fn parse_bytes(input: &'static [u8]) -> Vec<usize> {
 
 fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize], cpos: &mut usize, skipsize: &mut usize) -> usize {
     let numslenght = nums.len();
-    let mut indecies = Vec::with_capacity(200);
-    let mut selected = Vec::with_capacity(200);
+    let mut idx_nums = (Vec::with_capacity(200), Vec::with_capacity(200));
     for _ in 0..rounds {
         for len in lenghts.iter() {
             //the selected items from nums. wraps around. also gets the index.
-            (indecies, selected) = nums
+            idx_nums = nums
                     .iter()
                     .enumerate()
                     .cycle()
@@ -31,11 +30,11 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize], cpos: &mut usize, s
                     .take(*len)
                     .unzip();
                 
-            //loop over the indecies zipped with the reversed of the selected.
+            //loop over the indecis zipped with the reversed of the selected.
             //for each indecie, set nums[indecie] to newnum.
-            indecies
+            idx_nums.0
                 .drain(..)
-                .zip(selected.drain(..).rev())
+                .zip(idx_nums.1.drain(..).rev())
                 .for_each(|(indecie, newnum)| nums[indecie] = newnum);
 
             *cpos += (*len + *skipsize) % numslenght;
