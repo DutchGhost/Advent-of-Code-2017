@@ -22,6 +22,8 @@ fn parse_bytes(input: &'static [u8]) -> Vec<usize> {
         .collect()
 }
 
+//extends selecteds with the selected items from nums.
+//the drain it in reversed order, now we only allocate 1 vector to do all the magic!
 fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     let mut cpos: usize = 0;
     let mut skipsize: usize = 0;
@@ -30,7 +32,6 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
 
     for _ in 0..rounds {
         for len in lenghts.iter() {
-            //extends idx_nums with the selected items frum nums.
             selecteds.extend(nums.iter().cycle().skip(cpos).take(*len));
 
             (cpos % numslenght..numslenght)
