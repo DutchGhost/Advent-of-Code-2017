@@ -1,108 +1,37 @@
-/* TODO:
-        Make part 1 and part 2 share the same code for collisions
-*/
-
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-struct Scanner {
-    range: i64,
-    current: i64,
-    stepper: i64,
+fn parse(input: &str) -> Vec<(i64, i64)> {
+    input
+        .lines()
+        .map(|line| {
+            let mut it = line.split(": ").map(|item| {
+                item.parse::<i64>().expect("Failed to parse")
+            });
+            (it.next().unwrap(), it.next().unwrap())
+        })
+        .collect()
 }
 
-impl Scanner {
-    fn new(range: i64) -> Scanner {
-        Scanner {
-            range: range,
-            current: 0,
-            stepper: 1,
-        }
-    }
-
-    fn update(&mut self) {
-        self.current += self.stepper;
-        if self.current == 0 || self.current == self.range {
-            self.stepper *= -1;
-        }
-    }
+fn solve(firewall: &[(i64, i64)]) -> i64 {
+    firewall
+        .iter()
+        .filter(|&&(depth, range)| depth % ((range - 1) * 2) == 0)
+        .map(|&(depth, range)| depth * range)
+        .sum()
 }
 
-
-fn parse(input: &str) -> Vec<Option<Scanner>> {
-    let mut vector: Vec<Option<Scanner>> = vec![None; 99];
-    for line in input.lines() {
-        let splitted = line.split(": ").map(|item| item.parse::<i64>().expect("Failed to parse")).collect::<Vec<_>>();
-        
-        if let Some(scanner) = vector.get_mut(splitted[0] as usize) {
-            *scanner = Some(Scanner::new(splitted[1] - 1));
-        }
-    }
-    vector
-}
-
-//for every Scanner in the firewall, update the scanner.
-fn update(firewall: &mut [Option<Scanner>]) {
-    for scanner in firewall.iter_mut() {
-        if let &mut Some(ref mut s) = scanner {
-            s.update();
-        }
-    }
-}
-
-//loop over the depths, get the scanner of the current depth,
-//if the scanner's current position is 0...we're caught!
-fn severity(firewall: &mut [Option<Scanner>]) -> i64 {
-    let mut severity = 0;
-
-    for i in 0..firewall.len() {
-        if let Some(opt_scanner) = firewall.get(i) {
-            if let &Some(ref scanner) = opt_scanner {
-                if scanner.current == 0 {
-                    severity += i as i64 * (scanner.range + 1);
-                }
-            }
-        }
-        update(firewall)
-    }
-    severity
-}
-
-//loop over the depths, get the scanner of the current depth.
-//if the scanner's current position is 0, we're caught. return false.
-fn caught(firewall: &mut [Option<Scanner>]) -> bool {
-    for i in 0..firewall.len() {
-        if let Some(opt_scanner) = firewall.get(i) {
-            if let &Some(ref scanner) = opt_scanner {
-                if scanner.current == 0 {
-                    return true;
-                }
-            }
-        }
-        update(firewall)
-    }
-    false
-}
-
-//get the state, clone it into tmp.
-//while we're caught in the tmp, update the state, and set tmp to state.
-fn part2() -> i64 {
-    let mut state = parse(PUZZLE);
-    let mut tmp = state.clone();
-    let mut waited = 0;
-    
-    while caught(&mut tmp) {
-        update(&mut state);
-        tmp = state.clone();
-        waited += 1;
-    }
-
-    waited
+fn solve2(firewall: &[(i64, i64)]) -> i64 {
+    (0..)
+        .find(|wait| {
+            firewall.iter().all(|&(depth, range)| {
+                (depth + wait) % ((range - 1) * 2) != 0
+            })
+        })
+        .unwrap()
 }
 
 fn main() {
     let mut parsed = parse(PUZZLE);
-    
-    println!("part 1: {}", severity(&mut parsed));
-    println!("part 2: {}", part2());
+    println!("{}", solve(&parsed));
+    println!("{}", solve2(&parsed));
 }
