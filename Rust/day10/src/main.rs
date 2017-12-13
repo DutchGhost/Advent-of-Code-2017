@@ -53,19 +53,19 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     nums[0] * nums[1]
 }
 
-enum ext {
+enum Wrapper {
     Wrapped(std::iter::Zip<std::iter::Chain<std::ops::Range<usize>, std::ops::Range<usize>>, std::iter::Rev<std::iter::Chain<std::ops::Range<usize>, std::ops::Range<usize>>>>),
     Nonwrapped(std::iter::Zip<std::ops::Range<usize>, std::iter::Rev<std::ops::Range<usize>>>),
 }
 
-fn wrapping(cpos: usize, len: usize, numslenght: usize) -> ext {
+fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
     if cpos + len < numslenght {
-        ext::Nonwrapped((cpos..cpos + len).zip((cpos..cpos + len).rev()))
+        Wrapper::Nonwrapped((cpos..cpos + len).zip((cpos..cpos + len).rev()))
     }
     else {
         let already_got = numslenght - cpos;
         let it = (cpos..numslenght).chain(0..(len-already_got));
-        ext::Wrapped((cpos..numslenght).chain(0..(len-already_got)).zip((cpos..numslenght).chain(0..(len-already_got)).rev()))
+        Wrapper::Wrapped((cpos..numslenght).chain(0..(len-already_got)).zip((cpos..numslenght).chain(0..(len-already_got)).rev()))
     }
 }
 fn solve2(rounds: i64, nums: &mut [usize], lenghts: &[usize]) {
@@ -79,8 +79,8 @@ fn solve2(rounds: i64, nums: &mut [usize], lenghts: &[usize]) {
             let it = wrapping(cpos, *len, numslenght);
 
             match it {
-                ext::Wrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
-                ext::Nonwrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
+                Wrapper::Wrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
+                Wrapper::Nonwrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
             };
 
             cpos += (*len + skipsize);
