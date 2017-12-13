@@ -40,7 +40,6 @@ fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
     } else {
         
         let already_got = numslenght - cpos;
-        let it = (cpos..numslenght).chain(0..(len - already_got));
 
         Wrapper::Wrapped((cpos..numslenght).chain(0..(len - already_got)).zip(
             (cpos..numslenght).chain(0..(len - already_got)).rev(),
