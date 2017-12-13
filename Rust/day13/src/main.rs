@@ -1,3 +1,7 @@
+/* TODO:
+        Make part 1 and part 2 share the same code for collisions
+*/
+
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
