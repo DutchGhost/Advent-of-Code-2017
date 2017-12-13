@@ -1,12 +1,12 @@
 #![feature(conservative_impl_trait)]
 
-extern crate rayon;
+use std::iter::*;
+use std::ops::Range;
 
 const PUZZLE: &'static str = "31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
 const BYTESPUZZLE: [u8; 49] = *b"31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
 const SALT: [u8; 5] = [17, 31, 73, 47, 23];
 
-use rayon::prelude::*;
 use std::time::Instant;
 
 fn parse_str(input: &str) -> Vec<usize> {
@@ -28,34 +28,9 @@ fn parse_bytes(input: [u8; 49]) -> Vec<usize> {
         .collect()
 }
 
-//extends selecteds with the selected items from nums.
-//the drain it in reversed order, now we only allocate 1 vector to do all the magic!
-fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
-    let mut cpos: usize = 0;
-    let mut skipsize: usize = 0;
-    let numslenght = nums.len();
-    let mut selecteds = Vec::with_capacity(200);
-
-    for _ in 0..rounds {
-        for len in lenghts.iter() {
-            selecteds.extend(nums.iter().cycle().skip(cpos).take(*len));
-
-            (cpos..numslenght)
-                .chain(0..)
-                .zip(selecteds.drain(..).rev())
-                .for_each(|(idx, newnum)| nums[idx] = newnum);
-
-            cpos += (*len + skipsize);
-            cpos = cpos % numslenght;
-            skipsize += 1;
-        }
-    }
-    nums[0] * nums[1]
-}
-
 enum Wrapper {
-    Wrapped(std::iter::Zip<std::iter::Chain<std::ops::Range<usize>, std::ops::Range<usize>>, std::iter::Rev<std::iter::Chain<std::ops::Range<usize>, std::ops::Range<usize>>>>),
-    Nonwrapped(std::iter::Zip<std::ops::Range<usize>, std::iter::Rev<std::ops::Range<usize>>>),
+    Wrapped(Zip<Chain<Range<usize>, Range<usize>>, Rev<Chain<Range<usize>, Range<usize>>>>),
+    Nonwrapped(Zip<Range<usize>, Rev<Range<usize>>>),
 }
 
 fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
@@ -68,7 +43,7 @@ fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
         Wrapper::Wrapped((cpos..numslenght).chain(0..(len-already_got)).zip((cpos..numslenght).chain(0..(len-already_got)).rev()))
     }
 }
-fn solve2(rounds: i64, nums: &mut [usize], lenghts: &[usize]) {
+fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     let mut cpos = 0;
     let mut skipsize = 0;
     let mut numslenght = nums.len();
@@ -88,6 +63,7 @@ fn solve2(rounds: i64, nums: &mut [usize], lenghts: &[usize]) {
             skipsize += 1;
         }
     }
+    nums[0] * nums[1]
 }
 fn dense(nums: &[usize]) -> String {
     nums.chunks(16)
@@ -102,17 +78,6 @@ fn main() {
 
     let mut nums_part2 = nums();
     let lenghts_part2 = parse_bytes(BYTESPUZZLE);
-    let mut n = 1_000_000;
-    
-    let mut test = nums();
-    let s = Instant::now();
-    solve2(n, &mut test, &lenghts_part2);
-    println!("part2 (it):\t{}", dense(&test));
-    println!("{:?}", s.elapsed());
-
-    let mut t = Instant::now();
-    solve(n, &mut nums_part2, &lenghts_part2);
-    println!("part 2:\t\t{}", dense(&nums_part2));
-    println!("{:?}", t.elapsed());
-
+    solve(64, &mut nums_part2, &lenghts_part2);
+    println!("part 2: {}", dense(&nums_part2));
 }
