@@ -26,11 +26,14 @@ fn parse_bytes(input: [u8; 49]) -> Vec<usize> {
         .collect()
 }
 
+//wrapper for the 'range' of nums that need to be changed.
 enum Wrapper {
     Wrapped(Zip<Chain<Range<usize>, Range<usize>>, Rev<Chain<Range<usize>, Range<usize>>>>),
     Nonwrapped(Zip<Range<usize>, Rev<Range<usize>>>),
 }
 
+//'Wrapped' goes from cpos to numslenght, and then from 0 to (len - (numslenght - cpos))
+//'Nonwrapped' goes from cpos to cpos + len
 fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
     if cpos + len < numslenght {
         Wrapper::Nonwrapped((cpos..cpos + len).zip((cpos..cpos + len).rev()))
