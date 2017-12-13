@@ -69,18 +69,7 @@ fn main() {
 mod tests {
     use test::Bencher;
     use super::*;
-    #[bench]
-    fn par_solve_2(b: &mut Bencher) {
-        let parsed = parse(PUZZLE);
-        b.iter(|| par_solve2(&parsed))
-    }
-
-    #[bench]
-    fn single_solve_2(b: &mut Bencher) {
-        let parsed = parse(PUZZLE);
-        b.iter(|| solve2(&parsed));
-    }
-
+    
     #[bench]
     fn par_solve_1(b: &mut Bencher) {
         let parsed = parse(PUZZLE);
@@ -93,4 +82,15 @@ mod tests {
         b.iter(|| solve(&parsed));
     }
 
+    #[bench]
+    fn par_solve_2(b: &mut Bencher) {
+        let parsed = parse(PUZZLE);
+        b.iter(|| par_solve2(&parsed))
+    }
+
+    #[bench]
+    fn single_solve_2(b: &mut Bencher) {
+        let parsed = parse(PUZZLE);
+        b.iter(|| solve2(&parsed));
+    }
 }
