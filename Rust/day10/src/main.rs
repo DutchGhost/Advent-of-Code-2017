@@ -1,3 +1,5 @@
+#![feature(conservative_impl_trait)]
+
 extern crate rayon;
 
 const PUZZLE: &'static str = "31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
@@ -51,6 +53,21 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     nums[0] * nums[1]
 }
 
+enum ext {
+    Wrapped(std::iter::Zip<std::iter::Chain<std::ops::Range<usize>, std::ops::Range<usize>>, std::iter::Rev<std::iter::Chain<std::ops::Range<usize>, std::ops::Range<usize>>>>),
+    Nonwrapped(std::iter::Zip<std::ops::Range<usize>, std::iter::Rev<std::ops::Range<usize>>>),
+}
+
+fn wrapping(cpos: usize, len: usize, numslenght: usize) -> ext {
+    if cpos + len < numslenght {
+        ext::Nonwrapped((cpos..cpos + len).zip((cpos..cpos + len).rev()))
+    }
+    else {
+        let already_got = numslenght - cpos;
+        let it = (cpos..numslenght).chain(0..(len-already_got));
+        ext::Wrapped((cpos..numslenght).chain(0..(len-already_got)).zip((cpos..numslenght).chain(0..(len-already_got)).rev()))
+    }
+}
 fn solve2(rounds: i64, nums: &mut [usize], lenghts: &[usize]) {
     let mut cpos = 0;
     let mut skipsize = 0;
@@ -59,18 +76,13 @@ fn solve2(rounds: i64, nums: &mut [usize], lenghts: &[usize]) {
     for _ in 0..rounds {
         for len in lenghts.iter() {
             
-            //if we don't need to wrap around...
-            if cpos + len < numslenght {
-                let it = (cpos..cpos + len);
-                it.clone().zip(it.rev()).take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2));
-            }
-            else {
-                //these are before the wraparound (n..255).
-                //len minus this will be how many items we get after wraparound
-                let already_got = numslenght - cpos;
-                let it = (cpos..numslenght).chain(0..(len-already_got));
-                it.clone().zip(it.rev()).take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2));
-            }
+            let it = wrapping(cpos, *len, numslenght);
+
+            match it {
+                ext::Wrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
+                ext::Nonwrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
+            };
+
             cpos += (*len + skipsize);
             cpos = cpos % numslenght;
             skipsize += 1;
@@ -90,19 +102,17 @@ fn main() {
 
     let mut nums_part2 = nums();
     let lenghts_part2 = parse_bytes(BYTESPUZZLE);
-    let mut n = 1000_0000;
+    let mut n = 1_000_000;
     
-    rayon::join(|| {
-        let mut test = nums();
+    let mut test = nums();
     let s = Instant::now();
     solve2(n, &mut test, &lenghts_part2);
     println!("part2 (it):\t{}", dense(&test));
     println!("{:?}", s.elapsed());
-    }, || {
-        let mut t = Instant::now();
+
+    let mut t = Instant::now();
     solve(n, &mut nums_part2, &lenghts_part2);
     println!("part 2:\t\t{}", dense(&nums_part2));
     println!("{:?}", t.elapsed());
-    });
 
 }
