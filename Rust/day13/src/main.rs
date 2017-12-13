@@ -1,9 +1,11 @@
 #![feature(test)]
-const PUZZLE: &'static str = include_str!("Input.txt");
 extern crate rayon;
 extern crate test;
 
 use rayon::prelude::*;
+
+const PUZZLE: &'static str = include_str!("Input.txt");
+
 fn parse(input: &str) -> Vec<(i32, i32)> {
     input
         .lines()
