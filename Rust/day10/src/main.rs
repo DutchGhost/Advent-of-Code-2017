@@ -1,5 +1,3 @@
-#![feature(conservative_impl_trait)]
-
 use std::iter::*;
 use std::ops::Range;
 
@@ -36,11 +34,14 @@ enum Wrapper {
 fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
     if cpos + len < numslenght {
         Wrapper::Nonwrapped((cpos..cpos + len).zip((cpos..cpos + len).rev()))
-    }
-    else {
+    } else {
+        
         let already_got = numslenght - cpos;
-        let it = (cpos..numslenght).chain(0..(len-already_got));
-        Wrapper::Wrapped((cpos..numslenght).chain(0..(len-already_got)).zip((cpos..numslenght).chain(0..(len-already_got)).rev()))
+        let it = (cpos..numslenght).chain(0..(len - already_got));
+
+        Wrapper::Wrapped((cpos..numslenght).chain(0..(len - already_got)).zip(
+            (cpos..numslenght).chain(0..(len - already_got)).rev(),
+        ))
     }
 }
 fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
@@ -50,7 +51,7 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
 
     for _ in 0..rounds {
         for len in lenghts.iter() {
-            
+
             let it = wrapping(cpos, *len, numslenght);
 
             match it {
