@@ -61,7 +61,7 @@ fn part2() {
         let bitvec = binairy.chars().map(|c| c.to_digit(10).unwrap()).collect::<Vec<_>>();
         grid.push(bitvec);
     }
-    
+
     let mut s = 0;
     for j in 0..grid.len() {
         for i in 0..grid[j].len() {
