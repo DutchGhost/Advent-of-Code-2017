@@ -27,6 +27,8 @@ where 's: 'split
 
 impl<'look, 'split> Iterator for Hex<'look, 'split> {
     type Item = (i64, i64);
+
+    #[inline]
     fn next<'a>(&'a mut self) -> Option<Self::Item> {
         match self.iter.next() {
             Some(ins) => self.map.get(&ins).cloned(),
@@ -35,6 +37,7 @@ impl<'look, 'split> Iterator for Hex<'look, 'split> {
     }
 }
 
+#[inline]
 fn dist(x: i64, y: i64) -> i64 {
     let z = -(x + y);
     (x.abs()).max(y.abs()).max(z.abs())
