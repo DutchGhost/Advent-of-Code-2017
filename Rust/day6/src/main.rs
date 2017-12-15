@@ -8,18 +8,18 @@ fn parse(s: &str) -> Vec<i32> {
         .collect::<Vec<_>>()
 }
 
-/// Loop from 0 to the lenght of the slice, repeat it using cycle().
-/// at first, skip for the index plus one,
+///start at idx + 1. Loop 'till 15, then chain with something endless.
 /// then take as many items as needed (the number of items we need is value!)
 /// and add one to each element of the slice.
+#[inline]
 fn redistribute(memory: &mut [i32], idx: usize, value: i32) {
+    let len = memory.len();
     memory[idx] = 0;
 
-    (0..memory.len())
-        .cycle()
-        .skip(idx + 1)
+    (idx + 1..len)
+        .chain(0..)
         .take(value as usize)
-        .for_each(|idx| memory[idx] += 1);
+        .for_each(|n| memory[n] += 1);
 }
 
 /// max_by_key returns the last max value... using .rev() escapes from this,
