@@ -1,3 +1,6 @@
+const MASK: i64 = 0b1111_1111_1111_1111;
+const DIVIDER: i64 = 2147483647;
+
 const VALUE_A: i64 = 16807;
 const VALUE_B: i64 = 48271;
 
@@ -6,8 +9,6 @@ const INPUT_B: i64 = 191;
 
 const DIVIDE_A: i64 = 4;
 const DIVIDE_B: i64 = 8;
-
-const DIVIDER: i64 = 2147483647;
 
 struct Generator {
     value: i64,
@@ -33,28 +34,38 @@ impl Iterator for Generator {
     }
 }
 
+#[inline]
+fn xordev<'r>(&(n1, n2): &'r (i64, i64)) -> bool {
+    n1 & MASK == n2 & MASK
+}
+
+#[inline]
+fn criteria(item: i64, to_devide: i64) -> bool {
+    item % to_devide == 0
+}
+
 fn part1() -> usize {
     let generator_a = Generator::new(INPUT_A, VALUE_A);
     let generator_b = Generator::new(INPUT_B, VALUE_B);
 
-    generator_a.zip(generator_b).take(40_000_000).filter(|&(next_a, next_b)| (next_a ^ next_b) % 65536 == 0).count()
+    generator_a.zip(generator_b).take(40_000_000).filter(xordev).count()
 }
 
-//maybe add 'item / (item >> 2) == DIVIDE_A', and 'item / (item >> 3) == DEVIDE_B'
-//however, this does not seem to work.
 fn part2() -> usize {
     let generator_a = Generator::new(INPUT_A, VALUE_A);
     let generator_b = Generator::new(INPUT_B, VALUE_B);
 
     generator_a
-        .filter(|item| item % DIVIDE_A == 0)
-        .zip(generator_b.filter(|item| item % DIVIDE_B == 0))
+        .filter(|&n| criteria(n, DIVIDE_A))
+        .zip(generator_b.filter(|&n| criteria(n, DIVIDE_B)))
         .take(5_000_000)
-        .filter(|&(next_a, next_b)| (next_a ^ next_b) % 65536 == 0).count()
+        .filter(xordev)
+        .count()
 }
 fn main() {
    let part1 = part1();
    let part2 = part2();
+
    println!("part 1: {}", part1);
    println!("part 2: {}", part2);
 }
