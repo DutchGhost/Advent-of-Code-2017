@@ -27,6 +27,7 @@ impl Generator {
 impl Iterator for Generator {
     type Item = i64;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         self.value *= self.multiplier;
         self.value %= DIVIDER;
