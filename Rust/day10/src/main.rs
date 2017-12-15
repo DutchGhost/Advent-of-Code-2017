@@ -1,11 +1,10 @@
 use std::iter::*;
 use std::ops::Range;
+use std::time::Instant;
 
 const PUZZLE: &'static str = "31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
 const BYTESPUZZLE: [u8; 49] = *b"31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
 const SALT: [u8; 5] = [17, 31, 73, 47, 23];
-
-use std::time::Instant;
 
 fn parse_str(input: &str) -> Vec<usize> {
     input
@@ -34,6 +33,7 @@ enum Wrapper {
 
 //'Wrapped' goes from cpos to numslenght, and then from 0 to (len - (numslenght - cpos))
 //'Nonwrapped' goes from cpos to cpos + len
+#[inline]
 fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
     if cpos + len < numslenght {
         Wrapper::Nonwrapped((cpos..cpos + len).zip((cpos..cpos + len).rev()))
@@ -46,11 +46,12 @@ fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
         ))
     }
 }
+
 fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
+    assert!(nums.len() == 256);
     let mut cpos = 0;
     let mut skipsize = 0;
     let mut numslenght = nums.len();
-
     for _ in 0..rounds {
         for len in lenghts.iter() {
 
@@ -68,12 +69,15 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     }
     nums[0] * nums[1]
 }
+
+#[inline]
 fn dense(nums: &[usize]) -> String {
     nums.chunks(16)
         .map(|chunk| chunk.iter().fold(0, |n, acc| n ^ acc))
         .map(|chunk| format!("{:02x}", chunk).to_lowercase())
         .collect()
 }
+
 fn main() {
     let mut nums_part1 = nums();
     let lenghts_part1 = parse_str(PUZZLE);
@@ -81,6 +85,9 @@ fn main() {
 
     let mut nums_part2 = nums();
     let lenghts_part2 = parse_bytes(BYTESPUZZLE);
-    solve(64, &mut nums_part2, &lenghts_part2);
+    let rounds = 1_000_000_000;
+    let started = Instant::now();
+    solve(rounds, &mut nums_part2, &lenghts_part2);
     println!("part 2: {}", dense(&nums_part2));
+    println!("Calculated a hash of {} rounds in {:?} seconds", rounds, started.elapsed());
 }
