@@ -36,7 +36,7 @@ impl Iterator for Generator {
 }
 
 #[inline]
-fn xordev<'r>(&(n1, n2): &'r (i64, i64)) -> bool {
+fn mask<'r>(&(n1, n2): &'r (i64, i64)) -> bool {
     n1 & MASK == n2 & MASK
 }
 
@@ -49,7 +49,7 @@ fn part1() -> usize {
     let generator_a = Generator::new(INPUT_A, VALUE_A);
     let generator_b = Generator::new(INPUT_B, VALUE_B);
 
-    generator_a.zip(generator_b).take(40_000_000).filter(xordev).count()
+    generator_a.zip(generator_b).take(40_000_000).filter(mask).count()
 }
 
 fn part2() -> usize {
@@ -60,7 +60,7 @@ fn part2() -> usize {
         .filter(|&n| criteria(n, DIVIDE_A))
         .zip(generator_b.filter(|&n| criteria(n, DIVIDE_B)))
         .take(5_000_000)
-        .filter(xordev)
+        .filter(mask)
         .count()
 }
 fn main() {
