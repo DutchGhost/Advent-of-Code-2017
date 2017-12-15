@@ -23,8 +23,14 @@ where
     n
 }
 
+#[inline]
+fn one(_: i64) -> i64 { 1 }
+
+#[inline]
+fn two(n: i64) -> i64 {if n >= 3 { - 1} else { 1 } }
+
 fn main() {
     let data = parse(PUZZLE);
-    println!("day 5.1: {}", run(data.clone(), |_| 1));
-    println!("day 5.2: {}", run(data, |offset| if offset >= 3 { -1 } else { 1 }));
+    println!("day 5.1: {}", run(data.clone(), one));
+    println!("day 5.2: {}", run(data, two));
 }
