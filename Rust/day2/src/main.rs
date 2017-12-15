@@ -6,12 +6,14 @@ fn to_num(s: &str) -> Vec<u32> {
         .collect::<Vec<_>>()
 }
 
+#[inline]
 fn sort<'a>(a: &'a u32, b: &'a u32) -> (&'a u32, &'a u32) {
     if a > b { (a, b) } else { (b, a) }
 }
 
 /// gets the biggest out of the nums.
 /// returns None if the bigger one can not be equally devided by the smaller one.
+#[inline]
 fn is_divisible(a: &u32, b: &u32) -> Option<u32> {
     let (num1, num2) = sort(a, b);
     if num1 % num2 == 0 {
