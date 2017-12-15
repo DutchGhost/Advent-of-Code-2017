@@ -18,6 +18,7 @@ fn parse(input: &str) -> Vec<(i32, i32)> {
         .collect()
 }
 
+#[inline]
 fn solve(firewall: &[(i32, i32)]) -> i32 {
     firewall
         .iter()
@@ -26,6 +27,7 @@ fn solve(firewall: &[(i32, i32)]) -> i32 {
         .sum()
 }
 
+#[inline]
 fn par_solve(firewall: &[(i32, i32)]) -> i32 {
     firewall
         .par_iter()
@@ -34,7 +36,7 @@ fn par_solve(firewall: &[(i32, i32)]) -> i32 {
         .sum()
 }
 
-
+#[inline]
 fn par_solve2(firewall: &[(i32, i32)]) -> i32 {
     (0..10_000_000).into_par_iter()
         .find_first(|wait| {
@@ -45,6 +47,7 @@ fn par_solve2(firewall: &[(i32, i32)]) -> i32 {
         .unwrap()
 }
 
+#[inline]
 fn solve2(firewall: &[(i32, i32)]) -> i32 {
     (0..10_000_000)
         .find(|wait| {
