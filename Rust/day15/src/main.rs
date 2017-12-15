@@ -49,7 +49,11 @@ fn part1() -> usize {
     let generator_a = Generator::new(INPUT_A, VALUE_A);
     let generator_b = Generator::new(INPUT_B, VALUE_B);
 
-    generator_a.zip(generator_b).take(40_000_000).filter(mask).count()
+    generator_a
+        .zip(generator_b)
+        .take(40_000_000)
+        .filter(mask)
+        .count()
 }
 
 fn part2() -> usize {
@@ -64,9 +68,9 @@ fn part2() -> usize {
         .count()
 }
 fn main() {
-   let part1 = part1();
-   let part2 = part2();
+    let part1 = part1();
+    let part2 = part2();
 
-   println!("part 1: {}", part1);
-   println!("part 2: {}", part2);
+    println!("part 1: {}", part1);
+    println!("part 2: {}", part2);
 }
