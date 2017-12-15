@@ -57,7 +57,8 @@ fn part2() -> usize {
     let mut generator_b = Generator::new(INPUT_B, VALUE_B, 8);
 
     for _ in 0..5_000_000 {
-        let (next_a, next_b) = rayon::join(||generator_a.next_with_devide(),|| generator_b.next_with_devide());
+        let next_a = generator_a.next_with_devide();
+        let next_b = generator_b.next_with_devide();
         
         if (next_a ^ next_b) % 65536 == 0 {
             sum += 1;
@@ -66,7 +67,9 @@ fn part2() -> usize {
     sum
 }
 fn main() {
-   let (part1, part2) = rayon::join(||part1(), || part2());
+   //let (part1, part2) = rayon::join(||part1(), || part2());
+   let part1 = part1();
+   let part2 = part2();
    println!("part 1: {}", part1);
    println!("part 2: {}", part2);
 }
