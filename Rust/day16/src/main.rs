@@ -18,8 +18,8 @@ impl FromStr for Move {
             Ok(Move::Spin(s[1..].parse().unwrap()))
         }
         else if s.starts_with("x") {
-            let mut toswap = s[1..].split("/").map(|pos| pos.parse()?);
-            Ok(Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap()))
+            let mut toswap = s[1..].split("/").map(|pos| pos.parse());
+            Ok(Move::Exchange(toswap.next().unwrap()?, toswap.next().unwrap()?))
         }
         else {
             let mut partners = s[1..].chars().filter(|c| c != &'/');
