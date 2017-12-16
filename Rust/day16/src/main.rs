@@ -1,15 +1,15 @@
 #![feature(slice_rotate)]
 
 const PUZZLE: &'static str = include_str!("Input.txt");
-const PROGRAMMS: [&str; 16] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"];
+const PROGRAMMS: [char; 16] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
 
-enum Move<'a> {
+enum Move {
     Spin(usize),
     Exchange(usize, usize),
-    Partner(&'a str, &'a str),
+    Partner(char, char),
 }
 
-impl<'a> Move<'a> {
+impl Move {
     fn new(s: &str) -> Move {
         if s.starts_with("s") {
             Move::Spin(s[1..].parse().unwrap())
@@ -19,28 +19,24 @@ impl<'a> Move<'a> {
             Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap())
         }
         else {
-            let mut partners = s[1..].split("/");
+            let mut partners = s[1..].chars().filter(|c| c != &'/');
             Move::Partner(partners.next().unwrap(), partners.next().unwrap())
         }
     }
 }
 
-struct Instructions<'a> {
-    instructions: Vec<Move<'a>>,
-}
+struct Instructions(Vec<Move>);
 
-impl <'a>Instructions<'a> {
-    fn new(s: &'a str) -> Instructions<'a> {
-        Instructions {
-            instructions: s.split(",").map(|item| Move::new(item)).collect::<Vec<_>>(),
-        }
+impl Instructions {
+    fn new<'a>(s: &'a str) -> Instructions {
+        Instructions(s.split(",").map(|item| Move::new(item)).collect::<Vec<_>>())
     }
-    fn iter<'s>(&'s self) -> std::slice::Iter<'s, Move<'s>> {
-        self.instructions.iter()
+    fn iter<'s>(&'s self) -> std::slice::Iter<'s, Move> {
+        self.0.iter()
     }
 }
 
-fn run(programms: &mut [&str], instructions: &Instructions) {
+fn run(programms: &mut [char], instructions: &Instructions) {
     let len = programms.len();
 
     for instruction in instructions.iter() {
@@ -58,7 +54,7 @@ fn run(programms: &mut [&str], instructions: &Instructions) {
 
 //runs the dance untill the initial state. (at the start it's the initial state, but n equals 0.)
 //returns after how many dances it repeats itself, and the programms.
-fn get_cycle<'a>(programms: &mut [&str], instructions: &Instructions) -> usize {
+fn get_cycle<'a>(programms: &mut [char], instructions: &Instructions) -> usize {
     
     let mut n = 0;
     while programms != PROGRAMMS || n == 0 {
@@ -68,8 +64,8 @@ fn get_cycle<'a>(programms: &mut [&str], instructions: &Instructions) -> usize {
     n
 }
 
-fn stringify(programm: [&str; 16]) -> String {
-    programm.into_iter().map(move |s| s.to_string()).collect::<String>()
+fn stringify(programm: [char; 16]) -> String {
+    programm.iter().collect::<String>()
 }
 fn main() {
     let instructions = Instructions::new(PUZZLE);
