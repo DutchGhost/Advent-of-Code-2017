@@ -1,4 +1,6 @@
 #![feature(slice_rotate)]
+use std::str::FromStr;
+use std::num::ParseIntError;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
 const PROGRAMMS: [char; 16] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
@@ -9,18 +11,19 @@ enum Move {
     Partner(char, char),
 }
 
-impl Move {
-    fn new(s: &str) -> Move {
+impl FromStr for Move {
+    type Err = ParseIntError;
+    fn from_str(s: &str) -> Result<Move, Self::Err> {
         if s.starts_with("s") {
-            Move::Spin(s[1..].parse().unwrap())
+            Ok(Move::Spin(s[1..].parse().unwrap()))
         }
         else if s.starts_with("x") {
-            let mut toswap = s[1..].split("/").map(|pos| pos.parse::<usize>().unwrap());
-            Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap())
+            let mut toswap = s[1..].split("/").map(|pos| pos.parse()?);
+            Ok(Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap()))
         }
         else {
             let mut partners = s[1..].chars().filter(|c| c != &'/');
-            Move::Partner(partners.next().unwrap(), partners.next().unwrap())
+            Ok(Move::Partner(partners.next().unwrap(), partners.next().unwrap()))
         }
     }
 }
@@ -29,7 +32,7 @@ struct Instructions(Vec<Move>);
 
 impl Instructions {
     fn new<'a>(s: &'a str) -> Instructions {
-        Instructions(s.split(",").map(|item| Move::new(item)).collect::<Vec<_>>())
+        Instructions(s.split(",").filter_map(|line| line.parse::<Move>().ok()).collect::<Vec<_>>())
     }
     fn iter<'s>(&'s self) -> std::slice::Iter<'s, Move> {
         self.0.iter()
