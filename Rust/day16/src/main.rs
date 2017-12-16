@@ -28,7 +28,7 @@ enum Move {
 
 impl<'a> From<&'a str> for Move {
     #[inline]
-    fn from(s: &str) -> Move {
+    fn from(s: &'a str) -> Move {
         match s.chars().next().unwrap() {
             's' => {
                 Move::Spin(s[1..].parse::<usize>().unwrap())
@@ -60,7 +60,7 @@ impl Instructions {
     }
 }
 
-fn run(programms: &mut [u8], instructions: &Instructions) {
+fn run<'p, 'i>(programms: &'p mut [u8], instructions: &'i Instructions) {
     let len = programms.len();
 
     for instruction in instructions.iter() {
@@ -77,9 +77,9 @@ fn run(programms: &mut [u8], instructions: &Instructions) {
 }
 
 //runs the dance untill the initial state. (at the start it's the initial state, but n equals 0.)
-//returns after how many dances it repeats itself, and the programms.
+//returns after how many dances it repeats themself.
 #[inline]
-fn get_cycle<'a>(programms: &mut [u8], instructions: &Instructions) -> usize {
+fn repeated<'p, 'i>(programms: &'p mut [u8], instructions: &'i Instructions) -> usize {
 
     let mut n = 0;
     while programms != PROGRAMMS || n == 0 {
@@ -93,6 +93,7 @@ fn get_cycle<'a>(programms: &mut [u8], instructions: &Instructions) -> usize {
 fn stringify(programm: [u8; 16]) -> String {
     programm.iter().map(|b| *b as char).collect::<String>()
 }
+
 fn main() {
     let instructions = Instructions::new(PUZZLE);
     {
@@ -102,7 +103,7 @@ fn main() {
     }
     {
         let mut programms = PROGRAMMS;
-        let cycle = get_cycle(&mut programms, &instructions);
+        let cycle = repeated(&mut programms, &instructions);
         for _ in 0..(1_000_000_000 % cycle) {
             run(&mut programms, &instructions);
         }
