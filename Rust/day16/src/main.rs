@@ -73,15 +73,17 @@ fn stringify(programm: [&str; 16]) -> String {
 }
 fn main() {
     let instructions = Instructions::new(PUZZLE);
-
-    let mut programms = PROGRAMMS;
-    run(&mut programms, &instructions);
-    println!("part 1: {}", stringify(programms));
-    
-    let mut programms = PROGRAMMS;
-    let cycle = get_cycle(&mut programms, &instructions);
-    for _ in 0..(1_000_000_000 % cycle) {
+    {
+        let mut programms = PROGRAMMS;
         run(&mut programms, &instructions);
+        println!("part 1: {}", stringify(programms));
     }
-    println!("part 2: {}", stringify(programms));
+    {    
+        let mut programms = PROGRAMMS;
+        let cycle = get_cycle(&mut programms, &instructions);
+        for _ in 0..(1_000_000_000 % cycle) {
+            run(&mut programms, &instructions);
+        }
+        println!("part 2: {}", stringify(programms));
+    }
 }
