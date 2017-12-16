@@ -4,7 +4,7 @@ use std::cmp::max;
 pub trait from_str_and_hashmap<'r>
 {
     type Err;
-    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, Self::Err>;
+    fn from_string_and_map<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, Self::Err>;
 }
 
 //A register
@@ -164,7 +164,7 @@ impl <'r>from_str_and_hashmap<'r> for Statement<'r>
 {
     type Err = StatementError;
 
-    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, StatementError> {
+    fn from_string_and_map<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, StatementError> {
         let v = s.split_whitespace().collect::<Vec<_>>();
         Statement::new(v, map)
     }
