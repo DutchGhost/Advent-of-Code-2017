@@ -2,10 +2,10 @@ use std::collections::HashMap;
 use std::cmp::max;
 
 pub trait from_str_and_hashmap<'r, F>
-where F: Fn(i32) -> i32 + Sized
+where F: Fn(i32) -> i32
 {
     type Err;
-    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r, F>, Self::Err>;
+    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r, fn(i32) -> i32>, Self::Err>;
 }
 
 //A register
@@ -22,7 +22,7 @@ pub struct Registers<'r> {
 
 //An Instruction. Increment(Register, Value) or Decrement(Register, Value).
 enum Instruction<'r, F>
-where F: Fn(i32) -> i32 + Sized
+where F: Fn(i32) -> i32
 {
     Operation(F, Register<'r>, i32)
 }
@@ -82,10 +82,9 @@ impl <'i, 'r>Registers<'r> {
     }
 }
 
-impl <'a, 'r, 'i, F>Instruction<'r, F>
-where F: Fn(i32) -> i32  + Sized
+impl<'a, 'r, 'i> Instruction<'r, fn(i32) -> i32>
 {
-    fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r, F>
+    fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r, fn(i32) -> i32>
     {
         let inct = inc;
         let detc = dec;
@@ -132,7 +131,7 @@ where
     'a: 'm,
     F: Fn(i32) -> i32 + Sized
 {
-    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r, F>, StatementError> {
+    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r, fn(i32) -> i32>, StatementError> {
         match line.as_slice() {
             &[register, instruction, value, cmpregister, operator, otherval] => {
                 Ok(Statement {
@@ -168,16 +167,16 @@ impl StatementError {
         self.discription
     }
 }
-impl <'r, F>from_str_and_hashmap<'r, F> for Statement<'r, F>
-where F: Fn(i32) -> i32 + Sized
-{
-    type Err = StatementError;
+// impl <'r, F>from_str_and_hashmap<'r, F> for Statement<'r, F>
+// where F: Fn(i32) -> i32 + Sized
+// {
+//     type Err = StatementError;
 
-    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r, F>, StatementError> {
-        let v = s.split_whitespace().collect::<Vec<_>>();
-        Statement::new(v, map)
-    }
-}
+//     fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r, fn(i32) -> i32>, StatementError> {
+//         let v = s.split_whitespace().collect::<Vec<_>>();
+//         Statement::new(v, map)
+//     }
+// }
 /*
     NOTE:
         an if-statement has an expression, and a instruction.
