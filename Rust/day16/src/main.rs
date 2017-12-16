@@ -42,16 +42,6 @@ impl<'a> From<&'a str> for Move {
                 Move::Partner(partners.next().unwrap(), partners.next().unwrap())
             }
         }
-
-        // if s.starts_with("s") {
-        //     Move::Spin(s[1..].parse::<usize>().unwrap())
-        // } else if s.starts_with("x") {
-        //     let mut toswap = s[1..].split("/").map(|pos| pos.parse().unwrap());
-        //     Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap())
-        // } else {
-        //     let mut partners = s[1..].bytes().filter(|c| *c != b'/');
-        //     Move::Partner(partners.next().unwrap(), partners.next().unwrap())
-        // }
     }
 }
 
