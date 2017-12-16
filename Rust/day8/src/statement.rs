@@ -57,6 +57,7 @@ impl <'i, 'r>Registers<'r> {
         }
     }
 
+    #[inline]
     fn get<'v, 's: 'v>(&'s self, k: &Register<'r>) -> Option<&'v i32> {
         self.registers.get(k)
     }
@@ -73,6 +74,7 @@ impl <'i, 'r>Registers<'r> {
         }
     }
 
+    #[inline]
     pub fn max(self) -> (i32, i32) {
         (self.registers.values().max().unwrap().clone(), self.max)
     }
@@ -105,6 +107,7 @@ impl Operator {
         }
     }
 
+    #[inline]
     fn cmp(&self) -> bool {
         match self {
             &Operator::Equal(a, b) => a == b,
@@ -154,6 +157,8 @@ impl StatementError {
             discription: String::from(s),
         }
     }
+    
+    #[inline]
     pub fn discription(self) -> String {
         self.discription
     }
