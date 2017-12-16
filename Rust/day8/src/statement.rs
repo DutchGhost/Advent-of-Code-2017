@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 use std::cmp::max;
 
-pub trait from_str_and_hashmap<'r> {
+pub trait from_str_and_hashmap<'r>
+{
     type Err;
     fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, Self::Err>;
 }
@@ -19,8 +20,9 @@ pub struct Registers<'r> {
 }
 
 //An Instruction. Increment(Register, Value) or Decrement(Register, Value).
-enum Instruction<'r> {
-    Operation(Box<Fn(i32) -> i32>, Register<'r>, i32)
+enum Instruction<'r>
+{
+    Operation(&'static Fn(i32) -> i32, Register<'r>, i32)
 }
 
 //An operator, based on this a register's value is incremented or decremented
@@ -34,7 +36,8 @@ enum Operator {
 }
 
 //A statement. [instruction] [register] with [value] if [value of a register] [operator] [othervalue]
-pub struct Statement<'r> {
+pub struct Statement<'r>
+{
     instruction: Instruction<'r>,
     operator: Operator,
 }
@@ -58,7 +61,8 @@ impl <'i, 'r>Registers<'r> {
         self.registers.get(k)
     }
 
-    fn update(&mut self, operator: &Operator, instruction: Instruction<'r>) {
+    fn update(&mut self, operator: &Operator, instruction: Instruction<'r>)
+    {
         if operator.cmp() {
             match instruction {
                 Instruction::Operation(operation, register, value) => {
@@ -74,18 +78,18 @@ impl <'i, 'r>Registers<'r> {
     }
 }
 
-impl <'a, 'r, 'i>Instruction<'r> {
+impl <'a, 'r, 'i>Instruction<'r>
+{
     fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r> {
         match ins {
-            "inc" => Instruction::Operation(Box::new(Self::inc), register, value.parse::<i32>().expect("Invalid incremental value")),
-            "dec" => Instruction::Operation(Box::new(Self::dec), register, value.parse::<i32>().expect("Invalid decremental value")),
+            "inc" => Instruction::Operation(&Self::inc, register, value.parse::<i32>().expect("Invalid incremental value")),
+            "dec" => Instruction::Operation(&Self::dec, register, value.parse::<i32>().expect("Invalid decremental value")),
             _ => panic!("unknown instruction"),
         }
     }
     fn inc(value: i32) -> i32 { value }
     fn dec(value: i32) -> i32 { -value }
 }
-
 impl Operator {
     fn new<'r, 'a, 'rs>(cmpregister: Register<'r>, operator: &'a str, cmp: i32, registers: &Registers<'r>) -> Operator {
         let n = *registers.get(&cmpregister).unwrap_or(&0i32);
@@ -154,7 +158,8 @@ impl StatementError {
         self.discription
     }
 }
-impl <'r>from_str_and_hashmap<'r> for Statement<'r> {
+impl <'r>from_str_and_hashmap<'r> for Statement<'r>
+{
     type Err = StatementError;
 
     fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, StatementError> {
