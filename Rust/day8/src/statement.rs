@@ -1,11 +1,10 @@
 use std::collections::HashMap;
 use std::cmp::max;
 
-pub trait from_str_and_hashmap<'r, F>
-where F: Fn(i32) -> i32
+pub trait from_str_and_hashmap<'r>
 {
     type Err;
-    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r, fn(i32) -> i32>, Self::Err>;
+    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, Self::Err>;
 }
 
 //A register
@@ -21,10 +20,9 @@ pub struct Registers<'r> {
 }
 
 //An Instruction. Increment(Register, Value) or Decrement(Register, Value).
-enum Instruction<'r, F>
-where F: Fn(i32) -> i32
+enum Instruction<'r>
 {
-    Operation(F, Register<'r>, i32)
+    Operation(fn(i32) -> i32, Register<'r>, i32)
 }
 
 //An operator, based on this a register's value is incremented or decremented
@@ -38,10 +36,9 @@ enum Operator {
 }
 
 //A statement. [instruction] [register] with [value] if [value of a register] [operator] [othervalue]
-pub struct Statement<'r, F>
-where F: Fn(i32) -> i32 + Sized
+pub struct Statement<'r>
 {
-    instruction: Instruction<'r, F>,
+    instruction: Instruction<'r>,
     operator: Operator,
 }
 
@@ -64,8 +61,7 @@ impl <'i, 'r>Registers<'r> {
         self.registers.get(k)
     }
 
-    fn update<F>(&mut self, operator: &Operator, instruction: Instruction<'r, F>)
-    where F: Fn(i32) -> i32 + Sized
+    fn update(&mut self, operator: &Operator, instruction: Instruction<'r>)
     {
         if operator.cmp() {
             match instruction {
@@ -82,12 +78,10 @@ impl <'i, 'r>Registers<'r> {
     }
 }
 
-impl<'a, 'r, 'i> Instruction<'r, fn(i32) -> i32>
+impl<'a, 'r, 'i> Instruction<'r>
 {
-    fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r, fn(i32) -> i32>
+    fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r>
     {
-        let inct = inc;
-        let detc = dec;
         match ins {
             "inc" => Instruction::Operation(inc, register, value.parse::<i32>().expect("Invalid incremental value")),
             "dec" => Instruction::Operation(dec, register, value.parse::<i32>().expect("Invalid decremental value")),
@@ -125,13 +119,12 @@ impl Operator {
     }
 }
 
-impl<'r, 'b, 'm, 'a, F> Statement <'r, F>
+impl<'r, 'b, 'm, 'a> Statement <'r>
 where
     'a: 'b,
     'a: 'm,
-    F: Fn(i32) -> i32 + Sized
 {
-    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r, fn(i32) -> i32>, StatementError> {
+    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r>, StatementError> {
         match line.as_slice() {
             &[register, instruction, value, cmpregister, operator, otherval] => {
                 Ok(Statement {
@@ -167,16 +160,15 @@ impl StatementError {
         self.discription
     }
 }
-// impl <'r, F>from_str_and_hashmap<'r, F> for Statement<'r, F>
-// where F: Fn(i32) -> i32 + Sized
-// {
-//     type Err = StatementError;
+impl <'r>from_str_and_hashmap<'r> for Statement<'r>
+{
+    type Err = StatementError;
 
-//     fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r, fn(i32) -> i32>, StatementError> {
-//         let v = s.split_whitespace().collect::<Vec<_>>();
-//         Statement::new(v, map)
-//     }
-// }
+    fn from_s<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, StatementError> {
+        let v = s.split_whitespace().collect::<Vec<_>>();
+        Statement::new(v, map)
+    }
+}
 /*
     NOTE:
         an if-statement has an expression, and a instruction.

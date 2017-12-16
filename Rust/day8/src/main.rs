@@ -23,8 +23,7 @@ fn main() {
     // }
 
     for line in PUZZLE.lines() {
-        let v = line.split_whitespace().collect::<Vec<_>>();
-        let statement: Result<Statement<fn(i32) -> i32>, StatementError> = Statement::<fn(i32) -> i32>::new(v, &map);
+        let statement: Result<Statement, StatementError> = Statement::from_s(line, &map);
         match statement {
             Ok(s) => s.eval(&mut map),
             Err(e) => println!("{}", e.discription()),
