@@ -27,8 +27,8 @@ enum Move {
 }
 
 impl<'a> From<&'a str> for Move {
+    #[inline]
     fn from(s: &str) -> Move {
-
         match s.chars().next().unwrap() {
             's' => {
                 Move::Spin(s[1..].parse::<usize>().unwrap())
@@ -48,9 +48,13 @@ impl<'a> From<&'a str> for Move {
 struct Instructions(Vec<Move>);
 
 impl Instructions {
+    
+    #[inline]
     fn new<'a>(s: &'a str) -> Instructions {
         Instructions(s.split(",").map(|line| Move::from(line)).collect())
     }
+
+    #[inline]
     fn iter<'s>(&'s self) -> std::slice::Iter<'s, Move> {
         self.0.iter()
     }
@@ -74,6 +78,7 @@ fn run(programms: &mut [u8], instructions: &Instructions) {
 
 //runs the dance untill the initial state. (at the start it's the initial state, but n equals 0.)
 //returns after how many dances it repeats itself, and the programms.
+#[inline]
 fn get_cycle<'a>(programms: &mut [u8], instructions: &Instructions) -> usize {
 
     let mut n = 0;
@@ -84,6 +89,7 @@ fn get_cycle<'a>(programms: &mut [u8], instructions: &Instructions) -> usize {
     n
 }
 
+#[inline]
 fn stringify(programm: [u8; 16]) -> String {
     programm.iter().map(|b| *b as char).collect::<String>()
 }
