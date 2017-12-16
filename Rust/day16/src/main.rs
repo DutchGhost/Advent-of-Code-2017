@@ -23,15 +23,13 @@ fn run(programms: &mut [&str], input: &str) {
     }
 }
 
-//runs the dance untill the thing repeat's itself.
+//runs the dance untill the initial state. (at the start it's the initial state, but n equals 0.)
 //returns after how many dances it repeats itself, and the programms.
 fn get_cycle<'a>() -> (usize, [&'a str; 16]) {
     let mut programms = PROGRAMMS;
-    let mut cache = Vec::with_capacity(100);
-
+    
     let mut n = 0;
-    while !cache.contains(&programms) {
-        cache.push(programms.clone());
+    while programms != PROGRAMMS || n == 0 {
         run(&mut programms, PUZZLE);
         n += 1;
     }
@@ -51,4 +49,5 @@ fn main() {
         run(&mut programms, PUZZLE);
     }
     println!("part 2: {}", stringify(programms));
+    println!("{:?}", programms);
 }
