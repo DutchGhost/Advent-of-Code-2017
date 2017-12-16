@@ -48,7 +48,6 @@ impl<'a> From<&'a str> for Move {
 struct Instructions(Vec<Move>);
 
 impl Instructions {
-    
     #[inline]
     fn new<'a>(s: &'a str) -> Instructions {
         Instructions(s.split(",").map(|line| Move::from(line)).collect())
