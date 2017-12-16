@@ -1,6 +1,6 @@
 #![feature(slice_rotate)]
 
-const PUZZLE: &'static [u8] = include_bytes!("Input.txt");
+const PUZZLE: &'static str = include_str!("Input.txt");
 const PROGRAMMS: [u8; 16] = [
     b'a',
     b'b',
@@ -26,22 +26,16 @@ enum Move {
     Partner(u8, u8),
 }
 
-impl<'a> From<&'a [u8]> for Move {
-    fn from(s: &[u8]) -> Move {
-        if s.starts_with(b"s") {
-            Move::Spin(
-                unsafe { std::str::from_utf8_unchecked(&s[1..]) }
-                    .parse()
-                    .unwrap(),
-            )
-        } else if s.starts_with(b"x") {
-            let mut toswap = s[1..].split(|b| b == &b'/').map(
-                |pos| unsafe { std::str::from_utf8_unchecked(pos) }.parse().unwrap(),
-            );
+impl<'a> From<&'a str> for Move {
+    fn from(s: &str) -> Move {
+        if s.starts_with("s") {
+            Move::Spin(s[1..].parse::<usize>().unwrap())
+        } else if s.starts_with("x") {
+            let mut toswap = s[1..].split("/").map(|pos| pos.parse().unwrap());
             Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap())
         } else {
-            let mut partners = s[1..].iter().filter(|c| *c != &b'/');
-            Move::Partner(*partners.next().unwrap(), *partners.next().unwrap())
+            let mut partners = s[1..].bytes().filter(|c| *c != b'/');
+            Move::Partner(partners.next().unwrap(), partners.next().unwrap())
         }
     }
 }
@@ -49,12 +43,8 @@ impl<'a> From<&'a [u8]> for Move {
 struct Instructions(Vec<Move>);
 
 impl Instructions {
-    fn new<'a>(s: &'a [u8]) -> Instructions {
-        Instructions(
-            s.split(|b| b == &b',')
-                .map(|line| Move::from(line))
-                .collect::<Vec<_>>(),
-        )
+    fn new<'a>(s: &'a str) -> Instructions {
+        Instructions(s.split(",").map(|line| Move::from(line)).collect())
     }
     fn iter<'s>(&'s self) -> std::slice::Iter<'s, Move> {
         self.0.iter()
