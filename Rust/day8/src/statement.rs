@@ -167,11 +167,3 @@ impl <'r>from_str_and_hashmap<'r> for Statement<'r>
         Statement::new(v, map)
     }
 }
-/*
-    NOTE:
-        an if-statement has an expression, and a instruction.
-        IF expression {
-            Statement
-        }
-        Statement if Expression
-*/
