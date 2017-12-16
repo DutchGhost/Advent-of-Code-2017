@@ -83,14 +83,12 @@ impl<'a, 'r, 'i> Instruction<'r>
     fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r>
     {
         match ins {
-            "inc" => Instruction::Operation(inc, register, value.parse::<i32>().expect("Invalid incremental value")),
-            "dec" => Instruction::Operation(dec, register, value.parse::<i32>().expect("Invalid decremental value")),
+            "inc" => Instruction::Operation(|value: i32| {value}, register, value.parse::<i32>().expect("Invalid incremental value")),
+            "dec" => Instruction::Operation(|value: i32| {-value}, register, value.parse::<i32>().expect("Invalid decremental value")),
             _ => panic!("unknown instruction"),
         }
     }
 }
-fn inc(value: i32) -> i32 { value }
-fn dec(value: i32) -> i32 { -value }
 
 impl Operator {
     fn new<'r, 'a, 'rs>(cmpregister: Register<'r>, operator: &'a str, cmp: i32, registers: &Registers<'r>) -> Operator {
