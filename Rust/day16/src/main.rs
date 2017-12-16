@@ -1,29 +1,47 @@
 #![feature(slice_rotate)]
-use std::str::FromStr;
-use std::num::ParseIntError;
 
-const PUZZLE: &'static str = include_str!("Input.txt");
-const PROGRAMMS: [char; 16] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
+const PUZZLE: &'static [u8] = include_bytes!("Input.txt");
+const PROGRAMMS: [u8; 16] = [
+    b'a',
+    b'b',
+    b'c',
+    b'd',
+    b'e',
+    b'f',
+    b'g',
+    b'h',
+    b'i',
+    b'j',
+    b'k',
+    b'l',
+    b'm',
+    b'n',
+    b'o',
+    b'p',
+];
 
 enum Move {
     Spin(usize),
     Exchange(usize, usize),
-    Partner(char, char),
+    Partner(u8, u8),
 }
 
-impl FromStr for Move {
-    type Err = ParseIntError;
-    fn from_str(s: &str) -> Result<Move, Self::Err> {
-        if s.starts_with("s") {
-            Ok(Move::Spin(s[1..].parse().unwrap()))
-        }
-        else if s.starts_with("x") {
-            let mut toswap = s[1..].split("/").map(|pos| pos.parse());
-            Ok(Move::Exchange(toswap.next().unwrap()?, toswap.next().unwrap()?))
-        }
-        else {
-            let mut partners = s[1..].chars().filter(|c| c != &'/');
-            Ok(Move::Partner(partners.next().unwrap(), partners.next().unwrap()))
+impl<'a> From<&'a [u8]> for Move {
+    fn from(s: &[u8]) -> Move {
+        if s.starts_with(b"s") {
+            Move::Spin(
+                unsafe { std::str::from_utf8_unchecked(&s[1..]) }
+                    .parse()
+                    .unwrap(),
+            )
+        } else if s.starts_with(b"x") {
+            let mut toswap = s[1..].split(|b| b == &b'/').map(
+                |pos| unsafe { std::str::from_utf8_unchecked(pos) }.parse().unwrap(),
+            );
+            Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap())
+        } else {
+            let mut partners = s[1..].iter().filter(|c| *c != &b'/');
+            Move::Partner(*partners.next().unwrap(), *partners.next().unwrap())
         }
     }
 }
@@ -31,15 +49,19 @@ impl FromStr for Move {
 struct Instructions(Vec<Move>);
 
 impl Instructions {
-    fn new<'a>(s: &'a str) -> Instructions {
-        Instructions(s.split(",").filter_map(|line| line.parse::<Move>().ok()).collect::<Vec<_>>())
+    fn new<'a>(s: &'a [u8]) -> Instructions {
+        Instructions(
+            s.split(|b| b == &b',')
+                .map(|line| Move::from(line))
+                .collect::<Vec<_>>(),
+        )
     }
     fn iter<'s>(&'s self) -> std::slice::Iter<'s, Move> {
         self.0.iter()
     }
 }
 
-fn run(programms: &mut [char], instructions: &Instructions) {
+fn run(programms: &mut [u8], instructions: &Instructions) {
     let len = programms.len();
 
     for instruction in instructions.iter() {
@@ -57,8 +79,8 @@ fn run(programms: &mut [char], instructions: &Instructions) {
 
 //runs the dance untill the initial state. (at the start it's the initial state, but n equals 0.)
 //returns after how many dances it repeats itself, and the programms.
-fn get_cycle<'a>(programms: &mut [char], instructions: &Instructions) -> usize {
-    
+fn get_cycle<'a>(programms: &mut [u8], instructions: &Instructions) -> usize {
+
     let mut n = 0;
     while programms != PROGRAMMS || n == 0 {
         run(programms, instructions);
@@ -67,8 +89,8 @@ fn get_cycle<'a>(programms: &mut [char], instructions: &Instructions) -> usize {
     n
 }
 
-fn stringify(programm: [char; 16]) -> String {
-    programm.iter().collect::<String>()
+fn stringify(programm: [u8; 16]) -> String {
+    programm.iter().map(|b| *b as char).collect::<String>()
 }
 fn main() {
     let instructions = Instructions::new(PUZZLE);
@@ -77,7 +99,7 @@ fn main() {
         run(&mut programms, &instructions);
         println!("part 1: {}", stringify(programms));
     }
-    {    
+    {
         let mut programms = PROGRAMMS;
         let cycle = get_cycle(&mut programms, &instructions);
         for _ in 0..(1_000_000_000 % cycle) {
