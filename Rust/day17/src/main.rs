@@ -9,6 +9,16 @@ fn main() {
         current_pos = idx + 1;
         buff.insert(idx + 1, i);
     }
+
     let idx = buff.iter().position(|item| item == &2017).unwrap();
-    println!("{}", buff[idx + 1]);
+    println!("part 1: {}", buff[idx + 1]);
+
+    let mut ans = 0;
+    let mut nxt = 0;
+    for i in 1..50_000_001 {
+        nxt = (nxt + PUZZLE) % i;
+        if nxt == 0 {ans = i;}
+        nxt += 1;
+    }
+    println!("part 2: {}", ans);
 }
