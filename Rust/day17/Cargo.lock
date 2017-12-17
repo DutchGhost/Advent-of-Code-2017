@@ -1,4 +1,14 @@
 [[package]]
 name = "day17"
 version = "0.1.0"
+dependencies = [
+ "intrusive-collections 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
+[[package]]
+name = "intrusive-collections"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[metadata]
+"checksum intrusive-collections 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cca7ca9335705198e07e52fda501e6742f0290b7cb5cd4de924dde20f0ff2229"
