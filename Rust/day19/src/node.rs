@@ -36,7 +36,7 @@ pub struct Coordinates {
 }
 
 impl Coordinates {
-    ///A new node is initalized with just the x set.
+    ///A new node is initalized with just the x set to where you enter the maze.
     pub fn new(nodes: &[Vec<Node>]) -> Coordinates {
         let x = nodes[0]
             .iter()
