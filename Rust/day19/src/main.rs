@@ -1,7 +1,6 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 mod node;
-use node::Node;
-use node::Coordinates;
+use node::{Node, Coordinates};
 
 fn parse(input: &str) -> Vec<Vec<Node>> {
     input
