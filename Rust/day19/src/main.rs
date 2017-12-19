@@ -13,12 +13,12 @@ fn parse(input: &str) -> Vec<Vec<Node>> {
 fn main() {
     let nodes = parse(PUZZLE);
     let mut n = 0;
-    let mut coordinates = Coordinates::new(&nodes);
-    while nodes[coordinates.y as usize][coordinates.x as usize] != Node::Void {
+    let mut coordinates = Coordinates::new(nodes);
+
+    while !coordinates.voidnode() {
         coordinates.walk();
-        coordinates.checknode(&nodes);
         n += 1;
     }
-    println!("part 1: {}", coordinates.message);
+    println!("part 1: {}", coordinates.getstr());
     println!("part 2: {}", n);
 }
