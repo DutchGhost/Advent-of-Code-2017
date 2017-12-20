@@ -2,6 +2,7 @@ use prelude::*;
 
 //takes in any Iterator I with items of char, and any filter F.
 //F will be filtering '<', '>', '=' and the letter 'v', 'a' or 'p' out of the Iterator.
+#[inline]
 fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
 where
     I: Iterator<Item = char>,
@@ -17,6 +18,7 @@ where
     (n1, n2, n3)
 }
 
+#[inline]
 fn filter(ch: char) -> impl Fn(&char) -> bool {
     move |c| !(c == &'<' || c == &'>' || c == &'=' || c == &ch)
 }
@@ -30,6 +32,8 @@ struct Position {
 
 impl FromStr for Position {
     type Err = ();
+    
+    #[inline]
     fn from_str(s: &str) -> Result<Position, Self::Err> {
         let (x, y, z) = to_nums(s.chars(), filter('p'));
         Ok(Position { x: x, y: y, z: z })
@@ -45,6 +49,8 @@ struct Velocity {
 
 impl FromStr for Velocity {
     type Err = ();
+    
+    #[inline]
     fn from_str(s: &str) -> Result<Velocity, Self::Err> {
         let (x, y, z) = to_nums(s.chars(), filter('v'));
         Ok(Velocity { x: x, y: y, z: z })
@@ -60,6 +66,8 @@ struct Acceleration {
 
 impl FromStr for Acceleration {
     type Err = ();
+    
+    #[inline]
     fn from_str(s: &str) -> Result<Acceleration, Self::Err> {
         let (x, y, z) = to_nums(s.chars(), filter('a'));
         Ok(Acceleration { x: x, y: y, z: z })
@@ -96,6 +104,7 @@ impl FromStr for Particle {
 }
 
 impl Particle {
+    #[inline]
     fn update(&mut self) {
         self.velocity.x += self.acceleration.x;
         self.velocity.y += self.acceleration.y;
@@ -106,10 +115,12 @@ impl Particle {
         self.position.z += self.velocity.z;
     }
 
+    #[inline]
     fn distance(&self) -> i64 {
         self.position.x.abs() + self.position.y.abs() + self.position.z.abs()
     }
 
+    #[inline]
     fn collide(&self, other: &Particle) -> bool {
         self.position == other.position
     }
@@ -158,6 +169,8 @@ impl GPU {
 
         self.particles.retain(|p| !collided.contains(&p));
     }
+
+    #[inline]
     pub fn closest(&self) -> usize {
         self.particles
             .iter()
@@ -166,6 +179,8 @@ impl GPU {
             .unwrap()
             .0
     }
+
+    #[inline]
     pub fn countparticles(&self) -> usize {
         self.particles.len()
     }
