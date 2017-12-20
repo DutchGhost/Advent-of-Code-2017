@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::collections::HashMap;
 
 fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
 where
@@ -13,28 +14,28 @@ where
     (n1, n2, n3)
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 struct Position {
     x: i64,
     y: i64,
     z: i64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 struct Velocity {
     x: i64,
     y: i64,
     z: i64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 struct Acceleration {
     x: i64,
     y: i64,
     z: i64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 pub struct Particle {
     position: Position,
     velocity: Velocity,
@@ -118,6 +119,10 @@ impl Particle {
     fn distance(&self) -> i64 {
         self.position.x.abs() + self.position.y.abs() + self.position.z.abs()
     }
+
+    fn collide(&self, other: &Particle) -> bool {
+        self.position == other.position
+    }
 }
 
 impl FromStr for GPU {
@@ -136,6 +141,20 @@ impl GPU {
         for particle in self.particles.iter_mut() {
             particle.update()
         }
+    }
+
+    fn collisionupdate(&mut self) {
+        self.update();
+        for item in self.particles.iter().windows(2) {
+            println!("bl");
+        }
+        let idxs = Vec::new();
+        for (idx, (p1, p2)) in self.particles.iter().windows(2).enumerate() {
+            if p1.collide(p2) {
+                idxs.push(idx);
+            }
+        }
+        
     }
 
     pub fn closest(&self) -> usize {
