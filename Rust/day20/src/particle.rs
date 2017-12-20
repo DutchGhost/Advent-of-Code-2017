@@ -94,13 +94,7 @@ impl FromStr for Particle {
 }
 
 impl Particle {
-    ///Increase the X velocity by the X acceleration.
-    ///Increase the Y velocity by the Y acceleration.
-    ///Increase the Z velocity by the Z acceleration.
-    ///Increase the X position by the X velocity.
-    ///Increase the Y position by the Y velocity.
-    ///Increase the Z position by the Z velocity.
-
+    
     fn update(&mut self) {
         self.velocity.x += self.acceleration.x;
         self.velocity.y += self.acceleration.y;
