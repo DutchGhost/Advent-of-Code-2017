@@ -156,7 +156,7 @@ impl GPU {
             .cloned()
             .collect::<Vec<_>>();
 
-        self.particles.retain(|p| !collided.contains(&p))
+        self.particles.retain(|p| !collided.contains(&p));
     }
     pub fn closest(&self) -> usize {
         self.particles

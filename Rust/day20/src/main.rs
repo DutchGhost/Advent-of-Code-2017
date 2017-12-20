@@ -13,10 +13,10 @@ use prelude::*;
 fn main() {
     let mut gpu0 = GPU::from_str(PUZZLE).unwrap();
     let mut gpu1 = GPU::from_str(PUZZLE).unwrap();
-
-    loop {
+    for _ in 0..1000 {
         gpu0.update();
         gpu1.collisionupdate();
-        println!("{}\t{}", gpu0.closest(), gpu1.countparticles());
     }
+    println!("part 1: {}", gpu0.closest());
+    println!("part 2: {}", gpu1.countparticles());
 }
