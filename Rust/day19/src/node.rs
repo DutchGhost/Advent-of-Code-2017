@@ -57,7 +57,7 @@ impl Walker {
         self.message
     }
     
-    pub fn voidnode(&self) -> bool {
+    pub fn atvoidnode(&self) -> bool {
         self.nodes[self.y][self.x] == Node::Void
     }
 

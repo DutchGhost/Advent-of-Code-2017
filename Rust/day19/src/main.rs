@@ -14,7 +14,7 @@ fn main() {
     let mut n = 0;
     let mut walker = Walker::new(nodes);
 
-    while !walker.voidnode() {
+    while !walker.atvoidnode() {
         walker.walk();
         n += 1;
     }
