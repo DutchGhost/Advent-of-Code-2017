@@ -2,9 +2,14 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 mod particle;
-use particle::GPU;
 
-use std::str::FromStr;
+mod prelude {
+    pub use std::str::FromStr;
+    pub use particle::GPU;
+}
+
+use prelude::*;
+
 fn main() {
     let mut gpu0 = GPU::from_str(PUZZLE).unwrap();
     let mut gpu1 = GPU::from_str(PUZZLE).unwrap();

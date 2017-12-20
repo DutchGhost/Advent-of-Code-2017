@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use prelude::*;
 
 //takes in any Iterator I with items of char, and any filter F.
 //F will be filtering '<', '>', '=' and the letter 'v', 'a' or 'p' out of the Iterator.
