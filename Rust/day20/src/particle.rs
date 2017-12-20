@@ -67,7 +67,7 @@ impl FromStr for Acceleration {
 }
 
 #[derive(Eq, PartialEq, Clone)]
-pub struct Particle {
+struct Particle {
     position: Position,
     velocity: Velocity,
     acceleration: Acceleration,
