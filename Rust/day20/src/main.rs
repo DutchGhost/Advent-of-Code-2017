@@ -6,11 +6,12 @@ mod particle;
 use particle::*;
 
 fn main() {
-    let mut GPU = GPU::from_str(PUZZLE).unwrap();
+    let mut gpu0 = GPU::from_str(PUZZLE).unwrap();
+    let mut gpu1 = GPU::from_str(PUZZLE).unwrap();
 
-    for i in 0..1_000_000 {
-        GPU.collisionupdate();
-        println!("{}", GPU.countparticles());
+    loop {
+        gpu0.update();
+        gpu1.collisionupdate();
+        println!("{}\t{}", gpu0.closest(), gpu1.countparticles());
     }
-    //println!("{}", GPU.leftover());
 }

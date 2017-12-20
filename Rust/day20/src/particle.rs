@@ -1,7 +1,6 @@
 use std::str::FromStr;
-use std::collections::HashMap;
 
-fn to_nums<'c, I, F>(iter: I, filter: F) -> (i64, i64, i64)
+fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
 where
     I: Iterator<Item = char>,
     F: Fn(&char) -> bool,
@@ -16,43 +15,15 @@ where
     (n1, n2, n3)
 }
 
-fn filter<F>(ch: char) -> Fn(&char) -> bool
-where
-    F: Fn(&char) -> bool
-{
+fn filter(ch: char) -> impl Fn(&char) -> bool {
     move |c| !(c == &'<' || c == &'>' || c == &'=' || c == &ch)
 }
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 struct Position {
     x: i64,
     y: i64,
     z: i64,
-}
-
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
-struct Velocity {
-    x: i64,
-    y: i64,
-    z: i64,
-}
-
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
-struct Acceleration {
-    x: i64,
-    y: i64,
-    z: i64,
-}
-
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
-pub struct Particle {
-    position: Position,
-    velocity: Velocity,
-    acceleration: Acceleration,
-}
-
-pub struct GPU {
-    particles: Vec<Particle>,
 }
 
 impl FromStr for Position {
@@ -63,6 +34,13 @@ impl FromStr for Position {
     }
 }
 
+#[derive(Eq, PartialEq, Clone)]
+struct Velocity {
+    x: i64,
+    y: i64,
+    z: i64,
+}
+
 impl FromStr for Velocity {
     type Err = ();
     fn from_str(s: &str) -> Result<Velocity, Self::Err> {
@@ -71,12 +49,26 @@ impl FromStr for Velocity {
     }
 }
 
+#[derive(Eq, PartialEq, Clone)]
+struct Acceleration {
+    x: i64,
+    y: i64,
+    z: i64,
+}
+
 impl FromStr for Acceleration {
     type Err = ();
     fn from_str(s: &str) -> Result<Acceleration, Self::Err> {
         let (x, y, z) = to_nums(s.chars(), filter('a'));
         Ok(Acceleration { x: x, y: y, z: z })
     }
+}
+
+#[derive(Eq, PartialEq, Clone)]
+pub struct Particle {
+    position: Position,
+    velocity: Velocity,
+    acceleration: Acceleration,
 }
 
 impl FromStr for Particle {
@@ -128,6 +120,10 @@ impl Particle {
     }
 }
 
+pub struct GPU {
+    particles: Vec<Particle>,
+}
+
 impl FromStr for GPU {
     type Err = ();
     fn from_str(s: &str) -> Result<GPU, Self::Err> {
@@ -166,7 +162,7 @@ impl GPU {
         self.particles
             .iter()
             .enumerate()
-            .min_by_key(|&(idx, particle)| particle.distance())
+            .min_by_key(|&(_, particle)| particle.distance())
             .unwrap()
             .0
     }
