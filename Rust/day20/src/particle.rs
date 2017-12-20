@@ -44,14 +44,6 @@ pub struct Particle {
 impl FromStr for Position {
     type Err = ();
     fn from_str(s: &str) -> Result<Position, Self::Err> {
-        // let pos = s.chars().filter(|c| !(c == &'p' || c == &'=' || c == &'<' || c == &'>')).collect::<String>();
-        // let mut splitted = pos.split(",");
-
-        // Ok(Position {
-        //     x: splitted.next().unwrap().parse().unwrap(),
-        //     y: splitted.next().unwrap().parse().unwrap(),
-        //     z: splitted.next().unwrap().parse().unwrap(),
-        // })
         let (x, y, z) = to_nums(s.chars(), |c| !(c == &'p' || c == &'=' || c == &'<' || c == &'>'));
         Ok(Position {
             x: x,
