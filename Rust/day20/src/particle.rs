@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+//takes in any Iterator I with items of char, and any filter F.
+//F will be filtering '<', '>', '=' and the letter 'v', 'a' or 'p' out of the Iterator.
 fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
 where
     I: Iterator<Item = char>,
@@ -94,7 +96,7 @@ impl FromStr for Particle {
 }
 
 impl Particle {
-    
+
     fn update(&mut self) {
         self.velocity.x += self.acceleration.x;
         self.velocity.y += self.acceleration.y;
