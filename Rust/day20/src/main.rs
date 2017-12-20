@@ -1,3 +1,4 @@
+#![feature(conservative_impl_trait)]
 const PUZZLE: &'static str = include_str!("Input.txt");
 use std::str::FromStr;
 
@@ -9,7 +10,7 @@ fn main() {
 
     for i in 0..1_000_000 {
         GPU.collisionupdate();
-        println!("{}", GPU.leftover());
+        println!("{}", GPU.countparticles());
     }
     //println!("{}", GPU.leftover());
 }

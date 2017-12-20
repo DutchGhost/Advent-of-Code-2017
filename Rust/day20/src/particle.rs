@@ -1,18 +1,26 @@
 use std::str::FromStr;
 use std::collections::HashMap;
-use std::mem;
 
-fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
+fn to_nums<'c, I, F>(iter: I, filter: F) -> (i64, i64, i64)
 where
     I: Iterator<Item = char>,
     F: Fn(&char) -> bool,
 {
     let stringified = iter.filter(filter).collect::<String>();
     let mut it = stringified.split(",");
+
     let n1 = it.next().unwrap().parse::<i64>().unwrap();
     let n2 = it.next().unwrap().parse::<i64>().unwrap();
     let n3 = it.next().unwrap().parse::<i64>().unwrap();
+    
     (n1, n2, n3)
+}
+
+fn filter<F>(ch: char) -> Fn(&char) -> bool
+where
+    F: Fn(&char) -> bool
+{
+    move |c| !(c == &'<' || c == &'>' || c == &'=' || c == &ch)
 }
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
@@ -50,9 +58,7 @@ pub struct GPU {
 impl FromStr for Position {
     type Err = ();
     fn from_str(s: &str) -> Result<Position, Self::Err> {
-        let (x, y, z) = to_nums(s.chars(), |c| {
-            !(c == &'p' || c == &'=' || c == &'<' || c == &'>')
-        });
+        let (x, y, z) = to_nums(s.chars(), filter('p'));
         Ok(Position { x: x, y: y, z: z })
     }
 }
@@ -60,9 +66,7 @@ impl FromStr for Position {
 impl FromStr for Velocity {
     type Err = ();
     fn from_str(s: &str) -> Result<Velocity, Self::Err> {
-        let (x, y, z) = to_nums(s.chars(), |c| {
-            !(c == &'v' || c == &'=' || c == &'<' || c == &'>')
-        });
+        let (x, y, z) = to_nums(s.chars(), filter('v'));
         Ok(Velocity { x: x, y: y, z: z })
     }
 }
@@ -70,9 +74,7 @@ impl FromStr for Velocity {
 impl FromStr for Acceleration {
     type Err = ();
     fn from_str(s: &str) -> Result<Acceleration, Self::Err> {
-        let (x, y, z) = to_nums(s.chars(), |c| {
-            !(c == &'a' || c == &'=' || c == &'<' || c == &'>')
-        });
+        let (x, y, z) = to_nums(s.chars(), filter('a'));
         Ok(Acceleration { x: x, y: y, z: z })
     }
 }
@@ -146,23 +148,29 @@ impl GPU {
 
     pub fn collisionupdate(&mut self) {
         self.update();
-        //let mut new = Vec::new();
 
-        mem::swap(self.particles, &mut self.particles.into_iter().filter(|p1| self.particles.iter().all(|p2| !p1.collide(p2))).collect::<Vec<_>>());
+        let collided = self.particles
+            .iter()
+            .filter(|p1| {
+                self.particles
+                    .iter()
+                    .filter(|p2| p2 != p1)
+                    .any(|p2| p1.collide(&p2))
+            })
+            .cloned()
+            .collect::<Vec<_>>();
 
-        // for (idx, p1) in self.particles.iter().enumerate() {
-        //     for p2 in self.particles.iter().filter(|p| p != &p1) {
-        //         if p1.collide(p2) {
-        //             new.push(p1.clone());
-        //         }
-        //     }
-        // }
-        // self.particles = self.particles.iter().filter(|p| !new.contains(&p)).cloned().collect::<Vec<_>>();
+        self.particles.retain(|p| !collided.contains(&p))
     }
     pub fn closest(&self) -> usize {
-        self.particles.iter().enumerate().min_by_key(|&(idx, particle)| particle.distance()).unwrap().0
+        self.particles
+            .iter()
+            .enumerate()
+            .min_by_key(|&(idx, particle)| particle.distance())
+            .unwrap()
+            .0
     }
-    pub fn leftover(&self) -> usize {
+    pub fn countparticles(&self) -> usize {
         self.particles.len()
     }
 }
