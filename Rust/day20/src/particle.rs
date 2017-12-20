@@ -1,5 +1,6 @@
 use std::str::FromStr;
 use std::collections::HashMap;
+use std::mem;
 
 fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
 where
@@ -14,28 +15,28 @@ where
     (n1, n2, n3)
 }
 
-#[derive(Debug, Eq, PartialEq, Hash)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 struct Position {
     x: i64,
     y: i64,
     z: i64,
 }
 
-#[derive(Debug, Eq, PartialEq, Hash)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 struct Velocity {
     x: i64,
     y: i64,
     z: i64,
 }
 
-#[derive(Debug, Eq, PartialEq, Hash)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 struct Acceleration {
     x: i64,
     y: i64,
     z: i64,
 }
 
-#[derive(Debug, Eq, PartialEq, Hash)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub struct Particle {
     position: Position,
     velocity: Velocity,
@@ -143,21 +144,25 @@ impl GPU {
         }
     }
 
-    fn collisionupdate(&mut self) {
+    pub fn collisionupdate(&mut self) {
         self.update();
-        for item in self.particles.iter().windows(2) {
-            println!("bl");
-        }
-        let idxs = Vec::new();
-        for (idx, (p1, p2)) in self.particles.iter().windows(2).enumerate() {
-            if p1.collide(p2) {
-                idxs.push(idx);
-            }
-        }
-        
-    }
+        //let mut new = Vec::new();
 
+        mem::swap(self.particles, &mut self.particles.into_iter().filter(|p1| self.particles.iter().all(|p2| !p1.collide(p2))).collect::<Vec<_>>());
+
+        // for (idx, p1) in self.particles.iter().enumerate() {
+        //     for p2 in self.particles.iter().filter(|p| p != &p1) {
+        //         if p1.collide(p2) {
+        //             new.push(p1.clone());
+        //         }
+        //     }
+        // }
+        // self.particles = self.particles.iter().filter(|p| !new.contains(&p)).cloned().collect::<Vec<_>>();
+    }
     pub fn closest(&self) -> usize {
         self.particles.iter().enumerate().min_by_key(|&(idx, particle)| particle.distance()).unwrap().0
+    }
+    pub fn leftover(&self) -> usize {
+        self.particles.len()
     }
 }
