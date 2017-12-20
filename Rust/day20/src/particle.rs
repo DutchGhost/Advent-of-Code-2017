@@ -145,12 +145,12 @@ impl GPU {
         let collided = self.particles
             .iter()
             .enumerate()
-            .map(|(idx, p1)|
+            .map(|(idx, p1)| {
                 self.particles[idx..]
                     .iter()
                     .filter(|p2| p1.collide(&p2))
                     .collect::<Vec<_>>()
-            )
+            })
             .filter(|v| v.len() > 1)
             .flat_map(|v| v)
             .cloned()
