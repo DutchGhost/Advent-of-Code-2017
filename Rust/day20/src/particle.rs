@@ -137,20 +137,22 @@ impl GPU {
         }
     }
 
-    //make the iteration checking for collisions more efficient.
+    //includes the current particle in the collision-vector...
+    //however, we check for v.len() > 1!
     pub fn collisionupdate(&mut self) {
         self.update();
 
         let collided = self.particles
             .iter()
             .enumerate()
-            .map(|(idx, p1)| {
-                (p1, self.particles[idx + 1..]
+            .map(|(idx, p1)|
+                self.particles[idx..]
                     .iter()
                     .filter(|p2| p1.collide(&p2))
-                    .collect::<Vec<_>>())
-            })
-            .flat_map(|(p1, mut v)| {if !v.is_empty(){v.push(p1)} v})
+                    .collect::<Vec<_>>()
+            )
+            .filter(|v| v.len() > 1)
+            .flat_map(|v| v)
             .cloned()
             .collect::<Vec<_>>();
 
