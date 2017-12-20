@@ -97,8 +97,6 @@ impl FromStr for Particle {
             velocity: vel,
             acceleration: acc,
         })
-
-
     }
 }
 
