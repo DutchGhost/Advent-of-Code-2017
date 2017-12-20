@@ -137,6 +137,7 @@ impl GPU {
         }
     }
 
+    //make the iteration checking for collisions more efficient.
     pub fn collisionupdate(&mut self) {
         self.update();
 
