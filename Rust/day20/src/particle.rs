@@ -13,7 +13,7 @@ where
     let n1 = it.next().unwrap().parse::<i64>().unwrap();
     let n2 = it.next().unwrap().parse::<i64>().unwrap();
     let n3 = it.next().unwrap().parse::<i64>().unwrap();
-    
+
     (n1, n2, n3)
 }
 
@@ -96,7 +96,6 @@ impl FromStr for Particle {
 }
 
 impl Particle {
-
     fn update(&mut self) {
         self.velocity.x += self.acceleration.x;
         self.velocity.y += self.acceleration.y;
