@@ -21,7 +21,7 @@ fn filter(ch: char) -> impl Fn(&char) -> bool {
     move |c| !(c == &'<' || c == &'>' || c == &'=' || c == &ch)
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Eq, PartialEq, Clone)]
 struct Position {
     x: i64,
     y: i64,
