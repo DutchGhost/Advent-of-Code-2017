@@ -5,7 +5,7 @@ const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
 
 fn main() {
     println!("day 1.1: {}", bytes_summenize(BPUZZLE, 1));
-    println!("day 1.2: {}", bytes_optimized(BPUZZLE, PUZZLE.len() >> 1));
+    println!("day 1.2: {}", bytes_optimized(BPUZZLE, BPUZZLE.len() >> 1));
 }
 
 /// take an &str, loop over the chars,
