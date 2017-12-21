@@ -37,7 +37,7 @@ string readfile() {
 
 const string PUZZLE = readfile();
 int main() {
-
+		
 	cout << summenize(PUZZLE, 1) << endl;
 	cout << optimized(PUZZLE, PUZZLE.length() / 2) << endl;
 }
