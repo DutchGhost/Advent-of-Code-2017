@@ -1,3 +1,4 @@
+#git ls-files | grep rs | xargs wc -l
 import os
 from subprocess import run
 if __name__ == '__main__':
