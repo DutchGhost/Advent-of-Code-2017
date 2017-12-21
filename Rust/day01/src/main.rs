@@ -1,11 +1,11 @@
 #![feature(test)]
 extern crate test;
-const PUZZLE: &'static str = include_str!("PUZZLE.txt");
-const BPUZZLE: &'static [u8; 2190] = include_bytes!("PUZZLE.txt");
+const PUZZLE: &'static str = include_str!("Input.txt");
+const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
 
 fn main() {
-    println!("day 1.1: {}", summenize(PUZZLE, 1));
-    println!("day 1.2: {}", summenize(PUZZLE, PUZZLE.len() >> 1));
+    println!("day 1.1: {}", bytes_summenize(BPUZZLE, 1));
+    println!("day 1.2: {}", bytes_optimized(BPUZZLE, PUZZLE.len() >> 1));
 }
 
 /// take an &str, loop over the chars,
@@ -52,7 +52,7 @@ fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
 mod tests {
     use test::Bencher;
     use super::*;
-    
+
     #[bench]
     fn bytes_summenize_part1(b: &mut Bencher) {
         b.iter(|| bytes_summenize(BPUZZLE, 1));
