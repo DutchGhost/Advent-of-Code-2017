@@ -140,7 +140,6 @@ impl Walker {
 
         let middle = grid.grid.len() / 2;
 
-
         Walker {
             grid: grid,
             pos: Position::from((middle, middle)),
