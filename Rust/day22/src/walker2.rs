@@ -1,23 +1,36 @@
 use std::mem;
 
-#[derive(Debug, Clone)]
-pub enum Node {
-    Infected,
+#[derive(Clone, Debug)]
+pub enum Node2 {
     Clean,
+    Weakened,
+    Infected,
+    Flagged,
 }
 
-impl From<char> for Node {
-    fn from(c: char) -> Self {
+impl From<char> for Node2 {
+    fn from(c: char) -> Node2 {
         match c {
-            '.' => Node::Clean,
-            '#' => Node::Infected,
-            _ => panic!("I don't know this kind of node")
+            '.' => Node2::Clean,
+            '#' => Node2::Infected,
+            _ => panic!("INVALID!"),
         }
     }
 }
 
+impl Node2 {
+    fn modify(&mut self) {
+        mem::replace(self, match self {
+            &mut Node2::Clean => Node2::Weakened,
+            &mut Node2::Weakened => Node2::Infected,
+            &mut Node2::Infected => Node2::Flagged,
+            &mut Node2::Flagged => Node2::Clean,
+        });
+    }
+}
+
 #[derive(Debug)]
-pub enum Direction {
+enum Direction {
     Right,
     Up,
     Down,
@@ -66,25 +79,25 @@ impl Pos {
     }
 }
 
-pub struct Walker {
+pub struct Walker2 {
     pos: Pos,
-    grid: Vec<Vec<Node>>,
+    grid: Vec<Vec<Node2>>,
     direction: Direction,
 }
 
-//maybe change the direction for infected??
-impl Walker {
-    pub fn new(nodes: Vec<Vec<Node>>) -> Walker {
+impl Walker2 {
+    pub fn new(Node2s: Vec<Vec<Node2>>) -> Walker2 {
         let p = Pos::new();
 
-        let dir = match nodes[p.y][p.x] {
-            Node::Clean => Direction::Up,
-            Node::Infected => Direction::Down
+        let dir = match Node2s[p.y][p.x] {
+            Node2::Clean => Direction::Up,
+            Node2::Infected => Direction::Down,
+            _ => panic!("impossible"),
         };
         
-        Walker {
+        Walker2 {
             pos: p,
-            grid: nodes,
+            grid: Node2s,
             direction: dir,
         }
     }
@@ -92,57 +105,67 @@ impl Walker {
     fn expand(&mut self) {
         if self.pos.x == 0 {
             for mut row in self.grid.iter_mut() {
-                row.insert(0, Node::Clean);
+                row.insert(0, Node2::Clean);
             }
             self.pos.x += 1;
         }
         if self.pos.x == self.grid[0].len() {
             for mut row in self.grid.iter_mut() {
-                row.push(Node::Clean);
+                row.push(Node2::Clean);
             }
         }
         if self.pos.y == 0 {
             let len = self.grid[0].len();
-            let insert = vec![Node::Clean; len];
+            let insert = vec![Node2::Clean; len];
             self.grid.insert(0, insert);
             self.pos.y += 1;
         }
 
         if self.pos.y == self.grid.len() {
             let len = self.grid[0].len();
-            let insert = vec![Node::Clean; len];
+            let insert = vec![Node2::Clean; len];
             self.grid.push(insert);
         }
     }
 }
 //liftimes :). Sad this has te be outside the impl block... :(, else there are 2 &mut's
-fn node_at_pos<'m, 's: 'm>(nodes: &'s mut [Vec<Node>], pos: &Pos) -> Option<&'m mut Node> {
-    nodes.get_mut(pos.y).unwrap().get_mut(pos.x)
+fn Node2_at_pos<'m, 's: 'm>(Node2s: &'s mut [Vec<Node2>], pos: &Pos) -> Option<&'m mut Node2> {
+    Node2s.get_mut(pos.y).unwrap().get_mut(pos.x)
 }
 
-impl Iterator for Walker {
+impl Iterator for Walker2 {
     type Item = i64;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.expand();
         
-        let infected = match node_at_pos(&mut self.grid, &self.pos) {
+        let infected = match Node2_at_pos(&mut self.grid, &self.pos) {
             Some(n) => {
                 match n {
-                    &mut Node::Clean => {
+                    &mut Node2::Clean => {
                         self.direction.turn_left();
-                        *n = Node::Infected;
+                        n.modify();
+                        0
+                    },
+                    &mut Node2::Weakened => {
+                        n.modify();
                         1
-                    }
-                    &mut Node::Infected => {
+                    },
+                    &mut Node2::Infected => {
                         self.direction.turn_right();
-                        *n = Node::Clean;
+                        n.modify();
+                        0
+                    }
+                    &mut Node2::Flagged => {
+                        self.direction.reverse();
+                        n.modify();
                         0
                     }
                 }
             }
             None => panic!("something went horrible terribly wrong.")
         };
+
         match self.direction {
             Direction::Up => self.pos.y -= 1,
             Direction::Down => self.pos.y += 1,
