@@ -80,8 +80,8 @@ impl Walker {
             direction: dir,
         }
     }
-    pub fn walk(&mut self) -> usize {
-        //turn left or right based on the current node.
+
+    fn expand(&mut self) {
         if self.pos.x == 0 {
             for mut row in self.grid.iter_mut() {
                 row.insert(0, Node::Clean);
@@ -105,35 +105,43 @@ impl Walker {
             let insert = vec![Node::Clean; len];
             self.grid.push(insert);
         }
+    }
+}
+//liftimes :). Sad this has te be outside the impl block... :(, else there are 2 &mut's
+fn node_at_pos<'m, 's: 'm>(nodes: &'s mut Vec<Vec<Node>>, pos: &Pos) -> Option<&'m mut Node> {
+    nodes.get_mut(pos.y).unwrap().get_mut(pos.x)
+}
+
+impl Iterator for Walker {
+    type Item = i64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.expand();
         
-        let mut infected = 0;
-        match node_at_pos(&mut self.grid, &self.pos) {
+        
+        let infected = match node_at_pos(&mut self.grid, &self.pos) {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
                         self.direction.turn_left();
                         *n = Node::Infected;
-                        infected += 1;
+                        1
                     }
                     &mut Node::Infected => {
                         self.direction.turn_right();
                         *n = Node::Clean;
+                        0
                     }
                 }
             }
             None => panic!("something went horrible terribly wrong.")
         };
-        //move
         match self.direction {
             Direction::Up => self.pos.y -= 1,
             Direction::Down => self.pos.y += 1,
             Direction::Right => self.pos.x += 1,
             Direction::Left => self.pos.x -= 1,
         };
-        infected
+        Some(infected)
     }
-}
-//liftimes :). Sad this has te be outside the impl block... :(, else there are 2 &mut's
-fn node_at_pos<'m, 's: 'm>(nodes: &'s mut Vec<Vec<Node>>, pos: &Pos) -> Option<&'m mut Node> {
-    nodes.get_mut(pos.y).unwrap().get_mut(pos.x)
 }
