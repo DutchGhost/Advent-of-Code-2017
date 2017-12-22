@@ -141,6 +141,7 @@ impl Iterator for Walker2 {
         let mut infected = 0;
         match Node2_at_pos(&mut self.grid, &self.pos) {
             Some(n) => {
+                //change the position if needed. If weakened, set infected to 1.
                 match n {
                     &mut Node2::Clean => {
                         self.direction.turn_left();
@@ -158,6 +159,7 @@ impl Iterator for Walker2 {
                         infected = 0;
                     }
                 }
+                //lastly, update the node!
                 n.modify();
             }
             None => panic!("something went horrible terribly wrong.")
