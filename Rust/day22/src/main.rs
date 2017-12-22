@@ -2,6 +2,7 @@ const PUZZLE: &'static str = include_str!("Input.txt");
 
 mod walker;
 mod walker2;
+mod tmp;
 use walker::*;
 use walker2::*;
 
