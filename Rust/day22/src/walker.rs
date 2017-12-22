@@ -118,7 +118,6 @@ impl Iterator for Walker {
     fn next(&mut self) -> Option<Self::Item> {
         self.expand();
         
-        
         let infected = match node_at_pos(&mut self.grid, &self.pos) {
             Some(n) => {
                 match n {
