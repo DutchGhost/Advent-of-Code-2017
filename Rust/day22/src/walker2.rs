@@ -138,30 +138,27 @@ impl Iterator for Walker2 {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.expand();
-        
-        let infected = match Node2_at_pos(&mut self.grid, &self.pos) {
+        let mut infected = 0;
+        match Node2_at_pos(&mut self.grid, &self.pos) {
             Some(n) => {
                 match n {
                     &mut Node2::Clean => {
                         self.direction.turn_left();
-                        n.modify();
-                        0
+                        infected = 0;
                     },
                     &mut Node2::Weakened => {
-                        n.modify();
-                        1
+                        infected = 1;
                     },
                     &mut Node2::Infected => {
                         self.direction.turn_right();
-                        n.modify();
-                        0
+                        infected = 0;
                     }
                     &mut Node2::Flagged => {
                         self.direction.reverse();
-                        n.modify();
-                        0
+                        infected = 0;
                     }
                 }
+                n.modify();
             }
             None => panic!("something went horrible terribly wrong.")
         };
