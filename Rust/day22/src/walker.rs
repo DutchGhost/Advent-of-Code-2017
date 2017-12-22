@@ -108,7 +108,7 @@ impl Walker {
     }
 }
 //liftimes :). Sad this has te be outside the impl block... :(, else there are 2 &mut's
-fn node_at_pos<'m, 's: 'm>(nodes: &'s mut Vec<Vec<Node>>, pos: &Pos) -> Option<&'m mut Node> {
+fn node_at_pos<'m, 's: 'm>(nodes: &'s mut [Vec<Node>], pos: &Pos) -> Option<&'m mut Node> {
     nodes.get_mut(pos.y).unwrap().get_mut(pos.x)
 }
 
