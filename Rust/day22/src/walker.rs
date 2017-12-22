@@ -157,7 +157,7 @@ impl Walker {
             Direction::Left => self.pos.x -= 1,
             Direction::Right => self.pos.x += 1,
             Direction::Init => panic!("This hould never happen!"),
-        }
+        };
     }
 
     fn diagnostics(&mut self) -> i32 {
