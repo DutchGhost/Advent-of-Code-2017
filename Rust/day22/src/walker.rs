@@ -181,7 +181,6 @@ impl Walker {
             },
             None => panic!("Something went terribly horribly wrong with part 1!"),
         };
-        self.step();
         return ret
     }
 
@@ -213,7 +212,6 @@ impl Walker {
             },
             None => panic!("Something went terribly horribly wrong with part 2!"),
         };
-        self.step();
         return ret
     }
 }
@@ -239,9 +237,12 @@ impl Iterator for Walker {
             self.grid.extend_bottem();
         }
         
-        match self.part {
+        let infected = match self.part {
             Part::Part1 => Some(self.diagnostics()),
             Part::Part2 => Some(self.advanced_diagnostics()),
-        }
+        };
+
+        self.step();
+        return infected;
     }
 }
