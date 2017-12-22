@@ -86,10 +86,10 @@ pub struct Walker2 {
 }
 
 impl Walker2 {
-    pub fn new(Node2s: Vec<Vec<Node2>>) -> Walker2 {
+    pub fn new(node2: Vec<Vec<Node2>>) -> Walker2 {
         let p = Pos::new();
 
-        let dir = match Node2s[p.y][p.x] {
+        let dir = match node2[p.y][p.x] {
             Node2::Clean => Direction::Up,
             Node2::Infected => Direction::Down,
             _ => panic!("impossible"),
@@ -97,7 +97,7 @@ impl Walker2 {
         
         Walker2 {
             pos: p,
-            grid: Node2s,
+            grid: node2,
             direction: dir,
         }
     }
@@ -129,8 +129,8 @@ impl Walker2 {
     }
 }
 //liftimes :). Sad this has te be outside the impl block... :(, else there are 2 &mut's
-fn Node2_at_pos<'m, 's: 'm>(Node2s: &'s mut [Vec<Node2>], pos: &Pos) -> Option<&'m mut Node2> {
-    Node2s.get_mut(pos.y).unwrap().get_mut(pos.x)
+fn node2_at_pos<'m, 's: 'm>(node2: &'s mut [Vec<Node2>], pos: &Pos) -> Option<&'m mut Node2> {
+    node2.get_mut(pos.y).unwrap().get_mut(pos.x)
 }
 
 impl Iterator for Walker2 {
@@ -138,8 +138,8 @@ impl Iterator for Walker2 {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.expand();
-        let mut infected = 0;
-        match Node2_at_pos(&mut self.grid, &self.pos) {
+        let infected;
+        match node2_at_pos(&mut self.grid, &self.pos) {
             Some(n) => {
                 //change the position if needed. If weakened, set infected to 1.
                 match n {

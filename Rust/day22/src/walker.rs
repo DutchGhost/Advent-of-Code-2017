@@ -41,14 +41,6 @@ impl Direction {
             &mut Direction::Up => Direction::Left,
         });
     }
-    fn reverse(&mut self) {
-        mem::replace(self, match self {
-            &mut Direction::Left => Direction::Right,
-            &mut Direction::Down => Direction::Up,
-            &mut Direction::Right => Direction::Left,
-            &mut Direction::Up => Direction::Down,
-        });
-    }
 }
 
 #[derive(Debug)]
