@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum Node {
     Clean,
     Weakened,
@@ -20,7 +20,6 @@ impl From<char> for Node {
     }
 }
 
-#[derive(Debug)]
 struct Position {
     x: usize,
     y: usize,
