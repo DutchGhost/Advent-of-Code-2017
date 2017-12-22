@@ -77,8 +77,8 @@ impl Grid {
         let len = self.grid[0].len();
         self.grid.push(vec![Node::Clean; len])
     }
-
 }
+
 enum Direction {
     Up,
     Down,
