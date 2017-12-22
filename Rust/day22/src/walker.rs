@@ -47,6 +47,8 @@ impl FromStr for Grid {
 }
 
 impl Grid {
+    
+    #[inline]
     fn node_at_pos<'m, 's: 'm>(&'s mut self, pos: &Position) -> Option<&'m mut Node> {
         self.grid.get_mut(pos.y).and_then(|row| row.get_mut(pos.x))
     }
@@ -147,6 +149,8 @@ impl Walker {
             part: part,
         }
     }
+
+    #[inline]
     fn step(&mut self) {
         match self.facing {
             Direction::Up => self.pos.y -= 1,
@@ -158,54 +162,56 @@ impl Walker {
     }
 
     fn diagnostics(&mut self) -> i32 {
-        let ret = match self.grid.node_at_pos(&self.pos) {
+        let ret;
+        match self.grid.node_at_pos(&self.pos) {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
                         self.facing = self.facing.turn_left();
                         *n = Node::Infected;
-                        1
+                        ret = 1;
                     },
                     &mut Node::Infected => {
                         self.facing = self.facing.turn_right();
                         *n = Node::Clean;
-                        0
+                        ret = 0;
                     }
                     _ => panic!("cant happen on part 1!")
                 }
             },
-            None => panic!("Something went terribly horribly wrong! {:?}", self.pos),
+            None => panic!("Something went terribly horribly wrong with part 1!"),
         };
         self.step();
         return ret
     }
 
     fn advanced_diagnostics(&mut self) -> i32 {
-        let ret = match self.grid.node_at_pos(&self.pos) {
+        let ret;
+        match self.grid.node_at_pos(&self.pos) {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
                         self.facing = self.facing.turn_left();
                         *n = Node::Weakened;
-                        0
+                        ret = 0;
                     },
                     &mut Node::Weakened => {
                         *n = Node::Infected;
-                        1
+                        ret = 1;
                     }
                     &mut Node::Infected => {
                         self.facing = self.facing.turn_right();
                         *n = Node::Flagged;
-                        0
+                        ret = 0;
                     }
                     &mut Node::Flagged => {
                         self.facing = self.facing.reverse();
                         *n = Node::Clean;
-                        0
+                        ret = 0;
                     }
                 }
             },
-            None => panic!("Something went terribly horribly wrong!"),
+            None => panic!("Something went terribly horribly wrong with part 2!"),
         };
         self.step();
         return ret
@@ -215,6 +221,7 @@ impl Walker {
 impl Iterator for Walker {
     type Item = i32;
 
+    #[inline]
     fn next(&mut self) -> Option<i32> {
         
         if self.pos.x == 0 {
@@ -230,7 +237,6 @@ impl Iterator for Walker {
         }
         if self.pos.y == self.grid.grid.len() {
             self.grid.extend_bottem();
-            //self.pos.y -= 1;
         }
         
         match self.part {
