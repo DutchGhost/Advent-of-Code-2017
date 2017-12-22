@@ -161,57 +161,53 @@ impl Walker {
     }
 
     fn diagnostics(&mut self) -> i32 {
-        let ret;
         match self.grid.node_at_pos(&self.pos) {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
                         self.facing = self.facing.turn_left();
                         *n = Node::Infected;
-                        ret = 1;
+                        1
                     },
                     &mut Node::Infected => {
                         self.facing = self.facing.turn_right();
                         *n = Node::Clean;
-                        ret = 0;
+                        0
                     }
                     _ => panic!("cant happen on part 1!")
                 }
             },
             None => panic!("Something went terribly horribly wrong with part 1!"),
-        };
-        return ret
+        }
     }
 
     fn advanced_diagnostics(&mut self) -> i32 {
-        let ret;
         match self.grid.node_at_pos(&self.pos) {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
                         self.facing = self.facing.turn_left();
                         *n = Node::Weakened;
-                        ret = 0;
+                        0
                     },
                     &mut Node::Weakened => {
                         *n = Node::Infected;
-                        ret = 1;
+                        1
                     }
                     &mut Node::Infected => {
                         self.facing = self.facing.turn_right();
                         *n = Node::Flagged;
-                        ret = 0;
+                        0
                     }
                     &mut Node::Flagged => {
                         self.facing = self.facing.reverse();
                         *n = Node::Clean;
-                        ret = 0;
+                        0
                     }
                 }
             },
             None => panic!("Something went terribly horribly wrong with part 2!"),
-        };
-        return ret
+        }
     }
 }
 
