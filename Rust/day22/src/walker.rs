@@ -15,7 +15,7 @@ impl From<char> for Node {
         match c {
             '.' => Node::Clean,
             '#' => Node::Infected,
-            _ => panic!("Invalid nodetype.")
+            _ => panic!("Invalid NodeType.")
         }
     }
 }
@@ -156,7 +156,7 @@ impl Walker {
             Direction::Down => self.pos.y += 1,
             Direction::Left => self.pos.x -= 1,
             Direction::Right => self.pos.x += 1,
-            Direction::Init => panic!("This hould never happen!"),
+            Direction::Init => panic!("This should never happen!"),
         };
     }
 
