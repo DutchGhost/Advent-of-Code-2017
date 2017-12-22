@@ -59,7 +59,7 @@ impl Pos {
 }
 
 pub struct Walker {
-    pub pos: Pos,
+    pos: Pos,
     grid: Vec<Vec<Node>>,
     direction: Direction,
 }
