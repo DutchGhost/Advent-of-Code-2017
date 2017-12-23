@@ -22,8 +22,6 @@ fn main() {
     let instructions = parse(PUZZLE);
     let mut ip: i64 = 0;
     let mut snd: (&str, Option<i64>) = ("init", None);
-    let mut rcv = 0;
-
 
     'outer: loop {
         let ins = &instructions[ip as usize];

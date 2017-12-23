@@ -6,7 +6,6 @@ pub struct Programm<'a> {
     instructions: Vec<Vec<&'a str>>,
     registers: HashMap<&'a str, i64>,
     pub sended: i64,
-    id: i64,
     waiting: bool,
 }
 
@@ -28,7 +27,6 @@ impl <'a>Programm<'a> {
             instructions: instructions,
             registers: registers,
             sended: 0,
-            id: id,
             waiting: false,
         }
     }
@@ -55,12 +53,15 @@ impl <'a>Programm<'a> {
                     *self.registers.entry(ins[1]).or_insert(0) = r;
                     self.waiting = false;
                 }
+                //if the deque has no value to be popped, we'll wait!
                 else {
                     self.waiting = true;
                 }
             }
             _ => panic!(),
         }
+
+        //while waiting, don't update the programmcounter
         if !self.waiting {
             self.ip += 1;
         }
