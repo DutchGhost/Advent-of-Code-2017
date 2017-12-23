@@ -6,7 +6,7 @@ fn parse(input: &str) -> Vec<Vec<&str>> {
     input.lines().map(|line| line.split(" ").collect()).collect()
 }
 
-//returns either a value that needs top copied, or the value of a register
+//returns either a value that needs to copied, or the value of a register
 fn read<'b, 'a: 'b>(s: &'a str, map: &mut HashMap<&'b str, i64>) -> i64 {
     match s.parse::<i64>() {
         Ok(n) => n,
