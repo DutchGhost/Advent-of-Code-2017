@@ -47,8 +47,8 @@ fn main() {
         ip += 1;
     }
 
-    let mut p0 = Programm::new(0, instructions.clone());
-    let mut p1 = Programm::new(1, instructions.clone());
+    let mut p0 = Programm::new(0, &instructions);
+    let mut p1 = Programm::new(1, &instructions);
 
     let mut deque_send_p0 = VecDeque::new();
     let mut deque_send_p1 = VecDeque::new();

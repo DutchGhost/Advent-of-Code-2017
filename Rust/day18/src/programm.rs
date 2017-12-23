@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 
 pub struct Programm<'a> {
     ip: i64,
-    instructions: Vec<Vec<&'a str>>,
+    instructions: &'a [Vec<&'a str>],
     registers: HashMap<&'a str, i64>,
     pub sended: i64,
     waiting: bool,
@@ -18,7 +18,7 @@ fn read<'b, 'a: 'b>(s: &'a str, map: &mut HashMap<&'b str, i64>) -> i64 {
 
 
 impl <'a>Programm<'a> {
-    pub fn new(id: i64, instructions: Vec<Vec<&'a str>>) -> Programm<'a> {
+    pub fn new(id: i64, instructions: &'a [Vec<&'a str>]) -> Programm<'a> {
         let mut registers = HashMap::new();
         registers.insert("p", id);
 
