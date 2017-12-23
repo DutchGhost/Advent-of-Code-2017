@@ -1,21 +1,17 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
-mod programm;
-use programm::Programm;
 
-use std::collections::HashMap;
-use std::collections::VecDeque;
+mod programm;
+
+mod prelude {
+    pub use std::collections::{HashMap, VecDeque};
+    pub use programm::*;
+}
 
 fn parse(input: &str) -> Vec<Vec<&str>> {
     input.lines().map(|line| line.split(" ").collect()).collect()
 }
 
-//returns either a value that needs to copied, or the value of a register
-fn read<'b, 'a: 'b>(s: &'a str, map: &mut HashMap<&'b str, i64>) -> i64 {
-    match s.parse::<i64>() {
-        Ok(n) => n,
-        Err(_) => *map.entry(s).or_insert(0),
-    }
-}
+use prelude::*;
 
 fn main() {
     let mut registers = HashMap::new();
@@ -34,7 +30,7 @@ fn main() {
             "jgz" => if read(&ins[1], &mut registers) > 0 {ip += read(&ins[2], &mut registers)-1;},
 
             "snd" => snd = (ins[1], registers.get(ins[1]).cloned()),
-            "rcv" => if ins[1] == snd.0{
+            "rcv" => if ins[1] == snd.0 {
                 if let Some(n) = snd.1 {
                     if n > 0 {
                         println!("part 1: {}", snd.1.unwrap());

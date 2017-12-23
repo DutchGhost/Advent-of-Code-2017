@@ -1,5 +1,12 @@
-use std::collections::HashMap;
-use std::collections::VecDeque;
+use prelude::*;
+
+//returns either a value that needs to copied, or the value of a register
+pub fn read<'b, 'a: 'b>(s: &'a str, map: &mut HashMap<&'b str, i64>) -> i64 {
+    match s.parse::<i64>() {
+        Ok(n) => n,
+        Err(_) => *map.entry(s).or_insert(0),
+    }
+}
 
 pub struct Programm<'a> {
     ip: i64,
@@ -8,14 +15,6 @@ pub struct Programm<'a> {
     pub sended: i64,
     waiting: bool,
 }
-
-fn read<'b, 'a: 'b>(s: &'a str, map: &mut HashMap<&'b str, i64>) -> i64 {
-    match s.parse::<i64>() {
-        Ok(n) => n,
-        Err(_) => *map.entry(s).or_insert(0),
-    }
-}
-
 
 impl <'a>Programm<'a> {
     pub fn new(id: i64, instructions: &'a [Vec<&'a str>]) -> Programm<'a> {
