@@ -1,6 +1,9 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
+mod programm;
+use programm::Programm;
 
 use std::collections::HashMap;
+use std::collections::VecDeque;
 
 fn parse(input: &str) -> Vec<Vec<&str>> {
     input.lines().map(|line| line.split(" ").collect()).collect()
@@ -22,7 +25,7 @@ fn main() {
     let mut rcv = 0;
 
 
-    'outer: while rcv == 0 {
+    'outer: loop {
         let ins = &instructions[ip as usize];
         match ins[0].as_ref() {
             "set" => *registers.entry(ins[1]).or_insert(0) = read(&ins[2], &mut registers),
@@ -36,7 +39,7 @@ fn main() {
             "rcv" => if ins[1] == snd.0{
                 if let Some(n) = snd.1 {
                     if n > 0 {
-                        println!("{:?}", snd.1);
+                        println!("part 1: {}", snd.1.unwrap());
                         break 'outer;
                     }
                 }
@@ -45,5 +48,25 @@ fn main() {
         }
         ip += 1;
     }
-    println!("{:?}", registers);
+
+    let mut p0 = Programm::new(0, instructions.clone());
+    let mut p1 = Programm::new(1, instructions.clone());
+
+    let mut deque_send_p0 = VecDeque::new();
+    let mut deque_send_p1 = VecDeque::new();
+    loop {
+        let retp0 = p0.run(&mut deque_send_p1);
+        if let Some(val) = retp0 {
+            deque_send_p0.push_back(val);
+        }
+        let retp1 = p1.run(&mut deque_send_p0);
+
+        if let Some(val) = retp1 {
+            deque_send_p1.push_back(val);
+        }
+        if p0.is_waiting() && p1.is_waiting() {
+            println!("part 2: {}", p1.sended);
+            break;
+        }
+    }
 }
