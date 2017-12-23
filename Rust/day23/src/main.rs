@@ -1,13 +1,13 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 fn parse(input: &str) -> Vec<Vec<&str>> {
     input.lines().map(|line| line.split(" ").collect()).collect()
 }
 
 //returns either a value that needs top copied, or the value of a register
-fn read<'b, 'a: 'b>(s: &'a str, map: &mut BTreeMap<&'b str, i64>) -> i64 {
+fn read<'b, 'a: 'b>(s: &'a str, map: &mut HashMap<&'b str, i64>) -> i64 {
     match s.parse::<i64>() {
         Ok(n) => n,
         Err(_) => *map.entry(s).or_insert(0),
@@ -15,7 +15,7 @@ fn read<'b, 'a: 'b>(s: &'a str, map: &mut BTreeMap<&'b str, i64>) -> i64 {
 }
 
 fn main() {
-    let mut registers = BTreeMap::new();
+    let mut registers = HashMap::new();
     let instructions = parse(PUZZLE);
     let mut ip: i64 = 0;
     let mut muls = 0;
