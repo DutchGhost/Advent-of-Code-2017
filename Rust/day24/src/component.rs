@@ -1,9 +1,9 @@
 use std::str::FromStr;
 
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub struct Port {
-    pub front: u8,
-    pub back: u8,
+    pub front:i64,
+    pub back: i64,
 }
 
 impl FromStr for Port {
@@ -25,7 +25,7 @@ impl Port {
         self.front == 0 || self.back == 0
     }
 
-    pub fn value(&self) -> u8 {
+    pub fn value(&self) -> i64 {
         self.front + self.back
     }
 }

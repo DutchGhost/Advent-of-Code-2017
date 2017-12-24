@@ -4,15 +4,12 @@ mod component;
 use component::*;
 
 use std::collections::{HashMap, HashSet};
-
 use std::str::FromStr;
 
-fn parse(input: &str) -> Vec<Port> {
-    input.lines().map(|line| Port::from_str(line).unwrap()).collect()
+fn parse<S: AsRef<str>>(input: S) -> Vec<Port> {
+    input.as_ref().lines().map(|line| Port::from_str(line).unwrap()).collect()
 }
-
 
 fn main() {
     let mut components = parse(PUZZLE);
-    
-   }
+}
