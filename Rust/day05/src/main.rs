@@ -1,7 +1,9 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 use std::str::FromStr;
 
-fn parse<S: AsRef<str>, N: FromStr>(input: S) -> Vec<N> {
+fn parse<S: AsRef<str>, N: FromStr>(input: S) -> Vec<N>
+where <N as std::str::FromStr>::Err: std::fmt::Debug
+{
     input
         .as_ref()
         .lines()
