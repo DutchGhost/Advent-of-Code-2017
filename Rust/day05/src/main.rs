@@ -28,10 +28,10 @@ where
     n
 }
 
-#[inline]
+#[inline(always)]
 fn one(_: i64) -> i64 { 1 }
 
-#[inline]
+#[inline(always)]
 fn two(n: i64) -> i64 {if n >= 3 { - 1 } else { 1 } }
 
 fn main() {
