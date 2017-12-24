@@ -1,10 +1,11 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
+use std::str::FromStr;
 
-fn parse<S: AsRef<str>>(input: S) -> Vec<i64> {
+fn parse<S: AsRef<str>, N: FromStr>(input: S) -> Vec<N> {
     input
         .as_ref()
         .lines()
-        .map(|line| line.parse::<i64>().expect("this should not happen!"))
+        .map(|line| line.parse().unwrap())
         .collect::<Vec<_>>()
 }
 
