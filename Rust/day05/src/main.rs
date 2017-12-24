@@ -8,7 +8,7 @@ where <N as std::str::FromStr>::Err: std::fmt::Debug
         .as_ref()
         .lines()
         .map(|line| line.parse().unwrap())
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 
@@ -34,7 +34,7 @@ fn one(_: i64) -> i64 { 1 }
 fn two(n: i64) -> i64 {if n >= 3 { - 1 } else { 1 } }
 
 fn main() {
-    let data = parse(PUZZLE);
+    let data = parse::<&str, i64>(PUZZLE);
     println!("day 5.1: {}", run(data.clone(), one));
     println!("day 5.2: {}", run(data, two));
 }
