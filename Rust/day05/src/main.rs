@@ -1,7 +1,8 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-fn parse(input: &str) -> Vec<i64> {
+fn parse<S: AsRef<str>>(input: S) -> Vec<i64> {
     input
+        .as_ref()
         .lines()
         .map(|line| line.parse::<i64>().expect("this should not happen!"))
         .collect::<Vec<_>>()
@@ -27,7 +28,7 @@ where
 fn one(_: i64) -> i64 { 1 }
 
 #[inline]
-fn two(n: i64) -> i64 {if n >= 3 { - 1} else { 1 } }
+fn two(n: i64) -> i64 {if n >= 3 { - 1 } else { 1 } }
 
 fn main() {
     let data = parse(PUZZLE);
