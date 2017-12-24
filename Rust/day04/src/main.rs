@@ -9,14 +9,15 @@ use std::collections::HashSet;
 /// then put the vector in the hashset.
 /// if the number of elements in the HashSet equals the lenght of the line,
 /// its a valid line.
-fn solve<'a, F>(input: &'a str, mut transformer: F) -> i64
+fn solve<S, F>(input: S, mut transformer: F) -> i64
 where
+    S: AsRef<str>,
     F: FnMut(&mut [char])
 {
     let mut valids = 0;
     let mut set = HashSet::with_capacity(11);
     
-    for line in input.lines() {
+    for line in input.as_ref().lines() {
         let mut count = 0;
         
         for mut word in line.split_whitespace() {
@@ -41,7 +42,7 @@ where
 fn noop<T: ?Sized>(_: &mut T) {}
 
 fn main() {
-    let part2 = |chars: &mut [char]| {chars.sort()};
+    let part2 = |chars: &mut [char]| { chars.sort() };
     
     println!("part 1: {}", solve(PUZZLE, noop));
     println!("part 2: {}", solve(PUZZLE, part2))
