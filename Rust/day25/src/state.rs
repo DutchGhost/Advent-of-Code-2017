@@ -75,13 +75,13 @@ impl CPU {
     }
 
     fn move_right(&mut self) {
-        if self.cursor == self.tape.len() -1 {
+        if self.cursor == self.tape.len() - 1 {
             self.tape.push_back(0);
         }
         self.cursor += 1;
     }
 
-    pub fn count_one(&self) -> usize {
-        self.tape.iter().filter(|n| n == &&1).count()
+    pub fn count_one(self) -> usize {
+        self.tape.into_iter().filter(|n| n == &1).count()
     }
 }
