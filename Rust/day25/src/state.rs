@@ -1,13 +1,13 @@
 use std::collections::{VecDeque, HashMap};
 
 #[derive(Debug, Hash, Clone, Copy)]
-pub enum Direction {
+enum Direction {
     Left,
     Right,
 }
 
 #[derive(Debug, Hash, Clone, Copy, Eq, PartialEq)]
-pub enum State {
+enum State {
     A,
     B,
     C,
