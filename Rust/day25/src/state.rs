@@ -65,6 +65,7 @@ impl CPU {
         };
     }
 
+    #[inline]
     fn move_left(&mut self) {
         if self.cursor == 0 {
             self.tape.push_front(0);
@@ -74,6 +75,7 @@ impl CPU {
         }
     }
 
+    #[inline]
     fn move_right(&mut self) {
         if self.cursor == self.tape.len() - 1 {
             self.tape.push_back(0);
@@ -81,6 +83,7 @@ impl CPU {
         self.cursor += 1;
     }
 
+    #[inline]
     pub fn count_one(self) -> usize {
         self.tape.into_iter().filter(|n| n == &1).count()
     }
