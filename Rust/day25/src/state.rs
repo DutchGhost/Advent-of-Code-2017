@@ -1,5 +1,10 @@
 use std::collections::VecDeque;
 
+enum Direction {
+    Left,
+    Right,
+}
+
 #[derive(Debug)]
 enum State {
     A,
@@ -36,7 +41,7 @@ fn move_left(tape: &mut VecDeque<i32>, cursor: &mut usize) {
     }
 
 
-
+//Probably do something with a HashMap? <(State, value), (leftright, newState)> ????
 impl CPU {
     pub fn new() -> CPU {
         let mut deque = VecDeque::with_capacity(50_000);
