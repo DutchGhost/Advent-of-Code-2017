@@ -18,9 +18,9 @@ pub enum State {
 
 #[derive(Debug)]
 pub struct CPU {
-    pub state: State,
-    pub tape: VecDeque<i32>,
-    pub cursor: usize,
+    state: State,
+    tape: VecDeque<i32>,
+    cursor: usize,
     instruction: HashMap<(State, i32), (i32, Direction, State)>
 }
 
