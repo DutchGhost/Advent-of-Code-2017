@@ -1,12 +1,12 @@
 use std::collections::{VecDeque, HashMap};
 
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy)]
+#[derive(Debug, Hash, Clone, Copy)]
 pub enum Direction {
     Left,
     Right,
 }
 
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy)]
+#[derive(Debug, Hash, Clone, Copy, Eq, PartialEq)]
 pub enum State {
     A,
     B,
@@ -58,7 +58,7 @@ impl CPU {
         if let Some(n) = self.tape.get_mut(self.cursor) {
             *n = newvalue;
         };
-        
+
         match direction {
             Direction::Right => self.move_right(),
             Direction::Left => self.move_left(),
