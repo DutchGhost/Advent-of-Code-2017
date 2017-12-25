@@ -1,12 +1,13 @@
-use std::collections::VecDeque;
+use std::collections::{VecDeque, HashMap};
 
-enum Direction {
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy)]
+pub enum Direction {
     Left,
     Right,
 }
 
-#[derive(Debug)]
-enum State {
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy)]
+pub enum State {
     A,
     B,
     C,
@@ -17,127 +18,69 @@ enum State {
 
 #[derive(Debug)]
 pub struct CPU {
-    state: State,
-    tape: VecDeque<i32>,
-    cursor: usize,
-    leftright: bool,
+    pub state: State,
+    pub tape: VecDeque<i32>,
+    pub cursor: usize,
+    instruction: HashMap<(State, i32), (i32, Direction, State)>
 }
 
-fn move_left(tape: &mut VecDeque<i32>, cursor: &mut usize) {
-        if *cursor == 0 {
-            tape.push_front(0);
-        }
-        else {
-            *cursor -= 1;
-        }
-    }
-
-    //len - 1 or len??
-    fn move_right(tape: &mut VecDeque<i32>, cursor: &mut usize) {
-        if *cursor == tape.len() -1 {
-            tape.push_back(0);
-        }
-        *cursor += 1;
-    }
-
-
-//Probably do something with a HashMap? <(State, value), (leftright, newState)> ????
 impl CPU {
     pub fn new() -> CPU {
+        let mut map = HashMap::new();
+        map.insert((State::A, 0), (1, Direction::Right, State::B));
+        map.insert((State::A, 1), (0, Direction::Left, State::F));
+        map.insert((State::B, 0), (0, Direction::Right, State::C));
+        map.insert((State::B, 1), (0, Direction::Right, State::D));
+        map.insert((State::C, 0), (1, Direction::Left, State::D));
+        map.insert((State::C, 1), (1, Direction::Right, State::E));
+        map.insert((State::D, 0), (0, Direction::Left, State::E));
+        map.insert((State::D, 1), (0, Direction::Left, State::D));
+        map.insert((State::E, 0), (0, Direction::Right, State::A));
+        map.insert((State::E, 1), (1, Direction::Right, State::C));
+        map.insert((State::F, 0), (1, Direction::Left, State::A));
+        map.insert((State::F, 1), (1, Direction::Right, State::A));
+
         let mut deque = VecDeque::with_capacity(50_000);
-        for _ in 0..6 {
-            deque.push_front(0);
-        }
+        deque.push_front(0);
+        
         CPU {
             state: State::A,
             tape: deque,
-            cursor: 3,
-            leftright: false,
+            cursor: 0,
+            instruction: map,
         }
     }
     pub fn run(&mut self) {
-        match self.tape.get_mut(self.cursor) {
-            Some(n) => {
-                match self.state {
-                    State::A => {
-                        if *n == 0 {
-                            *n = 1;
-                            self.leftright = true;
-                            self.state = State::B;
-                        }
-                        else {
-                            *n = 0;
-                            self.leftright = false;
-                            self.state = State::F;
-                        }
-                    }
-                    State::B => {
-                        if *n == 0 {
-                            *n = 0;
-                            self.leftright = true;
-                            self.state = State::C;
-                        }
-                        else {
-                            *n = 0;
-                            self.leftright = true;
-                            self.state = State::D;
-                        }
-                    }
-                    State::C => {
-                        if *n == 0 {
-                            *n = 1;
-                            self.leftright = false;
-                            self.state = State::D;
-                        }
-                        else {
-                            *n = 1;
-                            self.leftright = true;
-                            self.state = State::E;
-                        }
-                    }
-                    State::D => {
-                        if *n == 0 {
-                            *n = 0;
-                            self.leftright = false;
-                            self.state = State::E;
-                        }
-                        else {
-                            *n = 0;
-                            self.leftright = false;
-                            self.state = State::D;
-                        }
-                    }
-                    State::E => {
-                        if *n == 0 {
-                            *n = 0;
-                            self.leftright = true;
-                            self.state = State::A;
-                        }
-                        else {
-                            *n = 1;
-                            self.leftright = true;
-                            self.state = State::C;
-                        }
-                    }
-                    State::F => {
-                        if *n == 0 {
-                            *n = 1;
-                            self.leftright = false;
-                            self.state = State::A;
-                        }
-                        else {
-                            *n = 1;
-                            self.leftright = true;
-                            self.state = State::A;
-                        }
-                    }
-                }
-            }
-            None => panic!("something whent horribly terribly wrong!"),
-        }
+        let current_value = *self.tape.get(self.cursor).unwrap();
+        let &(newvalue, direction, newstate) = self.instruction.get(&(self.state, current_value)).unwrap();
         
-        if self.leftright { move_right(&mut self.tape, &mut self.cursor); } else { move_left(&mut self.tape, &mut self.cursor); }
+        self.state = newstate;
+        if let Some(n) = self.tape.get_mut(self.cursor) {
+            *n = newvalue;
+        };
+        
+        match direction {
+            Direction::Right => self.move_right(),
+            Direction::Left => self.move_left(),
+        };
     }
+
+    fn move_left(&mut self) {
+        if self.cursor == 0 {
+            self.tape.push_front(0);
+        }
+        else {
+            self.cursor -= 1;
+        }
+    }
+
+    fn move_right(&mut self) {
+        if self.cursor == self.tape.len() -1 {
+            self.tape.push_back(0);
+        }
+        self.cursor += 1;
+    }
+
     pub fn count_one(&self) -> usize {
         self.tape.iter().filter(|n| n == &&1).count()
     }
