@@ -1,12 +1,34 @@
 use prelude::*;
 
+macro_rules! Struct3 {
+    ($s:ident, $c:expr) => {
+
+        #[derive(Eq, PartialEq, Clone)]
+        struct $s {
+            x: i64,
+            y: i64,
+            z: i64,
+        }
+        
+        impl FromStr for $s {
+            type Err = ();
+
+            #[inline]
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                let (x, y, z) = to_nums(s.chars(), filter($c));
+                Ok($s { x: x, y: y, z: z })
+            }
+        }
+    };
+}
+
 //takes in any Iterator I with items of char, and any filter F.
 //F will be filtering '<', '>', '=' and the letter 'v', 'a' or 'p' out of the Iterator.
 #[inline]
 fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
 where
-    I: Iterator<Item = char>,
     F: Fn(&char) -> bool,
+    I: Iterator<Item = char>,
 {
     let stringified = iter.filter(filter).collect::<String>();
     let mut it = stringified.split(",");
@@ -23,56 +45,10 @@ fn filter(ch: char) -> impl Fn(&char) -> bool {
     move |c| !(c == &'<' || c == &'>' || c == &'=' || c == &ch)
 }
 
-#[derive(Eq, PartialEq, Clone)]
-struct Position {
-    x: i64,
-    y: i64,
-    z: i64,
-}
+Struct3!(Velocity, 'v');
+Struct3!(Position, 'p');
+Struct3!(Acceleration, 'a');
 
-impl FromStr for Position {
-    type Err = ();
-    
-    #[inline]
-    fn from_str(s: &str) -> Result<Position, Self::Err> {
-        let (x, y, z) = to_nums(s.chars(), filter('p'));
-        Ok(Position { x: x, y: y, z: z })
-    }
-}
-
-#[derive(Eq, PartialEq, Clone)]
-struct Velocity {
-    x: i64,
-    y: i64,
-    z: i64,
-}
-
-impl FromStr for Velocity {
-    type Err = ();
-    
-    #[inline]
-    fn from_str(s: &str) -> Result<Velocity, Self::Err> {
-        let (x, y, z) = to_nums(s.chars(), filter('v'));
-        Ok(Velocity { x: x, y: y, z: z })
-    }
-}
-
-#[derive(Eq, PartialEq, Clone)]
-struct Acceleration {
-    x: i64,
-    y: i64,
-    z: i64,
-}
-
-impl FromStr for Acceleration {
-    type Err = ();
-    
-    #[inline]
-    fn from_str(s: &str) -> Result<Acceleration, Self::Err> {
-        let (x, y, z) = to_nums(s.chars(), filter('a'));
-        Ok(Acceleration { x: x, y: y, z: z })
-    }
-}
 
 #[derive(Eq, PartialEq, Clone)]
 struct Particle {
@@ -84,6 +60,7 @@ struct Particle {
 impl FromStr for Particle {
     type Err = ();
     fn from_str(s: &str) -> Result<Particle, Self::Err> {
+        
         let mut pos_vel_acc = s.split(", ");
 
         let p = pos_vel_acc.next().unwrap();
