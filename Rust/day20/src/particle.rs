@@ -1,9 +1,9 @@
 use prelude::*;
 
 macro_rules! Struct3 {
-    ($s:ident, $c:expr) => {
+    ($s:ident) => {
 
-        #[derive(Eq, PartialEq, Clone)]
+        #[derive(Debug, Eq, PartialEq, Clone)]
         struct $s {
             x: i64,
             y: i64,
@@ -15,22 +15,27 @@ macro_rules! Struct3 {
 
             #[inline]
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                let (x, y, z) = to_nums(s.chars(), filter($c));
+                let (x, y, z) = to_nums(s.chars());
                 Ok($s { x: x, y: y, z: z })
             }
         }
     };
 }
 
-//takes in any Iterator I with items of char, and any filter F.
-//F will be filtering '<', '>', '=' and the letter 'v', 'a' or 'p' out of the Iterator.
+macro_rules! add {
+    ($s1:expr, $s2:expr) => {
+        $s1.x += $s2.x;
+        $s1.y += $s2.y;
+        $s1.z += $s2.z;
+    };
+}
+
 #[inline]
-fn to_nums<I, F>(iter: I, filter: F) -> (i64, i64, i64)
-where
-    F: Fn(&char) -> bool,
-    I: Iterator<Item = char>,
-{
-    let stringified = iter.filter(filter).collect::<String>();
+fn to_nums<I: Iterator<Item = char>>(iter: I) -> (i64, i64, i64) {
+    let stringified = iter
+        .filter(|c| c.is_digit(10) || c == &'-' || c == &',')
+        .collect::<String>();
+
     let mut it = stringified.split(",");
 
     let n1 = it.next().unwrap().parse::<i64>().unwrap();
@@ -40,15 +45,9 @@ where
     (n1, n2, n3)
 }
 
-#[inline]
-fn filter(ch: char) -> impl Fn(&char) -> bool {
-    move |c| !(c == &'<' || c == &'>' || c == &'=' || c == &ch)
-}
-
-Struct3!(Velocity, 'v');
-Struct3!(Position, 'p');
-Struct3!(Acceleration, 'a');
-
+Struct3!(Position);
+Struct3!(Velocity);
+Struct3!(Acceleration);
 
 #[derive(Eq, PartialEq, Clone)]
 struct Particle {
@@ -83,13 +82,8 @@ impl FromStr for Particle {
 impl Particle {
     #[inline]
     fn update(&mut self) {
-        self.velocity.x += self.acceleration.x;
-        self.velocity.y += self.acceleration.y;
-        self.velocity.z += self.acceleration.z;
-
-        self.position.x += self.velocity.x;
-        self.position.y += self.velocity.y;
-        self.position.z += self.velocity.z;
+        add!(self.velocity, self.acceleration);
+        add!(self.position, self.velocity);
     }
 
     #[inline]
