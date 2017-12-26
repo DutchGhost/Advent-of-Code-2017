@@ -1,4 +1,3 @@
-#![feature(conservative_impl_trait)]
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 mod particle;
