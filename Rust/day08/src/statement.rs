@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::cmp::max;
 
-pub trait from_str_and_hashmap<'r>
+pub trait FromStrAndHashMap<'r>
 {
     type Err;
     fn from_string_and_map<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, Self::Err>;
@@ -163,7 +163,7 @@ impl StatementError {
         self.discription
     }
 }
-impl <'r>from_str_and_hashmap<'r> for Statement<'r>
+impl <'r>FromStrAndHashMap<'r> for Statement<'r>
 {
     type Err = StatementError;
 

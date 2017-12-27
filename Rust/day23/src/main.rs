@@ -32,6 +32,7 @@ fn main() {
             _ => panic!(),
         }
         ip += 1;
+        println!("{:?}", registers);
     }
     println!("{:?}", registers);
     println!("{}", muls);

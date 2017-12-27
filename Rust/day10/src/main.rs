@@ -51,7 +51,7 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     assert!(nums.len() == 256);
     let mut cpos = 0;
     let mut skipsize = 0;
-    let mut numslenght = nums.len();
+    let numslenght = nums.len();
     for _ in 0..rounds {
         for len in lenghts.iter() {
 
@@ -62,7 +62,7 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
                 Wrapper::Nonwrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
             };
 
-            cpos += (*len + skipsize);
+            cpos += *len + skipsize;
             cpos = cpos % numslenght;
             skipsize += 1;
         }

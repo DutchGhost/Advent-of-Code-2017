@@ -7,32 +7,32 @@ use intrusive_collections::linked_list::*;
 const PUZZLE: usize = 316;
 
 #[derive(Debug)]
-struct thing {
+struct Node {
     link: Link,
     value: usize,
 }
 
-impl thing {
+impl Node {
     fn get_value(&self) -> usize {
         self.value
     }
 }
 
-intrusive_adapter!(TestAdapter = Box<thing>: thing{link: Link});
+intrusive_adapter!(Linker = Box<Node>: Node{link: Link});
 
 //we already have a pointer to a position, so why not keep it? :)
 fn main() {
     
-    let mut vec_of_things = Vec::with_capacity(50_000_000);
+    let mut vec_of_nodes = Vec::with_capacity(50_000_000);
 
     for i in 1..50_000_001 {
-        vec_of_things.push(Box::new(thing{link: Link::new(), value: i}));
+        vec_of_nodes.push(Box::new(Node{link: Link::new(), value: i}));
     }
     
-    let mut iter_of_things = vec_of_things.into_iter();
+    let mut iter_of_nodes = vec_of_nodes.into_iter();
 
-    let mut buff = LinkedList::new(TestAdapter::new());
-    let first = Box::new(thing {link: Link::new(), value: 0});
+    let mut buff = LinkedList::new(Linker::new());
+    let first = Box::new(Node {link: Link::new(), value: 0});
     buff.push_front(first);
     let time = Instant::now();
     {
@@ -45,7 +45,7 @@ fn main() {
             {   
                 //insert at idx + 1.
                 if idx == current_pos {
-                    c.insert_after(iter_of_things.next().unwrap());
+                    c.insert_after(iter_of_nodes.next().unwrap());
                     c.move_next();
                 }
                 
@@ -56,7 +56,7 @@ fn main() {
                         current_pos += 1;
                         c.move_next();
                     }
-                    c.insert_after(iter_of_things.next().unwrap());
+                    c.insert_after(iter_of_nodes.next().unwrap());
                     c.move_next();
                 }
                 //else, move the cursor down.
@@ -65,7 +65,7 @@ fn main() {
                         current_pos -= 1;
                         c.move_prev();
                     }
-                    c.insert_after(iter_of_things.next().unwrap());
+                    c.insert_after(iter_of_nodes.next().unwrap());
                     c.move_next();
                 }
             }

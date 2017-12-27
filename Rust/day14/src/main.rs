@@ -72,7 +72,7 @@ fn part2() {
 }
 
 fn wipe_region(v: &mut [Vec<u32>], r: usize, c: usize) -> i64 {
-    if r < 0 || c < 0 || r >= v.len() || c >= v[r].len() || v[r][c] == 0 {
+    if r >= v.len() || c >= v[r].len() || v[r][c] == 0 {
         return 0;
     }
     v[r][c] = 0;

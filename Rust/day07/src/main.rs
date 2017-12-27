@@ -35,11 +35,11 @@ fn parse(line: &str) -> Tower {
 
 }
 
-fn find_bottem(Towers: &Vec<Tower>) -> String {
+fn find_bottem(towers: &Vec<Tower>) -> String {
     let mut are_aboves = HashSet::new();
     let mut have_aboves = HashSet::new();
 
-    for tower in Towers.iter() {
+    for tower in towers.iter() {
         if tower.aboves.len() > 0 {
             have_aboves.insert(tower.name.clone());
         }
@@ -71,7 +71,7 @@ fn check(tower: &Tower, lookup: &HashMap<String, Tower>) -> (i64, bool) {
 
     if subcheck_weights.len() > 1 && subchecks.values().all(|&(_, is_balanced)| is_balanced) {
         let mut map = HashMap::new();
-        for (name, &(total_weight, is_balanced)) in subchecks.iter() {
+        for (name, &(total_weight, _)) in subchecks.iter() {
             let above_tower = lookup.get(name).unwrap();
             *map.entry(total_weight).or_insert(0) += above_tower.weights;
         }
@@ -79,7 +79,7 @@ fn check(tower: &Tower, lookup: &HashMap<String, Tower>) -> (i64, bool) {
         let mut list = [it.next().unwrap(), it.next().unwrap()];
         list.sort_by_key(|&(w, _)| w);
 
-        let (w1, tw1) = list[0];
+        let (w1, _) = list[0];
         let (w2, tw2) = list[1];
         println!("part 2: {}", tw2 + (w1 - w2));
         
