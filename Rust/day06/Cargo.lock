@@ -1,4 +1,14 @@
 [[package]]
 name = "day6"
 version = "0.1.0"
+dependencies = [
+ "libaoc 0.1.0 (git+https://github.com/DutchGhost/libaoc.git)",
+]
 
+[[package]]
+name = "libaoc"
+version = "0.1.0"
+source = "git+https://github.com/DutchGhost/libaoc.git#ca11821c1983430fb9e50e9d156d157381dd8df3"
+
+[metadata]
+"checksum libaoc 0.1.0 (git+https://github.com/DutchGhost/libaoc.git)" = "<none>"

@@ -1,12 +1,10 @@
+extern crate libaoc;
+
+use libaoc::ToNum;
+
 use std::collections::HashMap;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
-
-fn parse(s: &str) -> Vec<i32> {
-    s.split_whitespace()
-        .map(|bank| bank.parse::<i32>().unwrap())
-        .collect::<Vec<_>>()
-}
 
 ///start at idx + 1. Loop 'till 15, then chain with something endless.
 /// then take as many items as needed (the number of items we need is value!)
@@ -37,7 +35,7 @@ fn cycle(memory: &[i32]) -> (usize, i32) {
 }
 
 fn solve(input: &str) -> (i32, i32) {
-    let mut memory = parse(input);
+    let mut memory = input.split_whitespace().to_num().unwrap();
     let mut cache: HashMap<Vec<i32>, i32> = HashMap::new();
 
     let mut n = 0;
