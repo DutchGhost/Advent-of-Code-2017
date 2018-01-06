@@ -1,3 +1,4 @@
+use libaoc::{Direction, Position};
 #[derive(Debug, PartialEq, Eq)]
 pub enum Node {
     Pipe,
@@ -19,18 +20,9 @@ impl From<char> for Node {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
-enum Direction {
-    Right,
-    Left,
-    Up,
-    Down,
-}
-
 #[derive(Debug)]
 pub struct Walker {
-    x: usize,
-    y: usize,
+    position: Position<usize>,
     direction: Direction,
     message: String,
     nodes: Vec<Vec<Node>>
@@ -45,8 +37,7 @@ impl Walker {
             .unwrap();
 
         Walker {
-            x: x,
-            y: 0,
+            position: Position::from((x, 0)),
             direction: Direction::Down,
             message: String::new(),
             nodes: nodes
@@ -58,24 +49,19 @@ impl Walker {
     }
     
     pub fn atvoidnode(&self) -> bool {
-        self.nodes[self.y][self.x] == Node::Void
+        self.nodes[*(self.position.y_val())][*(self.position.x_val())] == Node::Void
     }
 
     ///first walk, then check the node.
     /// if its a letter, push it to the message.
     /// if it's a turn, then turn!
     pub fn walk(&mut self) {
-        match self.direction {
-            Direction::Up => self.y -= 1,
-            Direction::Down => self.y += 1,
-            Direction::Left => self.x -= 1,
-            Direction::Right => self.x += 1,
-        }
+        self.position.change(&self.direction, 1);
         self.checknode()
     }
 
     pub fn checknode(&mut self) {
-        match self.nodes[self.y][self.x] {
+        match self.nodes[*(self.position.y_val())][*(self.position.x_val())] {
             Node::Letter(c) => self.message.push(c),
             Node::Turn => self.turn(),
             _ => return,
@@ -87,7 +73,7 @@ impl Walker {
     fn node_at_pos(&self, s: &str) -> Option<()> {
         match s {
             "updown" => {
-                if self.x + 1 >= self.nodes[0].len() || self.nodes[self.y][self.x + 1] == Node::Void {
+                if *self.position.x_val() + 1 >= self.nodes[0].len() || self.nodes[*(self.position.y_val())][*(self.position.x_val()) + 1] == Node::Void {
                     None
                 }
                 else {
@@ -95,7 +81,7 @@ impl Walker {
                 }
             }
             "leftright" => {
-                if self.y > self.nodes.len() || self.nodes[self.y + 1][self.x] == Node::Void {
+                if *self.position.y_val() > self.nodes.len() || self.nodes[*(self.position.y_val()) + 1][*(self.position.x_val())] == Node::Void {
                     None
                 }
                 else {
