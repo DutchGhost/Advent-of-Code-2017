@@ -1,3 +1,7 @@
+extern crate libaoc;
+
+use libaoc::ToNum;
+
 use std::iter::*;
 use std::ops::Range;
 use std::time::Instant;
@@ -5,13 +9,6 @@ use std::time::Instant;
 const PUZZLE: &'static str = "31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
 const BYTESPUZZLE: [u8; 49] = *b"31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
 const SALT: [u8; 5] = [17, 31, 73, 47, 23];
-
-fn parse_str(input: &str) -> Vec<usize> {
-    input
-        .split(",")
-        .map(|word| word.parse().expect("Failed to parse"))
-        .collect()
-}
 
 fn nums() -> Vec<usize> {
     (0..).take(256).collect()
@@ -80,12 +77,12 @@ fn dense(nums: &[usize]) -> String {
 
 fn main() {
     let mut nums_part1 = nums();
-    let lenghts_part1 = parse_str(PUZZLE);
+    let lenghts_part1 = PUZZLE.split(",").to_num().unwrap();
     println!("part 1: {}", solve(1, &mut nums_part1, &lenghts_part1));
 
     let mut nums_part2 = nums();
     let lenghts_part2 = parse_bytes(BYTESPUZZLE);
-    let rounds = 1_000_000_000;
+    let rounds = 64;
     let started = Instant::now();
     solve(rounds, &mut nums_part2, &lenghts_part2);
     println!("part 2: {}", dense(&nums_part2));
