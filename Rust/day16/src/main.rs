@@ -1,5 +1,10 @@
 #![feature(slice_rotate)]
 
+extern crate libaoc;
+
+use libaoc::ToNum;
+use std::str::FromStr;
+
 const PUZZLE: &'static str = include_str!("Input.txt");
 const PROGRAMMS: [u8; 16] = [
     b'a',
@@ -26,20 +31,21 @@ enum Move {
     Partner(u8, u8),
 }
 
-impl<'a> From<&'a str> for Move {
+impl FromStr for Move {
+    type Err = ();
     #[inline]
-    fn from(s: &'a str) -> Move {
+    fn from_str(s: &str) -> Result<Move, Self::Err> {
         match s.chars().next().unwrap() {
             's' => {
-                Move::Spin(s[1..].parse::<usize>().unwrap())
+                Ok(Move::Spin(s[1..].parse::<usize>().unwrap()))
             },
             'x' => {
                 let mut toswap = s[1..].split("/").map(|pos| pos.parse().unwrap());
-                Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap())
+                Ok(Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap()))
             },
             _ => {
                 let mut partners = s[1..].bytes().filter(|c| *c != b'/');
-                Move::Partner(partners.next().unwrap(), partners.next().unwrap())
+                Ok(Move::Partner(partners.next().unwrap(), partners.next().unwrap()))
             }
         }
     }
@@ -50,7 +56,7 @@ struct Instructions(Vec<Move>);
 impl Instructions {
     #[inline]
     fn new<'a>(s: &'a str) -> Instructions {
-        Instructions(s.split(",").map(|line| Move::from(line)).collect())
+        Instructions(s.split(",").to_num().unwrap())
     }
 
     #[inline]
