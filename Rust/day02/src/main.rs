@@ -1,21 +1,14 @@
+extern crate libaoc;
+
+use libaoc::{ToNum, MinMax};
+
 const PUZZLE: &'static str = include_str!("Input.txt");
-
-fn to_num(s: &str) -> Vec<u32> {
-    s.split_whitespace()
-        .map(|n| n.parse::<u32>().unwrap())
-        .collect::<Vec<_>>()
-}
-
-#[inline]
-fn sort<'a>(a: &'a u32, b: &'a u32) -> (&'a u32, &'a u32) {
-    if a > b { (a, b) } else { (b, a) }
-}
 
 /// gets the biggest out of the nums.
 /// returns None if the bigger one can not be equally devided by the smaller one.
 #[inline]
 fn is_divisible(a: &u32, b: &u32) -> Option<u32> {
-    let (num1, num2) = sort(a, b);
+    let (num1, num2) = (a, b).maxmin();
     if num1 % num2 == 0 {
         Some(num1 / num2)
     } else {
@@ -44,7 +37,7 @@ fn difference(nums: &[u32]) -> u32 {
 }
 
 fn solve() -> (u32, u32) {
-    let parsed = PUZZLE.lines().map(|line| to_num(line)).collect::<Vec<_>>();
+    let parsed = PUZZLE.lines().filter_map(|line| line.split_whitespace().to_num().ok()).collect::<Vec<_>>();
     let part1 = parsed.iter().map(|nums| difference(nums)).sum::<u32>();
     let part2 = parsed.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
 

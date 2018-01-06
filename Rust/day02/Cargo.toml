@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Dutch_Gh0st <kasper199914@gmail.com>"]
 
 [dependencies]
+libaoc = { git = "https://github.com/DutchGhost/libaoc.git", version = "*" }
