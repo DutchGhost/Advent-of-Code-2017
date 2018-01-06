@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate libaoc;
+
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 use std::collections::HashSet;
@@ -24,7 +27,7 @@ where
 
             let mut chars = word.chars().collect::<Vec<_>>();
             
-            transformer(&mut chars);
+            transformer((&mut chars));
             set.insert(chars);
             
             count += 1;
@@ -38,12 +41,9 @@ where
     valids
 }
 
-#[inline(always)]
-fn noop<T: ?Sized>(_: &mut T) {}
-
 fn main() {
-    let part2 = |chars: &mut [char]| { chars.sort() };
+    let part2 = |chars: (&mut [char])| { chars.sort() };
     
-    println!("part 1: {}", solve(PUZZLE, noop));
+    println!("part 1: {}", solve(PUZZLE, noop!((&mut [char]))));
     println!("part 2: {}", solve(PUZZLE, part2))
 }
