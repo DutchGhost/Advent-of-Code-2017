@@ -1,6 +1,6 @@
 extern crate libaoc;
 
-use libaoc::{ToNum, MinMax};
+use libaoc::{StrToNum, MinMax};
 
 const PUZZLE: &'static str = include_str!("Input.txt");
 
