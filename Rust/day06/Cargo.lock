@@ -8,7 +8,7 @@ dependencies = [
 [[package]]
 name = "libaoc"
 version = "0.1.0"
-source = "git+https://github.com/DutchGhost/libaoc.git#ca11821c1983430fb9e50e9d156d157381dd8df3"
+source = "git+https://github.com/DutchGhost/libaoc.git#e7cff86cc0f46af1fdc5ecf5724a1ba109df9cfd"
 
 [metadata]
 "checksum libaoc 0.1.0 (git+https://github.com/DutchGhost/libaoc.git)" = "<none>"
