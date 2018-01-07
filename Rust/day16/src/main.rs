@@ -2,7 +2,7 @@
 
 extern crate libaoc;
 
-use libaoc::ToNum;
+use libaoc::StrToNum;
 use std::str::FromStr;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
