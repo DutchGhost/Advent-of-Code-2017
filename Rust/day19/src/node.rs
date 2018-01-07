@@ -48,8 +48,8 @@ impl Walker {
     }
     
     pub fn atvoidnode(&self) -> bool {
-        let (x, y) = self.position.get_ref();
-        self.nodes[*y][*x] == Node::Void
+        let (x, y) = self.position.copy_to_tup();
+        self.nodes[y][x] == Node::Void
     }
 
     /// first walk, then check the node.
@@ -61,11 +61,7 @@ impl Walker {
     }
 
     pub fn checknode(&mut self) {
-        let (x, y) = 
-        {
-            let (_x, _y) = self.position.get_ref();
-            (*_x, *_y)
-        };
+        let (x, y) = self.position.copy_to_tup();
         match self.nodes[y][x] {
             Node::Letter(c) => self.message.push(c),
             Node::Turn => self.turn(),
@@ -76,8 +72,7 @@ impl Walker {
     //return None if you can't even look to the right / down
     //return None if x + 1 or y + 1 equals Node::Void.
     fn node_at_pos(&self, s: &str) -> Option<()> {
-        let (x, y) = self.position.get_ref();
-        let (x, y) = (*x, *y);
+        let (x, y) = self.position.copy_to_tup();
         match s {
             "updown" => {
                 if x + 1 >= self.nodes[0].len() || self.nodes[y][x + 1] == Node::Void {
