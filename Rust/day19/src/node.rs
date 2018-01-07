@@ -35,7 +35,6 @@ impl Walker {
             .iter()
             .position(|node| node == &Node::Pipe)
             .unwrap();
-
         Walker {
             position: Position::from((x, 0)),
             direction: Direction::Down,
@@ -49,10 +48,11 @@ impl Walker {
     }
     
     pub fn atvoidnode(&self) -> bool {
-        self.nodes[*(self.position.y_val())][*(self.position.x_val())] == Node::Void
+        let (x, y) = self.position.get_ref();
+        self.nodes[*y][*x] == Node::Void
     }
 
-    ///first walk, then check the node.
+    /// first walk, then check the node.
     /// if its a letter, push it to the message.
     /// if it's a turn, then turn!
     pub fn walk(&mut self) {
@@ -61,7 +61,12 @@ impl Walker {
     }
 
     pub fn checknode(&mut self) {
-        match self.nodes[*(self.position.y_val())][*(self.position.x_val())] {
+        let (x, y) = 
+        {
+            let (_x, _y) = self.position.get_ref();
+            (*_x, *_y)
+        };
+        match self.nodes[y][x] {
             Node::Letter(c) => self.message.push(c),
             Node::Turn => self.turn(),
             _ => return,
@@ -71,9 +76,11 @@ impl Walker {
     //return None if you can't even look to the right / down
     //return None if x + 1 or y + 1 equals Node::Void.
     fn node_at_pos(&self, s: &str) -> Option<()> {
+        let (x, y) = self.position.get_ref();
+        let (x, y) = (*x, *y);
         match s {
             "updown" => {
-                if *self.position.x_val() + 1 >= self.nodes[0].len() || self.nodes[*(self.position.y_val())][*(self.position.x_val()) + 1] == Node::Void {
+                if x + 1 >= self.nodes[0].len() || self.nodes[y][x + 1] == Node::Void {
                     None
                 }
                 else {
@@ -81,7 +88,7 @@ impl Walker {
                 }
             }
             "leftright" => {
-                if *self.position.y_val() > self.nodes.len() || self.nodes[*(self.position.y_val()) + 1][*(self.position.x_val())] == Node::Void {
+                if y > self.nodes.len() || self.nodes[y + 1][x] == Node::Void {
                     None
                 }
                 else {
@@ -95,16 +102,17 @@ impl Walker {
         match self.direction {
             Direction::Up | Direction::Down => {
                 match self.node_at_pos("updown") {
-                    Some(_) => self.direction = Direction::Right,
-                    None => self.direction = Direction::Left,
+                    Some(_) => self.direction = Direction::init_right(),
+                    None => self.direction = Direction::init_left(),
                 }
             },
             Direction::Left | Direction::Right => {
                 match self.node_at_pos("leftright") {
-                    Some(_) => self.direction = Direction::Down,
-                    None => self.direction = Direction::Up,
+                    Some(_) => self.direction = Direction::init_down(),
+                    None => self.direction = Direction::init_up(),
                 }
             },
+            _ => return,
         }
     }
 }
