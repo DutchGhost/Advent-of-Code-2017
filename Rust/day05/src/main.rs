@@ -1,7 +1,7 @@
 extern crate libaoc;
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-use libaoc::ToNum;
+use libaoc::StrToNum;
 
 fn run<F>(mut jumps: Vec<i64>, updater: F) -> i64
 where
