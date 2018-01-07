@@ -1,6 +1,6 @@
 extern crate libaoc;
 
-use libaoc::ToNum;
+use libaoc::StrToNum;
 
 use std::iter::*;
 use std::ops::Range;
