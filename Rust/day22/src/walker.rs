@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use libaoc::{Direction, Position};
+use libaoc::{Direction, Position, ToVec};
 
 #[derive(Clone)]
 pub enum Node {
@@ -29,7 +29,7 @@ impl FromStr for Grid {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Grid{ grid: s.lines().map(|line| line.chars().map(|c| Node::from(c)).collect()).collect()})
+        Ok(Grid{ grid: s.lines().map(|line| line.chars().convert()).collect()})
     }
 }
 
@@ -37,7 +37,8 @@ impl Grid {
     
     #[inline]
     fn node_at_pos<'m, 's: 'm>(&'s mut self, pos: &Position<usize>) -> Option<&'m mut Node> {
-        self.grid.get_mut(*pos.y_val()).and_then(|row| row.get_mut(*pos.x_val()))
+        let (x, y) = pos.get_ref();
+        self.grid.get_mut(*y).and_then(|row| row.get_mut(*x))
     }
 
     #[inline]
@@ -149,19 +150,22 @@ impl Iterator for Walker {
 
     #[inline]
     fn next(&mut self) -> Option<i32> {
-        
-        if *(self.pos.x_val()) == 0 {
+        let (x, y) = {
+            let (_x, _y) = self.pos.get_ref();
+            (*_x, *_y)
+        };
+        if x == 0 {
             self.grid.extend_left();
             self.pos.increment_x(1);
         }
-        if *(self.pos.x_val()) == self.grid.grid[0].len() {
+        if x == self.grid.grid[0].len() {
             self.grid.extend_right();
         }
-        if *(self.pos.y_val()) == 0 {
+        if y == 0 {
             self.grid.extend_top();
             self.pos.increment_y(1);
         }
-        if *(self.pos.y_val()) == self.grid.grid.len() {
+        if y == self.grid.grid.len() {
             self.grid.extend_bottem();
         }
         
