@@ -42,8 +42,8 @@ where
 }
 
 fn main() {
-    let part2 = |chars: (&mut [char])| { chars.sort() };
+    let part2 = |chars: &mut [char]| { chars.sort() };
     
-    println!("part 1: {}", solve(PUZZLE, noop!((&mut [char]))));
+    println!("part 1: {}", solve(PUZZLE, noop!(&mut [char])));
     println!("part 2: {}", solve(PUZZLE, part2))
 }
