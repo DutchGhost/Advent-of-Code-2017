@@ -5,6 +5,7 @@ use std::time::Instant;
 use intrusive_collections::linked_list::*;
 
 const PUZZLE: usize = 316;
+const ITERATIONS: usize = 50_000_001;
 
 #[derive(Debug)]
 struct Node {
@@ -25,7 +26,7 @@ fn main() {
     
     let mut vec_of_nodes = Vec::with_capacity(50_000_000);
 
-    for i in 1..50_000_001 {
+    for i in 1..ITERATIONS {
         vec_of_nodes.push(Box::new(Node{link: Link::new(), value: i}));
     }
     
@@ -40,34 +41,22 @@ fn main() {
         c.move_next();
 
         let mut current_pos = 0;
-        for i in 1..50_000_001 {
+        for i in 1..ITERATIONS {
             let idx = (current_pos + PUZZLE) % i;
             {   
-                //insert at idx + 1.
-                if idx == current_pos {
-                    c.insert_after(iter_of_nodes.next().unwrap());
+                while idx > current_pos {
+                    current_pos += 1;
                     c.move_next();
                 }
-                
-                //if the index is bigger than the current pos,
-                //move the cursor along witht the list
-                else if idx > current_pos {
-                    while current_pos != idx {
-                        current_pos += 1;
-                        c.move_next();
-                    }
-                    c.insert_after(iter_of_nodes.next().unwrap());
-                    c.move_next();
+
+                while idx < current_pos {
+                    current_pos -= 1;
+                    c.move_prev();
                 }
-                //else, move the cursor down.
-                else {
-                    while current_pos != idx {
-                        current_pos -= 1;
-                        c.move_prev();
-                    }
-                    c.insert_after(iter_of_nodes.next().unwrap());
-                    c.move_next();
-                }
+
+                c.insert_after(iter_of_nodes.next().unwrap());
+                c.move_next();
+
             }
             current_pos = idx + 1;
             
@@ -77,7 +66,6 @@ fn main() {
         }
     }
     let mut iter = buff.iter();
-
     while let Some(thing) = iter.next() {
         if thing.get_value() == 0 {
             break;
