@@ -72,7 +72,7 @@ impl Spiral {
             .map(|(value, _)| value)
             .sum();
 
-        self.storage.push((value, self.point.clone()));
+        self.storage.push((value, self.point));
         value
     }
 
