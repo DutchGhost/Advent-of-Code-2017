@@ -1,3 +1,5 @@
+extern crate libaoc;
+
 const PUZZLE: &'static str = include_str!("Input.txt");
 
 mod walker;

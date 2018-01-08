@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use libaoc::{Direction, Position, ToVec};
 
 #[derive(Clone)]
 pub enum Node {
@@ -20,19 +21,6 @@ impl From<char> for Node {
     }
 }
 
-struct Position {
-    x: usize,
-    y: usize,
-}
-
-impl From<(usize, usize)> for Position {
-    
-    #[inline]
-    fn from((n1, n2): (usize, usize)) -> Position {
-        Position {x: n1, y: n2}
-    }
-}
-
 struct Grid {
     grid: Vec<Vec<Node>>
 }
@@ -41,15 +29,16 @@ impl FromStr for Grid {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Grid{ grid: s.lines().map(|line| line.chars().map(|c| Node::from(c)).collect()).collect()})
+        Ok(Grid{ grid: s.lines().map(|line| line.chars().convert()).collect()})
     }
 }
 
 impl Grid {
     
     #[inline]
-    fn node_at_pos<'m, 's: 'm>(&'s mut self, pos: &Position) -> Option<&'m mut Node> {
-        self.grid.get_mut(pos.y).and_then(|row| row.get_mut(pos.x))
+    fn node_at_pos<'m, 's: 'm>(&'s mut self, pos: &Position<usize>) -> Option<&'m mut Node> {
+        let (x, y) = pos.get_ref();
+        self.grid.get_mut(*y).and_then(|row| row.get_mut(*x))
     }
 
     #[inline]
@@ -79,50 +68,6 @@ impl Grid {
     }
 }
 
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-    Init,
-}
-
-impl Direction {
-    
-    #[inline]
-    fn turn_right(&self) -> Self {
-        match *self {
-            Direction::Right => Direction::Down,
-            Direction::Down => Direction::Left,
-            Direction::Left => Direction::Up,
-            Direction::Up => Direction::Right,
-            Direction::Init => Direction::Right,
-        }
-    }
-
-    #[inline]
-    fn turn_left(&self) -> Self {
-        match *self {
-            Direction::Left => Direction::Down,
-            Direction::Down => Direction::Right,
-            Direction::Right => Direction::Up,
-            Direction::Up => Direction::Left,
-            Direction::Init => Direction::Left,
-        }
-    }
-
-    #[inline]
-    fn reverse(&self) -> Self {
-        match *self {
-            Direction::Left => Direction::Right,
-            Direction::Down => Direction::Up,
-            Direction::Right => Direction::Left,
-            Direction::Up => Direction::Down,
-            Direction::Init => panic!("this should never happen.")
-        }
-    }
-}
-
 pub enum Part {
     Part1,
     Part2,
@@ -130,7 +75,7 @@ pub enum Part {
 
 pub struct Walker {
     grid: Grid,
-    pos: Position,
+    pos: Position<usize>,
     facing: Direction,
     part: Part,
 }
@@ -144,20 +89,9 @@ impl Walker {
         Walker {
             grid: grid,
             pos: Position::from((middle, middle)),
-            facing: Direction::Init,
+            facing: Direction::init_init(),
             part: part,
         }
-    }
-
-    #[inline]
-    fn step(&mut self) {
-        match self.facing {
-            Direction::Up => self.pos.y -= 1,
-            Direction::Down => self.pos.y += 1,
-            Direction::Left => self.pos.x -= 1,
-            Direction::Right => self.pos.x += 1,
-            Direction::Init => panic!("This should never happen!"),
-        };
     }
 
     fn diagnostics(&mut self) -> i32 {
@@ -216,19 +150,22 @@ impl Iterator for Walker {
 
     #[inline]
     fn next(&mut self) -> Option<i32> {
-        
-        if self.pos.x == 0 {
+        let (x, y) = {
+            let (_x, _y) = self.pos.get_ref();
+            (*_x, *_y)
+        };
+        if x == 0 {
             self.grid.extend_left();
-            self.pos.x += 1;
+            self.pos.increment_x(1);
         }
-        if self.pos.x == self.grid.grid[0].len() {
+        if x == self.grid.grid[0].len() {
             self.grid.extend_right();
         }
-        if self.pos.y == 0 {
+        if y == 0 {
             self.grid.extend_top();
-            self.pos.y += 1;
+            self.pos.increment_y(1);
         }
-        if self.pos.y == self.grid.grid.len() {
+        if y == self.grid.grid.len() {
             self.grid.extend_bottem();
         }
         
@@ -237,7 +174,7 @@ impl Iterator for Walker {
             Part::Part2 => Some(self.advanced_diagnostics()),
         };
 
-        self.step();
+        self.pos.change(&self.facing, 1);
         return infected;
     }
 }

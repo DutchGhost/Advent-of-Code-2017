@@ -1,3 +1,4 @@
+use libaoc::{Direction, Position};
 #[derive(Debug, PartialEq, Eq)]
 pub enum Node {
     Pipe,
@@ -19,18 +20,9 @@ impl From<char> for Node {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
-enum Direction {
-    Right,
-    Left,
-    Up,
-    Down,
-}
-
 #[derive(Debug)]
 pub struct Walker {
-    x: usize,
-    y: usize,
+    position: Position<usize>,
     direction: Direction,
     message: String,
     nodes: Vec<Vec<Node>>
@@ -43,10 +35,8 @@ impl Walker {
             .iter()
             .position(|node| node == &Node::Pipe)
             .unwrap();
-
         Walker {
-            x: x,
-            y: 0,
+            position: Position::from((x, 0)),
             direction: Direction::Down,
             message: String::new(),
             nodes: nodes
@@ -58,24 +48,21 @@ impl Walker {
     }
     
     pub fn atvoidnode(&self) -> bool {
-        self.nodes[self.y][self.x] == Node::Void
+        let (x, y) = self.position.into();
+        self.nodes[y][x] == Node::Void
     }
 
-    ///first walk, then check the node.
+    /// first walk, then check the node.
     /// if its a letter, push it to the message.
     /// if it's a turn, then turn!
     pub fn walk(&mut self) {
-        match self.direction {
-            Direction::Up => self.y -= 1,
-            Direction::Down => self.y += 1,
-            Direction::Left => self.x -= 1,
-            Direction::Right => self.x += 1,
-        }
+        self.position.change(&self.direction, 1);
         self.checknode()
     }
 
     pub fn checknode(&mut self) {
-        match self.nodes[self.y][self.x] {
+        let (x, y) = self.position.into();
+        match self.nodes[y][x] {
             Node::Letter(c) => self.message.push(c),
             Node::Turn => self.turn(),
             _ => return,
@@ -85,9 +72,10 @@ impl Walker {
     //return None if you can't even look to the right / down
     //return None if x + 1 or y + 1 equals Node::Void.
     fn node_at_pos(&self, s: &str) -> Option<()> {
+        let (x, y) = self.position.into();
         match s {
             "updown" => {
-                if self.x + 1 >= self.nodes[0].len() || self.nodes[self.y][self.x + 1] == Node::Void {
+                if x + 1 >= self.nodes[0].len() || self.nodes[y][x + 1] == Node::Void {
                     None
                 }
                 else {
@@ -95,7 +83,7 @@ impl Walker {
                 }
             }
             "leftright" => {
-                if self.y > self.nodes.len() || self.nodes[self.y + 1][self.x] == Node::Void {
+                if y > self.nodes.len() || self.nodes[y + 1][x] == Node::Void {
                     None
                 }
                 else {
@@ -109,16 +97,17 @@ impl Walker {
         match self.direction {
             Direction::Up | Direction::Down => {
                 match self.node_at_pos("updown") {
-                    Some(_) => self.direction = Direction::Right,
-                    None => self.direction = Direction::Left,
+                    Some(_) => self.direction = Direction::init_right(),
+                    None => self.direction = Direction::init_left(),
                 }
             },
             Direction::Left | Direction::Right => {
                 match self.node_at_pos("leftright") {
-                    Some(_) => self.direction = Direction::Down,
-                    None => self.direction = Direction::Up,
+                    Some(_) => self.direction = Direction::init_down(),
+                    None => self.direction = Direction::init_up(),
                 }
             },
+            _ => return,
         }
     }
 }

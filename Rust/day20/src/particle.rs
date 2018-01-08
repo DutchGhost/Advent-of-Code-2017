@@ -105,9 +105,7 @@ impl FromStr for GPU {
     type Err = ();
     fn from_str(s: &str) -> Result<GPU, Self::Err> {
         Ok(GPU {
-            particles: s.lines()
-                .map(|line| Particle::from_str(line).unwrap())
-                .collect::<Vec<_>>(),
+            particles: s.lines().to_num().unwrap()
         })
     }
 }

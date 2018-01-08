@@ -1,77 +1,32 @@
 use genitter::GeneratorAdaptor;
 
 use std::ops::Generator;
-use std::mem;
 
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
+use libaoc::{Position, Direction, ManhattenDst};
 
-impl Direction {
-    fn new() -> Direction {
-        Direction::Right
-    }
-
-    fn change(&mut self) {
-        mem::replace(self, match *self {
-            Direction::Up => Direction::Left,
-            Direction::Left => Direction::Down,
-            Direction::Down => Direction::Right,
-            Direction::Right => Direction::Up,
-        });
-    }
-}
-
-#[derive(Clone)]
-struct Point {
-    x: i64,
-    y: i64,
-}
-
-impl Point {
-    fn update(&mut self, direction: &Direction) {
-        match direction {
-            &Direction::Up => {
-                self.y += 1;
-            },
-            &Direction::Down => {
-                self.y -= 1;
-            }
-            &Direction::Left => {
-                self.x -= 1;
-            },
-            &Direction::Right => {
-                self.x += 1;
-            }
-        }
-    }
-}
-
+//turn left, on dir::up,
 pub struct Spiral {
-    point: Point,
+    point: Position<i64>,
     direction: Direction,
-    storage: Vec<(i64, Point)>
+    storage: Vec<(i64, Position<i64>)>
 }
 
 impl Spiral {
     //Init a spiral with the coordinate [0, 0] set to a value of 1.
     pub fn new() -> Spiral {
-        let vec = vec![(1, Point {x: 0, y: 0})];
+        let vec = vec![(1, Position::new(0, 0))];
         Spiral {
-            point: Point {x: 0, y: 0},
-            direction: Direction::new(),
+            point: Position::new(0, 0),
+            direction: Direction::init_right(),
             storage: vec
         }
     }
     pub fn reset(&mut self) {
-        self.point = Point {x: 0, y: 0};
-        self.direction = Direction::new();
+        self.point = Position::new(0, 0);
+        self.direction = Direction::init_right();
     }
 
-    fn spiral<'g, 'a: 'g, F>(&'a mut self, next_value: F) -> impl Generator<Yield = (i64, Point), Return = ()> + 'g
+    fn spiral<'g, 'a: 'g, F>(&'a mut self, next_value: F) -> impl Generator<Yield = (i64, Position<i64>), Return = ()> + 'g
     where
         F: Fn(&mut Self, i64) -> i64 + 'g,
     {
@@ -86,16 +41,15 @@ impl Spiral {
                         //yield the value directly.
                         let to_yield = self.point.clone();
                         yield (value, to_yield);
-
                         //update the coordinates.
-                        self.point.update(&mut self.direction);
+                        self.point.rev_change(&self.direction, 1);
 
                         //get the new value.
                         value = next_value(self, value);
 
                         //after the last step, we must change our direction.
                         if must_chage_direction == number_of_steps - 1 {
-                            self.direction.change();
+                            self.direction = self.direction.turn_left();
                         }
                     }
                 }
@@ -113,12 +67,12 @@ impl Spiral {
         
         let value = self.storage
             .iter()
-            .map(|&(value, ref p)| (value, ((p.x - self.point.x).abs(), (p.y - self.point.y).abs())))
+            .map(|&(value, ref p)| (value, self.point.diff_clone(&p)))
             .filter(|&(_, coordinate)| valids.contains(&coordinate))
             .map(|(value, _)| value)
             .sum();
-            
-        self.storage.push((value, self.point.clone()));
+
+        self.storage.push((value, self.point));
         value
     }
 
@@ -131,7 +85,7 @@ impl Spiral {
         
         spiralizer
             .find(|&(value, _)| value == input)
-            .map(|(_, point)| point.x.abs() + point.y.abs())
+            .map(|(_, point)| point.manhattendst())
             .unwrap()
     }
 
