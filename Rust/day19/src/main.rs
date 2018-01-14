@@ -2,16 +2,22 @@ extern crate libaoc;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-use libaoc::ToVec;
+use libaoc::convert::Convert;
 
 mod node;
 use node::{Node, Walker};
 
-fn parse(input: &str) -> Vec<Vec<Node>> {
-    input
-        .lines()
-        .map(|line| line.chars().convert())
-        .collect::<Vec<_>>()
+const ROWS: usize = 201;
+const COLUMS: usize = 202;
+
+fn parse(input: &str) -> [[Node; COLUMS]; ROWS] {
+    let mut arr: [[Node; COLUMS]; ROWS] = [[Node::Void; COLUMS]; ROWS];
+ 
+    for (row, line) in arr.iter_mut().zip(input.lines()) {
+        line.chars().convert_into_slice(row);
+    }
+
+    arr
 }
 
 fn main() {
