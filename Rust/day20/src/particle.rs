@@ -105,7 +105,7 @@ impl FromStr for GPU {
     type Err = ();
     fn from_str(s: &str) -> Result<GPU, Self::Err> {
         Ok(GPU {
-            particles: s.lines().to_num().unwrap()
+            particles: s.lines().try_convert().unwrap()
         })
     }
 }

@@ -6,7 +6,7 @@ mod particle;
 mod prelude {
     pub use std::str::FromStr;
     pub use particle::GPU;
-    pub use libaoc::StrToNum;
+    pub use libaoc::convert::TryConvert;
 }
 
 use prelude::*;
