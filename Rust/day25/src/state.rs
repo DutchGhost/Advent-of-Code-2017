@@ -51,7 +51,15 @@ fn parse<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> (i32, Direction, Stat
     
     (write, direction, newstate)
 }
-
+impl Block {
+    pub fn new() -> Block {
+        Block {
+            state: State::A,
+            onzero: (0, Direction::Left, State::A),
+            onone: (0, Direction::Left, State::A),
+        }
+    }
+}
 impl FromStr for Block {
     type Err = &'static str;
     fn from_str(s: &str) -> Result<Block, Self::Err> {
@@ -89,7 +97,7 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn new(transitions: Vec<Block>) -> CPU {
+    pub fn new(transitions: [Block; 6]) -> CPU {
         let mut map = HashMap::new();
         
         for transition in transitions.into_iter() {
