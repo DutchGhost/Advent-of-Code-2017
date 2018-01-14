@@ -12,8 +12,7 @@ const INPUT_SIZE: usize = 16;
 const BYTESPUZZLE: [u8; 49] = *b"31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33";
 const SALT: [u8; 5] = [17, 31, 73, 47, 23];
 
-fn nums() -> [usize; 256] {
-    [
+const NUMS: [usize; 256] = [
           0,  1,    2,   3,   4,   5,   6,   7,   8,   9,
          10,  11,  12,  13,  14,  15,  16,  17,  18,  19,
          20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
@@ -40,8 +39,7 @@ fn nums() -> [usize; 256] {
         230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
         240, 241, 242, 243, 244, 245, 246, 247, 248, 249,
         250, 251, 252, 253, 254, 255
-    ]
-}
+    ];
 
 fn parse_bytes(input: [u8; 49]) -> [usize; 49 + 5] {
     let mut arr = [0usize; 49 + 5];
@@ -107,12 +105,12 @@ fn dense(nums: &[usize]) -> String {
 }
 
 fn main() {
-    let mut nums_part1 = nums();
+    let mut nums_part1 = NUMS;
     let mut lenghts_part1: [usize; INPUT_SIZE] = [0; INPUT_SIZE];
     PUZZLE.split(",").try_convert_into_slice(&mut lenghts_part1);
     println!("part 1: {}", solve(1, &mut nums_part1, &lenghts_part1));
 
-    let mut nums_part2 = nums();
+    let mut nums_part2 = NUMS;
     let lenghts_part2 = parse_bytes(BYTESPUZZLE);
     let rounds = 64;
     let started = Instant::now();
