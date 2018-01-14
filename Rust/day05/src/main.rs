@@ -1,9 +1,11 @@
 extern crate libaoc;
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-use libaoc::StrToNum;
+use libaoc::convert::TryConvert;
 
-fn run<F>(mut jumps: Vec<i64>, updater: F) -> i64
+const INPUT_SIZE: usize = 1097;
+
+fn run<F>(mut jumps: [i64; INPUT_SIZE], updater: F) -> i64
 where
     F: Fn(i64) -> i64
 {
@@ -25,7 +27,9 @@ fn one(_: i64) -> i64 { 1 }
 fn two(n: i64) -> i64 {if n >= 3 { - 1 } else { 1 } }
 
 fn main() {
-    let data = PUZZLE.lines().to_num().unwrap();
-    println!("day 5.1: {}", run(data.clone(), one));
-    println!("day 5.2: {}", run(data, two));
+    let mut arr: [i64; INPUT_SIZE] = [0; INPUT_SIZE];
+    PUZZLE.lines().try_convert_into_slice(&mut arr);
+
+    println!("day 5.1: {}", run(arr, one));
+    println!("day 5.2: {}", run(arr, two));
 }
