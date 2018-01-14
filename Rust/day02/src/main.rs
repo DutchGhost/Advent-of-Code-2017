@@ -1,8 +1,11 @@
 extern crate libaoc;
 
-use libaoc::{StrToNum, MinMax};
+use libaoc::convert::TryConvert;
+use libaoc::MinMax;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
+
+const INPUT_LEN: usize = 16;
 
 /// gets the biggest out of the nums.
 /// returns None if the bigger one can not be equally devided by the smaller one.
@@ -37,17 +40,25 @@ fn difference(nums: &[u32]) -> u32 {
 }
 
 fn solve() -> (u32, u32) {
-    let parsed = PUZZLE.lines().filter_map(|line| line.split_whitespace().to_num().ok()).collect::<Vec<_>>();
-    let part1 = parsed.iter().map(|nums| difference(nums)).sum::<u32>();
-    let part2 = parsed.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
+    let mut arr: [[u32; INPUT_LEN]; INPUT_LEN] = [[0; INPUT_LEN]; INPUT_LEN];
+
+    let parsed = PUZZLE.lines();
+
+    for (row, line) in arr.iter_mut().zip(parsed) {
+        line.split_whitespace().try_convert_into_slice(row);
+    }
+
+    let part1 = arr.iter().map(|nums| difference(nums)).sum::<u32>();
+    let part2 = arr.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
 
     (part1, part2)
 }
-fn main() {
-    let (part1, part2) = solve();
 
-    println!("day 2.1: {}", part1);
-    println!("day 2.2: {}", part2);
+fn main() {
+    let (p1, p2) = solve();
+
+    println!("day 2.1: {}", p1);
+    println!("day 2.2: {}", p2);
 }
 
 trait Sub<T>
