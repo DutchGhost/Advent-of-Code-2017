@@ -54,9 +54,30 @@ fn solve() -> (u32, u32) {
     (part1, part2)
 }
 
-fn main() {
-    let (p1, p2) = solve();
+fn solve_vec() -> (u32, u32) {
 
+    let arr = PUZZLE
+        .lines()
+        .take(INPUT_LEN)
+        .map(|line| line.split_whitespace().take(INPUT_LEN).try_convert().unwrap())
+        .collect::<Vec<_>>();
+
+    let part1 = arr.iter().map(|nums| difference(nums)).sum::<u32>();
+    let part2 = arr.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
+
+    (part1, part2)
+}
+
+fn main() {
+    use std::time::Instant;
+    let s = Instant::now();
+    let (p1, p2) = solve();
+    println!("{:?}", s.elapsed());
+
+    let v = Instant::now();
+    let (part1, part2) = solve_vec();
+    println!("{:?}", v.elapsed());
+    
     println!("day 2.1: {}", p1);
     println!("day 2.2: {}", p2);
 }
