@@ -2,7 +2,7 @@ use genitter::GeneratorAdaptor;
 
 use std::ops::Generator;
 
-use libaoc::{Position, Direction, ManhattenDst};
+use libaoc::movement::{Position, Direction, ManhattenDst};
 
 //turn left, on dir::up,
 pub struct Spiral {
@@ -67,9 +67,8 @@ impl Spiral {
         
         let value = self.storage
             .iter()
-            .map(|&(value, ref p)| (value, self.point.diff_clone(&p)))
-            .filter(|&(_, coordinate)| valids.contains(&coordinate))
-            .map(|(value, _)| value)
+            .filter(|&&(_, coordinate)| self.point.is_adjecent(&coordinate))
+            .map(|&(value, _)| value)
             .sum();
 
         self.storage.push((value, self.point));

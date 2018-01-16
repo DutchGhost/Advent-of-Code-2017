@@ -1,4 +1,5 @@
 use std::collections::{VecDeque, HashMap};
+use std::str::FromStr;
 
 #[derive(Debug, Hash, Clone, Copy)]
 enum Direction {
@@ -7,13 +8,84 @@ enum Direction {
 }
 
 #[derive(Debug, Hash, Clone, Copy, Eq, PartialEq)]
-enum State {
+pub enum State {
     A,
     B,
     C,
     D,
     E,
     F
+}
+
+#[derive(Debug)]
+pub struct Block {
+    state: State,
+    onzero: (i32, Direction, State),
+    onone: (i32, Direction, State),
+}
+
+fn parse<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> (i32, Direction, State) {
+    let write = match iter.next().unwrap().split_whitespace().last() {        
+        Some("0.") => 0,
+        Some("1.") => 1,
+        _ => panic!("I dont know how to parse this!"),
+    };
+
+    //the direction.
+    let direction = match iter.next().unwrap().split_whitespace().last() {
+            
+        Some("left.") => Direction::Left,
+        Some("right.") => Direction::Right,
+        _ => panic!("I dont know how to parse this!"),
+    };
+
+    let newstate = match iter.next().unwrap().split_whitespace().last() {
+        Some("A.") => State::A,
+        Some("B.") => State::B,
+        Some("C.") => State::C,
+        Some("D.") => State::D,
+        Some("E.") => State::E,
+        Some("F.") => State::F,
+        _ => panic!("cant parse this"),
+    };
+    
+    (write, direction, newstate)
+}
+impl Block {
+    pub fn new() -> Block {
+        Block {
+            state: State::A,
+            onzero: (0, Direction::Left, State::A),
+            onone: (0, Direction::Left, State::A),
+        }
+    }
+}
+impl FromStr for Block {
+    type Err = &'static str;
+    fn from_str(s: &str) -> Result<Block, Self::Err> {
+        let mut iter = s.lines().filter(|line| line != &"");
+        //the state
+        let state = match iter.next().unwrap().split_whitespace().last() {
+            Some("A:") => State::A,
+            Some("B:") => State::B,
+            Some("C:") => State::C,
+            Some("D:") => State::D,
+            Some("E:") => State::E,
+            Some("F:") => State::F,
+            _ => panic!("Could not parse"),
+        };
+        iter.next();
+        //the last char
+        
+        let onezero = parse(&mut iter);
+        iter.next();
+        let onone = parse(&mut iter);
+        Ok(Block {
+            state: state,
+            onzero: onezero,
+            onone: onone,
+        })
+    }
 }
 
 #[derive(Debug)]
@@ -25,20 +97,13 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn new() -> CPU {
+    pub fn new(transitions: [Block; 6]) -> CPU {
         let mut map = HashMap::new();
-        map.insert((State::A, 0), (1, Direction::Right, State::B));
-        map.insert((State::A, 1), (0, Direction::Left, State::F));
-        map.insert((State::B, 0), (0, Direction::Right, State::C));
-        map.insert((State::B, 1), (0, Direction::Right, State::D));
-        map.insert((State::C, 0), (1, Direction::Left, State::D));
-        map.insert((State::C, 1), (1, Direction::Right, State::E));
-        map.insert((State::D, 0), (0, Direction::Left, State::E));
-        map.insert((State::D, 1), (0, Direction::Left, State::D));
-        map.insert((State::E, 0), (0, Direction::Right, State::A));
-        map.insert((State::E, 1), (1, Direction::Right, State::C));
-        map.insert((State::F, 0), (1, Direction::Left, State::A));
-        map.insert((State::F, 1), (1, Direction::Right, State::A));
+        
+        for transition in transitions.into_iter() {
+            map.insert((transition.state, 0i32), transition.onzero);
+            map.insert((transition.state, 1i32), transition.onone);
+        }
 
         let mut deque = VecDeque::with_capacity(50_000);
         deque.push_front(0);

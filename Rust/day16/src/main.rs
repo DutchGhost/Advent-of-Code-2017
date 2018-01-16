@@ -2,7 +2,7 @@
 
 extern crate libaoc;
 
-use libaoc::StrToNum;
+use libaoc::convert::TryConvert;
 use std::str::FromStr;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
@@ -56,7 +56,7 @@ struct Instructions(Vec<Move>);
 impl Instructions {
     #[inline]
     fn new<'a>(s: &'a str) -> Instructions {
-        Instructions(s.split(",").to_num().unwrap())
+        Instructions(s.split(",").try_convert().unwrap())
     }
 
     #[inline]
@@ -70,7 +70,7 @@ fn run<'p, 'i>(programms: &'p mut [u8], instructions: &'i Instructions) {
 
     for instruction in instructions.iter() {
         match instruction {
-            &Move::Spin(n) => programms.rotate(len - n),
+            &Move::Spin(n) => programms.rotate_left(len - n),
             &Move::Exchange(n1, n2) => programms.swap(n1, n2),
             &Move::Partner(d1, d2) => {
                 let n1 = programms.iter().position(|item| item == &d1).unwrap();

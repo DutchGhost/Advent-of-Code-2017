@@ -1,5 +1,9 @@
-use libaoc::{Direction, Position};
-#[derive(Debug, PartialEq, Eq)]
+use libaoc::movement::{Direction, Position};
+
+const ROWS: usize = 201;
+const COLUMS: usize = 202;
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Node {
     Pipe,
     Void,
@@ -20,17 +24,16 @@ impl From<char> for Node {
     }
 }
 
-#[derive(Debug)]
 pub struct Walker {
     position: Position<usize>,
     direction: Direction,
     message: String,
-    nodes: Vec<Vec<Node>>
+    nodes: [[Node; COLUMS]; ROWS]
 }
 
 impl Walker {
     ///A new Walker is initalized with just the x set to where you enter the maze.
-    pub fn new(nodes: Vec<Vec<Node>>) -> Walker {
+    pub fn new(nodes: [[Node; COLUMS]; ROWS]) -> Walker {
         let x = nodes[0]
             .iter()
             .position(|node| node == &Node::Pipe)

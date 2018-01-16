@@ -1,5 +1,7 @@
 use std::str::FromStr;
-use libaoc::{Direction, Position, ToVec};
+use libaoc::movement::{Direction, Position};
+use libaoc::convert::Convert;
+
 
 #[derive(Clone)]
 pub enum Node {
