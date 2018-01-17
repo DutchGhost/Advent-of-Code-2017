@@ -36,11 +36,12 @@ fn summmenize_andpercent(input: &[u8; 2190], skip: usize) -> u32 {
 fn optimized_andpercent(input: &[u8; 2190], half: usize) -> u32 {
     let (head, tail) = input.split_at(half);
 
-    let mut totall: u32 = 0;
-    for (c1, c2) in head.iter().zip(tail.iter()) {
-        totall += ((*c1 as i8 - 48) & -((c1 == c2) as i8)) as u32
-    }
-    totall << 1
+    head
+        .iter()
+        .zip(tail.iter())
+        .map(|(c1, c2)| ((*c1 as i8 - 48) & -((c1 == c2) as i8)) as u32)
+        .sum::<u32>() << 1
+   
 }
 /// take an &str, loop over the chars,
 /// and zip with an infinite version of itself that skips for `skip`.
