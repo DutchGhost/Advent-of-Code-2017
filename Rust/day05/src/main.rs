@@ -24,9 +24,32 @@ where
 fn one(_: i64) -> i64 { 1 }
 
 #[inline(always)]
-fn two(n: i64) -> i64 {if n >= 3 { - 1 } else { 1 } }
+fn TWO_UGLY_VERSION(n: i64) -> i64 { -(( n >= 3) as i64) | 1 }
+/*
+    push rbp
+    mov rbp, rsp
+    cmp rdi, 2
+    mov ecx, 1
+    mov rax, -1
+    cmovle rax, rcx
+    pop rbp
+    ret
+*/
 
-fn main() {
+#[inline(always)]
+fn two(n: i64) -> i64 {if n >= 3 { -1 } else { 1 }}
+/*
+    push rbp
+    mov rbp, rsp
+    cmp rdi, 2
+    mov ecx, 1
+    mov rax, -1
+    cmovle rax, rcx
+    pop rbp
+    ret
+*/
+
+fn main() {   
     let mut arr: [i64; INPUT_SIZE] = [0; INPUT_SIZE];
     PUZZLE.lines().try_convert_into_slice(&mut arr);
 
