@@ -18,6 +18,7 @@ fn is_divisible(a: &u32, b: &u32) -> Option<u32> {
         None
     }
 }
+
 fn evenly(vec: &[u32]) -> Option<u32> {
     // The inner Iterator can result in a None, if nothing so far is divisible.
     vec.iter()
@@ -54,29 +55,8 @@ fn solve() -> (u32, u32) {
     (part1, part2)
 }
 
-fn solve_vec() -> (u32, u32) {
-
-    let arr = PUZZLE
-        .lines()
-        .take(INPUT_LEN)
-        .map(|line| line.split_whitespace().take(INPUT_LEN).try_convert().unwrap())
-        .collect::<Vec<_>>();
-
-    let part1 = arr.iter().map(|nums| difference(nums)).sum::<u32>();
-    let part2 = arr.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
-
-    (part1, part2)
-}
-
 fn main() {
-    use std::time::Instant;
-    let s = Instant::now();
     let (p1, p2) = solve();
-    println!("{:?}", s.elapsed());
-
-    let v = Instant::now();
-    let (part1, part2) = solve_vec();
-    println!("{:?}", v.elapsed());
     
     println!("day 2.1: {}", p1);
     println!("day 2.2: {}", p2);
@@ -92,7 +72,8 @@ where
 impl<T> Sub<T> for (T, T)
 where
     T: std::ops::Sub<T>,
-{
+{   
+    #[inline]
     fn sub(self) -> <T as std::ops::Sub>::Output {
         self.0 - self.1
     }
