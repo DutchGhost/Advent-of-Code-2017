@@ -4,12 +4,47 @@ const PUZZLE: &'static str = include_str!("Input.txt");
 const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
 
 fn main() {
+    use std::time::Instant;
+
+
+    let s = Instant::now();
+    println!("{}", summmenize_andpercent(BPUZZLE, 1));
+    println!("{}", optimized_andpercent(BPUZZLE, PUZZLE.len() >> 1));
+    println!("{:?}", s.elapsed());
+
+
+    let t = Instant::now();
     println!("day 1.1: {}", bytes_summenize(BPUZZLE, 1));
     println!("day 1.2: {}", bytes_optimized(BPUZZLE, BPUZZLE.len() >> 1));
+    println!("{:?}", t.elapsed());
+
 }
 
+#[inline]
+fn summmenize_andpercent(input: &[u8; 2190], skip: usize) -> u32 {
+    let mut totall: u32 = 0;
+
+    for (c1, c2) in input.iter().zip(input.iter().skip(skip)) {
+        totall += ((*c1 as i8 - 48) & -((c1 == c2) as i8)) as u32
+    }
+    //assert!(input.len() > 2189);
+    totall += ((input[0] - 48) as i32 & -((input[0] == input[2189]) as i32)) as u32;
+    totall
+}
+
+#[inline]
+fn optimized_andpercent(input: &[u8; 2190], half: usize) -> u32 {
+    let (head, tail) = input.split_at(half);
+
+    let mut totall: u32 = 0;
+    for (c1, c2) in head.iter().zip(tail.iter()) {
+        totall += ((*c1 as i8 - 48) & -((c1 == c2) as i8)) as u32
+    }
+    totall << 1
+}
 /// take an &str, loop over the chars,
 /// and zip with an infinite version of itself that skips for `skip`.
+#[inline]
 fn summenize(input: &str, skip: usize) -> u32 {
     input
         .chars()
@@ -21,6 +56,7 @@ fn summenize(input: &str, skip: usize) -> u32 {
 /// We devide the str in half, check for each element.
 /// at the end we bitshift by 1 to the left (multiply by 2),
 /// every item we found in the first half, will also be the same fore the second half
+#[inline]
 fn optimized(input: &str, half: usize) -> u32 {
     let (head, tail) = input.split_at(half);
     head
@@ -81,5 +117,15 @@ mod tests {
     #[bench]
     fn str_fast_part2(b: &mut Bencher) {
         b.iter(|| optimized(PUZZLE, PUZZLE.len() >> 1));
+    }
+
+    #[bench]
+    fn bytes_summenize_part1_andpercent(b: &mut Bencher) {
+        b.iter(|| summmenize_andpercent(BPUZZLE, 1));
+    }
+
+    #[bench]
+    fn bytes_optimized_part2_andpercent(b: &mut Bencher) {
+        b.iter(|| optimized_andpercent(BPUZZLE, PUZZLE.len() >> 1));
     }
 }
