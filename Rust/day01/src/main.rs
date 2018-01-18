@@ -89,24 +89,53 @@ fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
         .sum::<u32>() << 1
 }
 
-#[inline]
+// #[inline]
+// pub fn optimized_andpercent_unrolled(input: &[u8; 2190], HALF: usize) -> u32 {
+//     let mut totall = 0;
+//     let (head, tail) = input.split_at(HALF);
+    
+//     unsafe {
+//         for (lhs, rhs) in head.chunks(5).zip(tail.chunks(5)) {
+//             //assert!(lhs.len() == 5 && rhs.len() == 5);
+//             totall +=  (((*lhs.get_unchecked(0) as i8 - 48) & -((*lhs.get_unchecked(0) == *rhs.get_unchecked(0)) as i8)) +
+//                         ((*lhs.get_unchecked(1) as i8 - 48) & -((*lhs.get_unchecked(1) == *rhs.get_unchecked(1)) as i8)) +
+//                         ((*lhs.get_unchecked(2) as i8 - 48) & -((*lhs.get_unchecked(2) == *rhs.get_unchecked(2)) as i8)) +
+//                         ((*lhs.get_unchecked(3) as i8 - 48) & -((*lhs.get_unchecked(3) == *rhs.get_unchecked(3)) as i8)) +
+//                         ((*lhs.get_unchecked(4) as i8 - 48) & -((*lhs.get_unchecked(4) == *rhs.get_unchecked(4)) as i8))) as u32;
+//         }
+//     }
+//     totall << 1
+// }
+const SUB: i8 = 48;
 pub fn optimized_andpercent_unrolled(input: &[u8; 2190], HALF: usize) -> u32 {
     let mut totall = 0;
-    let (head, tail) = input.split_at(HALF);
-    
     unsafe {
-        for (lhs, rhs) in head.chunks(5).zip(tail.chunks(5)) {
-            //assert!(lhs.len() == 5 && rhs.len() == 5);
-            totall +=  (((*lhs.get_unchecked(0) as i8 - 48) & -((*lhs.get_unchecked(0) == *rhs.get_unchecked(0)) as i8)) +
-                        ((*lhs.get_unchecked(1) as i8 - 48) & -((*lhs.get_unchecked(1) == *rhs.get_unchecked(1)) as i8)) +
-                        ((*lhs.get_unchecked(2) as i8 - 48) & -((*lhs.get_unchecked(2) == *rhs.get_unchecked(2)) as i8)) +
-                        ((*lhs.get_unchecked(3) as i8 - 48) & -((*lhs.get_unchecked(3) == *rhs.get_unchecked(3)) as i8)) +
-                        ((*lhs.get_unchecked(4) as i8 - 48) & -((*lhs.get_unchecked(4) == *rhs.get_unchecked(4)) as i8))) as u32;
-        }
+        let head = input.get_unchecked(0..1095);
+        let tail = input.get_unchecked(1095..);
+
+        head.chunks(15).zip(tail.chunks(15)).for_each(|(lhs, rhs)|  {
+            totall +=
+                (
+                        ((*lhs.get_unchecked(0) as i8 - SUB) & -((*lhs.get_unchecked(0) == *rhs.get_unchecked(0)) as i8)) +
+                        ((*lhs.get_unchecked(1) as i8 - SUB) & -((*lhs.get_unchecked(1) == *rhs.get_unchecked(1)) as i8)) +
+                        ((*lhs.get_unchecked(2) as i8 - SUB) & -((*lhs.get_unchecked(2) == *rhs.get_unchecked(2)) as i8)) +
+                        ((*lhs.get_unchecked(3) as i8 - SUB) & -((*lhs.get_unchecked(3) == *rhs.get_unchecked(3)) as i8)) +
+                        ((*lhs.get_unchecked(4) as i8 - SUB) & -((*lhs.get_unchecked(4) == *rhs.get_unchecked(4)) as i8)) +
+                        ((*lhs.get_unchecked(5) as i8 - SUB) & -((*lhs.get_unchecked(5) == *rhs.get_unchecked(5)) as i8)) +
+                        ((*lhs.get_unchecked(6) as i8 - SUB) & -((*lhs.get_unchecked(6) == *rhs.get_unchecked(6)) as i8)) +
+                        ((*lhs.get_unchecked(7) as i8 - SUB) & -((*lhs.get_unchecked(7) == *rhs.get_unchecked(7)) as i8)) +
+                        ((*lhs.get_unchecked(8) as i8 - SUB) & -((*lhs.get_unchecked(8) == *rhs.get_unchecked(8)) as i8)) +
+                        ((*lhs.get_unchecked(9) as i8 - SUB) & -((*lhs.get_unchecked(9) == *rhs.get_unchecked(9)) as i8)) +
+                        ((*lhs.get_unchecked(10) as i8 - SUB) & -((*lhs.get_unchecked(10) == *rhs.get_unchecked(10)) as i8)) +
+                        ((*lhs.get_unchecked(11) as i8 - SUB) & -((*lhs.get_unchecked(11) == *rhs.get_unchecked(11)) as i8)) +
+                        ((*lhs.get_unchecked(12) as i8 - SUB) & -((*lhs.get_unchecked(12) == *rhs.get_unchecked(12)) as i8)) +
+                        ((*lhs.get_unchecked(13) as i8 - SUB) & -((*lhs.get_unchecked(13) == *rhs.get_unchecked(13)) as i8)) +
+                        ((*lhs.get_unchecked(14) as i8 - SUB) & -((*lhs.get_unchecked(14) == *rhs.get_unchecked(14)) as i8))
+                ) as u32;
+        });
     }
     totall << 1
 }
-
 
 #[cfg(test)]
 mod tests {
