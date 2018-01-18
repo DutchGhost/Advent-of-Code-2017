@@ -1,8 +1,8 @@
-#![feature(slice_patterns)]
 #![feature(test)]
 extern crate test;
 const PUZZLE: &'static str = include_str!("Input.txt");
 const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
+const SUB: i8 = 48;
 
 fn main() {
     use std::time::Instant;
@@ -89,25 +89,8 @@ fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
         .sum::<u32>() << 1
 }
 
-// #[inline]
-// pub fn optimized_andpercent_unrolled(input: &[u8; 2190], HALF: usize) -> u32 {
-//     let mut totall = 0;
-//     let (head, tail) = input.split_at(HALF);
-    
-//     unsafe {
-//         for (lhs, rhs) in head.chunks(5).zip(tail.chunks(5)) {
-//             //assert!(lhs.len() == 5 && rhs.len() == 5);
-//             totall +=  (((*lhs.get_unchecked(0) as i8 - 48) & -((*lhs.get_unchecked(0) == *rhs.get_unchecked(0)) as i8)) +
-//                         ((*lhs.get_unchecked(1) as i8 - 48) & -((*lhs.get_unchecked(1) == *rhs.get_unchecked(1)) as i8)) +
-//                         ((*lhs.get_unchecked(2) as i8 - 48) & -((*lhs.get_unchecked(2) == *rhs.get_unchecked(2)) as i8)) +
-//                         ((*lhs.get_unchecked(3) as i8 - 48) & -((*lhs.get_unchecked(3) == *rhs.get_unchecked(3)) as i8)) +
-//                         ((*lhs.get_unchecked(4) as i8 - 48) & -((*lhs.get_unchecked(4) == *rhs.get_unchecked(4)) as i8))) as u32;
-//         }
-//     }
-//     totall << 1
-// }
-const SUB: i8 = 48;
-pub fn optimized_andpercent_unrolled(input: &[u8; 2190], HALF: usize) -> u32 {
+#[inline]
+fn optimized_andpercent_unrolled(input: &[u8; 2190], _: usize) -> u32 {
     let mut totall = 0;
     unsafe {
         let head = input.get_unchecked(0..1095);
