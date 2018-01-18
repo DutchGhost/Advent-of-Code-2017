@@ -91,21 +91,22 @@ fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
 
 #[inline]
 pub fn optimized_andpercent_unrolled(input: &[u8; 2190], HALF: usize) -> u32 {
-    
     let mut totall = 0;
     let (head, tail) = input.split_at(HALF);
-   
-    for (lhs, rhs) in head.chunks(5).zip(tail.chunks(5)) {
-        assert!(lhs.len() == 5 && rhs.len() == 5);
-        totall +=   (   ((lhs[0] as i8 - 48) & -((lhs[0] == rhs[0]) as i8)) +
-                        ((lhs[1] as i8 - 48) & -((lhs[1] == rhs[1]) as i8)) +
-                        ((lhs[2] as i8 - 48) & -((lhs[2] == rhs[2]) as i8)) +
-                        ((lhs[3] as i8 - 48) & -((lhs[3] == rhs[3]) as i8)) +
-                        ((lhs[4] as i8 - 48) & -((lhs[4] == rhs[4]) as i8))
-                    ) as u32;
+    
+    unsafe {
+        for (lhs, rhs) in head.chunks(5).zip(tail.chunks(5)) {
+            //assert!(lhs.len() == 5 && rhs.len() == 5);
+            totall +=  (((*lhs.get_unchecked(0) as i8 - 48) & -((*lhs.get_unchecked(0) == *rhs.get_unchecked(0)) as i8)) +
+                        ((*lhs.get_unchecked(1) as i8 - 48) & -((*lhs.get_unchecked(1) == *rhs.get_unchecked(1)) as i8)) +
+                        ((*lhs.get_unchecked(2) as i8 - 48) & -((*lhs.get_unchecked(2) == *rhs.get_unchecked(2)) as i8)) +
+                        ((*lhs.get_unchecked(3) as i8 - 48) & -((*lhs.get_unchecked(3) == *rhs.get_unchecked(3)) as i8)) +
+                        ((*lhs.get_unchecked(4) as i8 - 48) & -((*lhs.get_unchecked(4) == *rhs.get_unchecked(4)) as i8))) as u32;
+        }
     }
     totall << 1
 }
+
 
 #[cfg(test)]
 mod tests {
