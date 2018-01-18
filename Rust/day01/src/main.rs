@@ -1,3 +1,4 @@
+#![feature(slice_patterns)]
 #![feature(test)]
 extern crate test;
 const PUZZLE: &'static str = include_str!("Input.txt");
@@ -6,15 +7,19 @@ const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
 fn main() {
     use std::time::Instant;
 
+    let q = Instant::now();
+    println!("{}", optimized_andpercent_unrolled(BPUZZLE, BPUZZLE.len() >> 1));
+    println!("{:?}", q.elapsed());
 
-    let s = Instant::now();
+
     println!("{}", summmenize_andpercent(BPUZZLE, 1));
+    let s = Instant::now();
     println!("{}", optimized_andpercent(BPUZZLE, PUZZLE.len() >> 1));
     println!("{:?}", s.elapsed());
 
 
-    let t = Instant::now();
     println!("day 1.1: {}", bytes_summenize(BPUZZLE, 1));
+    let t = Instant::now();
     println!("day 1.2: {}", bytes_optimized(BPUZZLE, BPUZZLE.len() >> 1));
     println!("{:?}", t.elapsed());
 
@@ -84,6 +89,23 @@ fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
         .sum::<u32>() << 1
 }
 
+#[inline]
+pub fn optimized_andpercent_unrolled(input: &[u8; 2190], HALF: usize) -> u32 {
+    
+    let mut totall = 0;
+    let (head, tail) = input.split_at(HALF);
+   
+    for (lhs, rhs) in head.chunks(5).zip(tail.chunks(5)) {
+        assert!(lhs.len() == 5 && rhs.len() == 5);
+        totall +=   (   ((lhs[0] as i8 - 48) & -((lhs[0] == rhs[0]) as i8)) +
+                        ((lhs[1] as i8 - 48) & -((lhs[1] == rhs[1]) as i8)) +
+                        ((lhs[2] as i8 - 48) & -((lhs[2] == rhs[2]) as i8)) +
+                        ((lhs[3] as i8 - 48) & -((lhs[3] == rhs[3]) as i8)) +
+                        ((lhs[4] as i8 - 48) & -((lhs[4] == rhs[4]) as i8))
+                    ) as u32;
+    }
+    totall << 1
+}
 
 #[cfg(test)]
 mod tests {
@@ -128,5 +150,10 @@ mod tests {
     #[bench]
     fn bytes_optimized_part2_andpercent(b: &mut Bencher) {
         b.iter(|| optimized_andpercent(BPUZZLE, PUZZLE.len() >> 1));
+    }
+
+    #[bench]
+    fn unrolled_optimized_part2_andpercent(b: &mut Bencher) {
+        b.iter(|| optimized_andpercent_unrolled(BPUZZLE, BPUZZLE.len() >> 1));
     }
 }
