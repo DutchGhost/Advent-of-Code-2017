@@ -1,28 +1,41 @@
 #![feature(test)]
 extern crate test;
+
+use std::time::{Instant, Duration};
 const PUZZLE: &'static str = include_str!("Input.txt");
 const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
 const SUB: i8 = 48;
 
 fn main() {
-    use std::time::Instant;
+    
+    let (ans, time) = measure_command(|| optimized_andpercent_unrolled(BPUZZLE, BPUZZLE.len() >> 1));
+    println!("andpercent_unrolled: {}, {:?}", ans, time);
+    
+    let (ans1, time1) = measure_command(|| summmenize_andpercent(BPUZZLE, 1));
+    println!("summenize_andpercent: {} {:?}", ans1, time1);
+    
+    let (ans2, time2) = measure_command(|| optimized_andpercent(BPUZZLE, PUZZLE.len() >> 1));
+    println!("optimized_andpercent: {} {:?}", ans2, time2);
 
-    let q = Instant::now();
-    println!("{}", optimized_andpercent_unrolled(BPUZZLE, BPUZZLE.len() >> 1));
-    println!("{:?}", q.elapsed());
+    let (ans3, time3) = measure_command(|| bytes_summenize(BPUZZLE, 1));
+    println!("part 1.1: {} {:?}", ans3, time3);
 
+    let (ans4, time4) = measure_command(|| bytes_optimized(BPUZZLE, BPUZZLE.len() >> 1));
+    println!("part 1.2: {} {:?}", ans4, time4);
+}
 
-    println!("{}", summmenize_andpercent(BPUZZLE, 1));
-    let s = Instant::now();
-    println!("{}", optimized_andpercent(BPUZZLE, PUZZLE.len() >> 1));
-    println!("{:?}", s.elapsed());
+#[inline]
+fn measure_command<T, F: Fn() -> T>(f: F) -> (F::Output, Duration) {
+    let start = Instant::now();
 
-
-    println!("day 1.1: {}", bytes_summenize(BPUZZLE, 1));
-    let t = Instant::now();
-    println!("day 1.2: {}", bytes_optimized(BPUZZLE, BPUZZLE.len() >> 1));
-    println!("{:?}", t.elapsed());
-
+    let mut v = Vec::new();
+    for _ in 0..50_000_000 {
+        let mut i = f();
+        v.push(i);
+    }
+    let stop = start.elapsed();
+    
+    (f(), stop)
 }
 
 #[inline]
@@ -72,6 +85,7 @@ fn optimized(input: &str, half: usize) -> u32 {
         .sum::<u32>() << 1
 }
 
+#[inline]
 fn bytes_summenize(input: &[u8; 2190], skip: usize) -> u32 {
     input
         .iter()
@@ -80,6 +94,7 @@ fn bytes_summenize(input: &[u8; 2190], skip: usize) -> u32 {
         .sum::<u32>()
 }
 
+#[inline]
 fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
     let (head, tail) = input.split_at(half);
     head
