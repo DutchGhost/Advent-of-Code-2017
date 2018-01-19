@@ -10,14 +10,10 @@ uint32_t summenize(string Input, uint32_t skip) {
 	uint32_t LEN = Input.length() - 1;
 
 	for (uint32_t i = 0; i < LEN; i++) {
-		if (Input[i] == Input[i + skip]) {
-			totall += (Input[i] - SUBVAL);
-		}
+		totall += (Input[i] - SUBVAL) & -(Input[i] == Input[i + skip]);
 	}
+	totall += (Input[0] - SUBVAL) & -(Input[0] == Input[LEN]);
 
-	if (Input[0] == Input[LEN]) {
-		totall += Input[0] - SUBVAL;
-	}
 	return totall;
 }
 
@@ -26,9 +22,7 @@ uint32_t optimized(string Input, uint32_t skip) {
 	uint32_t LEN = Input.length();
 
 	for (uint32_t i = 0; i < LEN >> 1; i++) {
-		if (Input[i] == Input[i + skip]) {
-			totall += (Input[i] - SUBVAL);
-		}
+		totall += (Input[i] - SUBVAL) & -(Input[i] == Input[i + skip]);
 	}
 	return totall << 1;
 }
