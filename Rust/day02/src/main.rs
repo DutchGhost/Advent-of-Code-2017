@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate libaoc;
 
 use libaoc::convert::TryConvert;
@@ -55,9 +56,40 @@ fn solve() -> (u32, u32) {
     (part1, part2)
 }
 
+fn solve2() -> (u32, u32) {
+    let arr = arraycollect!(
+        PUZZLE
+            .lines()
+            .map(|line|
+                arraycollect!(
+                    line.split_whitespace()
+                        .try_convert_iter()
+                        .map(|item| item.unwrap()) => [u32; 16]).unwrap()
+        ) => [[u32; 16]; 16]).unwrap();
+
+    let part1 = arr.iter().map(|nums| difference(nums)).sum::<u32>();
+    let part2 = arr.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
+
+    (part1, part2)
+}
 fn main() {
+    use std::time::Instant;
+
+    let b = Instant::now();
+    for _ in 0..1_000_000 {
+        let (pp1, pp2) = solve2();
+    }
+    println!("{:?}", b.elapsed());
+
+
+
+    let f = Instant::now();
+    for _ in 0..1_000_000 {
+        let (p1, p2) = solve();
+    }
+    println!("{:?}", f.elapsed());
+
     let (p1, p2) = solve();
-    
     println!("day 2.1: {}", p1);
     println!("day 2.2: {}", p2);
 }
@@ -72,7 +104,7 @@ where
 impl<T> Sub<T> for (T, T)
 where
     T: std::ops::Sub<T>,
-{   
+{
     #[inline]
     fn sub(self) -> <T as std::ops::Sub>::Output {
         self.0 - self.1
