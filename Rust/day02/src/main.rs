@@ -47,7 +47,7 @@ fn solve() -> (u32, u32) {
     let parsed = PUZZLE.lines();
 
     for (row, line) in arr.iter_mut().zip(parsed) {
-        line.split_whitespace().try_convert_into_slice(row);
+        line.split_whitespace().try_convert_into_slice(row).unwrap();
     }
 
     let part1 = arr.iter().map(|nums| difference(nums)).sum::<u32>();
@@ -56,7 +56,7 @@ fn solve() -> (u32, u32) {
     (part1, part2)
 }
 
-fn solve2() -> (u32, u32) {
+fn solve_with_collected_array() -> (u32, u32) {
     let arr = arraycollect!(
         PUZZLE
             .lines()
@@ -77,7 +77,7 @@ fn main() {
 
     let b = Instant::now();
     for _ in 0..1_000_000 {
-        let (pp1, pp2) = solve2();
+        let (_, _) = solve_with_collected_array();
     }
     println!("{:?}", b.elapsed());
 
@@ -85,7 +85,7 @@ fn main() {
 
     let f = Instant::now();
     for _ in 0..1_000_000 {
-        let (p1, p2) = solve();
+        let (_, _) = solve();
     }
     println!("{:?}", f.elapsed());
 
