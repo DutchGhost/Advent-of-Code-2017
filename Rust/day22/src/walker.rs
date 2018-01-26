@@ -12,7 +12,7 @@ pub enum Node {
 }
 
 impl From<char> for Node {
-    
+
     #[inline]
     fn from(c: char) -> Node {
         match c {
@@ -31,16 +31,16 @@ impl FromStr for Grid {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Grid{ grid: s.lines().map(|line| line.chars().convert()).collect()})
+        Ok(Grid{ grid: s.lines().map(#[inline] |line| line.chars().convert()).collect()})
     }
 }
 
 impl Grid {
-    
+
     #[inline]
     fn node_at_pos<'m, 's: 'm>(&'s mut self, pos: &Position<usize>) -> Option<&'m mut Node> {
-        let (x, y) = pos.get_ref();
-        self.grid.get_mut(*y).and_then(|row| row.get_mut(*x))
+        let (x, y) = pos.to_tuple();
+        self.grid.get_mut(y).and_then(#[inline] |row| row.get_mut(x))
     }
 
     #[inline]
@@ -78,7 +78,7 @@ pub enum Part {
 pub struct Walker {
     grid: Grid,
     pos: Position<usize>,
-    facing: Direction,
+    facing: Option<Direction>,
     part: Part,
 }
 
@@ -91,7 +91,7 @@ impl Walker {
         Walker {
             grid: grid,
             pos: Position::from((middle, middle)),
-            facing: Direction::init_init(),
+            facing: None,
             part: part,
         }
     }
@@ -101,12 +101,12 @@ impl Walker {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
-                        self.facing = self.facing.turn_left();
+                        self.facing = Some(self.facing.map_or(Direction::init_left(), #[inline] |dir| dir.turn_left()));
                         *n = Node::Infected;
                         1
                     },
                     &mut Node::Infected => {
-                        self.facing = self.facing.turn_right();
+                        self.facing = Some(self.facing.map_or(Direction::init_right(), #[inline] |dir| dir.turn_right()));
                         *n = Node::Clean;
                         0
                     }
@@ -122,7 +122,7 @@ impl Walker {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
-                        self.facing = self.facing.turn_left();
+                        self.facing = Some(self.facing.map_or(Direction::init_left(), #[inline] |dir| dir.turn_left()));
                         *n = Node::Weakened;
                         0
                     },
@@ -131,12 +131,12 @@ impl Walker {
                         1
                     }
                     &mut Node::Infected => {
-                        self.facing = self.facing.turn_right();
+                        self.facing = Some(self.facing.map_or(Direction::init_right(), #[inline] |dir| dir.turn_right()));
                         *n = Node::Flagged;
                         0
                     }
                     &mut Node::Flagged => {
-                        self.facing = self.facing.reverse();
+                        self.facing = self.facing.map(#[inline] |dir| dir.reverse());
                         *n = Node::Clean;
                         0
                     }
@@ -152,10 +152,7 @@ impl Iterator for Walker {
 
     #[inline]
     fn next(&mut self) -> Option<i32> {
-        let (x, y) = {
-            let (_x, _y) = self.pos.get_ref();
-            (*_x, *_y)
-        };
+        let (x, y) = self.pos.to_tuple();
         if x == 0 {
             self.grid.extend_left();
             self.pos.increment_x(1);
@@ -170,13 +167,16 @@ impl Iterator for Walker {
         if y == self.grid.grid.len() {
             self.grid.extend_bottem();
         }
-        
+
         let infected = match self.part {
             Part::Part1 => Some(self.diagnostics()),
             Part::Part2 => Some(self.advanced_diagnostics()),
         };
 
-        self.pos.change(&self.facing, 1);
+        if let Some(ref f) = self.facing {
+            self.pos.change(f, 1);
+        }
+
         return infected;
     }
 }
