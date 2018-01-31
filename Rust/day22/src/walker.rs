@@ -31,7 +31,7 @@ impl FromStr for Grid {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Grid{ grid: s.lines().map(#[inline] |line| line.chars().convert()).collect()})
+        Ok(Grid{ grid: s.lines().map(#[inline] |line| line.chars().convert_into_vec()).collect()})
     }
 }
 
@@ -76,10 +76,10 @@ pub enum Part {
 }
 
 pub struct Walker {
-    grid: Grid,
-    pos: Position<usize>,
-    facing: Option<Direction>,
     part: Part,
+    facing: Option<Direction>,
+    pos: Position<usize>,
+    grid: Grid,
 }
 
 impl Walker {
@@ -89,10 +89,10 @@ impl Walker {
         let middle = grid.grid.len() / 2;
 
         Walker {
-            grid: grid,
-            pos: Position::from((middle, middle)),
-            facing: None,
             part: part,
+            facing: None,
+            pos: Position::from((middle, middle)),
+            grid: grid,
         }
     }
 
@@ -101,12 +101,12 @@ impl Walker {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
-                        self.facing = Some(self.facing.map_or(Direction::init_left(), #[inline] |dir| dir.turn_left()));
+                        self.facing = Self::change_left(self.facing);
                         *n = Node::Infected;
                         1
                     },
                     &mut Node::Infected => {
-                        self.facing = Some(self.facing.map_or(Direction::init_right(), #[inline] |dir| dir.turn_right()));
+                        self.facing = Self::change_right(self.facing);
                         *n = Node::Clean;
                         0
                     }
@@ -122,7 +122,7 @@ impl Walker {
             Some(n) => {
                 match n {
                     &mut Node::Clean => {
-                        self.facing = Some(self.facing.map_or(Direction::init_left(), #[inline] |dir| dir.turn_left()));
+                        self.facing = Self::change_left(self.facing);
                         *n = Node::Weakened;
                         0
                     },
@@ -131,7 +131,7 @@ impl Walker {
                         1
                     }
                     &mut Node::Infected => {
-                        self.facing = Some(self.facing.map_or(Direction::init_right(), #[inline] |dir| dir.turn_right()));
+                        self.facing = Self::change_right(self.facing);
                         *n = Node::Flagged;
                         0
                     }
@@ -145,14 +145,28 @@ impl Walker {
             None => panic!("Something went terribly horribly wrong with part 2!"),
         }
     }
+
+    #[inline]
+    fn change_left(facing: Option<Direction>) -> Option<Direction> {
+        Some(facing.map_or(Direction::init_left(), #[inline] |dir| dir.turn_left()))
+    }
+
+    #[inline]
+    fn change_right(facing: Option<Direction>) -> Option<Direction> {
+        Some(facing.map_or(Direction::init_right(), #[inline] |dir| dir.turn_right()))
+    }
 }
 
+//@TODO: make this better,
+//  there should be a way to find out if x is 0, or the lenght of a row, OR y is 0 or the lenght of a column.
+//  that should get rid of the if's, and make this nicer.
 impl Iterator for Walker {
     type Item = i32;
 
     #[inline]
     fn next(&mut self) -> Option<i32> {
         let (x, y) = self.pos.to_tuple();
+
         if x == 0 {
             self.grid.extend_left();
             self.pos.increment_x(1);
