@@ -108,6 +108,7 @@ fn main_2() -> usize {
     StepBy::new(105700, 122700, 17).filter(|n| (2..*n).any(|d| n % d == 0)).count()
 }
 
+//An Iterator from <including>start to <including>end, with steps of `steps`. StepBy {0, 10, 2} will give 0, 2, 4, 6, 8, 10.
 struct StepBy {
     start: usize,
     end: usize,
