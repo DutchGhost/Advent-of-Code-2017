@@ -1,7 +1,5 @@
 const PUZZLE: &'static str = include_str!("Input.txt");
 
-use std::collections::HashMap;
-
 fn parse(input: &str) -> [[&str; 3]; 32] {
     let mut arr: [[&str; 3]; 32] = [[""; 3]; 32];
 
@@ -47,7 +45,6 @@ fn main() {
     let instructions: [[&str; 3]; 32] = parse(PUZZLE);
     let mut ip: i64 = 0;
     let mut muls = 0;
-    let mut millions = 0;
     while ip < instructions.len() as i64 {
         let ins = &instructions[ip as usize];
         match ins[0].as_ref() {
@@ -69,7 +66,13 @@ fn main() {
 
 fn main_2() -> usize {
     // let (mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h) = (1, 0, 0, 0, 0, 0 , 0, 0);
-    //
+    // //THE VALUES OF B AND C COMES FROM THE GIVEN INSTRUCTION AT THE TOP, THEY EVALUATE TO 105700, AND 122700. SEE BELOW:
+    // //b = 57        // 1
+    // //c = b         // 2
+    // //b *= 100      // 5
+    // //b -= -100000  // 6
+    // //c = b         // 7
+    // //c -= -17000   // 8
     // b = 105700;
     // c = 122700;   // 8
     //
@@ -101,6 +104,7 @@ fn main_2() -> usize {
     //     if b - c == 0 { break '_1; }
     //     b += 17;
     // }
+    // return h
     StepBy::new(105700, 122700, 17).filter(|n| (2..*n).any(|d| n % d == 0)).count()
 }
 
@@ -111,10 +115,12 @@ struct StepBy {
 }
 
 impl StepBy {
+    #[inline]
     fn new(start: usize, end: usize, steps: usize) -> StepBy {
         StepBy {start, end, steps}
     }
 }
+
 impl Iterator for StepBy {
     type Item = usize;
 
