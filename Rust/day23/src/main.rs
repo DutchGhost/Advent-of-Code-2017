@@ -59,8 +59,8 @@ fn main() {
         }
         ip += 1;
     }
-    println!("{}", muls);
-    println!("{}", main_2());
+    println!("part 1: {}", muls);
+    println!("part 2: {}", main_2());
 }
 
 
