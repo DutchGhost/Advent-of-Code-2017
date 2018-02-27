@@ -304,4 +304,9 @@ mod tests {
     fn bench_c_like(b: &mut Bencher) {
         b.iter(|| c_like(BPUZZLE));
     }
+
+    #[bench]
+    fn bench_testing(b: &mut Bencher) {
+        b.iter(|| testing(BPUZZLE));
+    }
 }

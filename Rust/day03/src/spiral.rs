@@ -37,7 +37,7 @@ impl Spiral {
             loop {
                 for _ in 0..2 {
                     for must_chage_direction in 0..number_of_steps {
-                        
+
                         //yield the value directly.
                         let to_yield = self.point.clone();
                         yield (value, to_yield);
@@ -62,9 +62,8 @@ impl Spiral {
 
     //returns the sum of the value's of the current point's adjecent point's.
     //also inserts the current value with the current coordinate to the storage.
-    fn sum_of_adjecents(&mut self) -> i64 {    
-        let valids = [(0, 1), (1, 0), (1, 1)];
-        
+    fn sum_of_adjecents(&mut self) -> i64 {
+
         let value = self.storage
             .iter()
             .filter(|&&(_, coordinate)| self.point.is_adjecent(&coordinate))
@@ -81,7 +80,7 @@ impl Spiral {
         let spiral = self.spiral(|_, n| n + 1);
 
         let mut spiralizer = GeneratorAdaptor::new(spiral);
-        
+
         spiralizer
             .find(|&(value, _)| value == input)
             .map(|(_, point)| point.manhattendst())
