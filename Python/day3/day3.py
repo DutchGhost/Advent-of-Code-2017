@@ -1,12 +1,12 @@
 from enum import Enum
-import sys
+
 INPUT = 361527
 
 class Direction(Enum):
     UP = 0
-    RIGHT = 3
-    DOWN = 2
-    LEFT = 1
+    DOWN = 1
+    RIGHT = 2
+    LEFT = 3
 
     '''Turn to the right'''
     def turn_right(self):
