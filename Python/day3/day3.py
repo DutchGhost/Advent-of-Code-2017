@@ -81,33 +81,27 @@ class Solver():
         self.storage = [(1, (0, 0))]
     
     def part1(self):
-        for (value, (x, y)) in enumerate(self.spiralizer.spiral(), start=1):
-            if value == INPUT:
-                return abs(x) + abs(y)
-
+        (x, y) = next((x, y) for (value, (x, y)) in enumerate(self.spiralizer.spiral(), start = 1) if value == INPUT)
+        return abs(x) + abs(y)
+    
     def reset(self):
         self.spiralizer.reset()
 
-    '''Loop over the (value, (x, y)) in self.storage, if (x, y) is adjecent to position, increment
-        s with the value previously found for that position.
+    '''Loop over the (value, (x, y)) in self.storage, take the sum of all values where (x, y)
+        are adjecent to position.
         add (s, position) to the storage.
     '''
     def adjecents(self, position):
         (pos_x, pos_y) = position
-        s = 0
         valids = [(0, 1), (1, 0), (1, 1)]
 
-        for (value, (x, y)) in self.storage:
-            if (abs(pos_x - x), abs(pos_y - y)) in valids:
-                s += value
+        s = sum(value for (value, (x, y)) in self.storage if (abs(pos_x - x), abs(pos_y - y)) in valids)
 
         self.storage.append((s, position))
         return s
 
     def part2(self):
-        for val in map(self.adjecents, self.spiralizer.spiral()):
-            if val > INPUT:
-                return val
+        return next(val for val in map(self.adjecents, self.spiralizer.spiral()) if val > INPUT)
 
 if __name__ == '__main__':
     solver = Solver()
