@@ -63,7 +63,6 @@ impl Spiral {
     //returns the sum of the value's of the current point's adjecent point's.
     //also inserts the current value with the current coordinate to the storage.
     fn sum_of_adjecents(&mut self) -> i64 {    
-        let valids = [(0, 1), (1, 0), (1, 1)];
         
         let value = self.storage
             .iter()
