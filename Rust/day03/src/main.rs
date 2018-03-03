@@ -11,7 +11,7 @@ use spiral::Spiral;
 fn main() {
     let input = 361527;
     let mut spiral = Spiral::new();
-    
+
     println!("{}", spiral.part1(input));
     spiral.reset();
     println!("{}", spiral.part2(input));
