@@ -36,7 +36,7 @@ impl Spiral {
         move || {
             loop {
                 for _ in 0..2 {
-                    for must_chage_direction in 0..number_of_steps {
+                    for must_chage_direction in 1..number_of_steps {
 
                         //yield the value directly.
                         let to_yield = self.point.clone();
@@ -46,12 +46,8 @@ impl Spiral {
 
                         //get the new value.
                         value = next_value(self, value);
-
-                        //after the last step, we must change our direction.
-                        if must_chage_direction == number_of_steps - 1 {
-                            self.direction = self.direction.turn_left();
-                        }
                     }
+                    self.direction = self.direction.turn_left();
                 }
 
                 //after we've done half a 'layer', increment the steps we must do.
