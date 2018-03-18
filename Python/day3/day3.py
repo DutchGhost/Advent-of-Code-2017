@@ -61,13 +61,12 @@ class Spiral():
         number_of_steps = 1
         while True:
             for _ in range(2):
-                for must_change in range(0, number_of_steps):
+                for _ in range(1, number_of_steps):
                     
                     yield self.position.to_tuple()
                     self.position.rev_change(self.direction, 1)
 
-                    if must_change == number_of_steps - 1:
-                        self.direction = self.direction.turn_left()
+                self.direction = self.direction.turn_left()
             number_of_steps += 1
     
     '''Resets the direction and position, to start over'''
