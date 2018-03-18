@@ -36,7 +36,7 @@ impl Spiral {
         move || {
             loop {
                 for _ in 0..2 {
-                    for _ in 1..number_of_steps {
+                    for _    in 1..number_of_steps {
 
                         //yield the value directly.
                         let to_yield = self.point.clone();
