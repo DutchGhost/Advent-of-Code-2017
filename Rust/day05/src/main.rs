@@ -50,6 +50,18 @@ where
     }
 }
 
+macro_rules! __unroll {
+    ($jumps:expr, $updater:expr, $idx:expr, $n:expr, $plus:expr) => ({
+        let offset = $jumps.get_unchecked_mut($idx as usize);
+        $idx += *offset;
+        *offset += $updater(*offset);
+        if $idx as usize >= INPUT_SIZE { return $n + $plus }
+    });
+    ($jumps:expr, $updater:expr, $idx:expr, $n:expr, $plus:expr $(, $tail:expr)*) => (
+        __unroll!($jumps, $updater, $idx, $n, $plus);
+        __unroll!($jumps, $updater, $idx, $n $(, $tail)*);
+    )
+}
 
 #[inline]
 fn fast_run<F>(mut jumps: [i64; INPUT_SIZE], updater: F) -> i64
@@ -61,27 +73,8 @@ where
 
     unsafe {
         loop {
-            {
-                //this is safe, since we already check idx ourselves.
-                let offset = jumps.get_unchecked_mut(idx as usize);
-
-                idx += *offset;
-                *offset += updater(*offset);
-
-                if idx as usize >= INPUT_SIZE { return n + 1; }
-            }
-
-            {
-                //this is safe, since we already check idx ourselves.
-                let offset = jumps.get_unchecked_mut(idx as usize);
-
-                idx += *offset;
-                *offset += updater(*offset);
-
-                if idx as usize >= INPUT_SIZE { return n + 2; }
-            }
-
-            n += 2;
+            __unroll!(jumps, updater, idx, n, 1, 2, 3, 4, 5, 6, 7, 8);
+            n += 8;
         }
     }
 }
