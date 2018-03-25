@@ -26,9 +26,9 @@ impl Spiral {
         self.direction = Direction::init_right();
     }
 
-    fn spiral<'g, 'a: 'g, F>(&'a mut self, next_value: F) -> impl Generator<Yield = (i64, Position<i64>), Return = ()> + 'g
+    fn spiral<'g, 'a: 'g, F>(&'a mut self, next_value: F) -> impl Generator<Yield = (i64, Position<i64>), Return = ()> + 'a + 'g
     where
-        F: Fn(&mut Self, i64) -> i64 + 'g,
+        F: Fn(&mut Self, i64) -> i64 + 'a,
     {
         let mut value = 1;
         let mut number_of_steps = 1;

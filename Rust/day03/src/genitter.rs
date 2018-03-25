@@ -32,9 +32,11 @@ where G: Generator<Yield = Y, Return = R>
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-          match self.0.resume() {
-            GeneratorState::Yielded(x) => Some(x),
-            GeneratorState::Complete(_) => None,
+        unsafe {
+            match self.0.resume() {
+                GeneratorState::Yielded(x) => Some(x),
+                GeneratorState::Complete(_) => None,
+            }
         }
     }
 }
