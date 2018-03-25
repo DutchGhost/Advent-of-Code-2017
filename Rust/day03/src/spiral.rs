@@ -39,8 +39,7 @@ impl Spiral {
                     for _    in 1..number_of_steps {
 
                         //yield the value directly.
-                        let to_yield = self.point.clone();
-                        yield (value, to_yield);
+                        yield (value, self.point);
                         //update the coordinates.
                         self.point.rev_change(&self.direction, 1);
 
