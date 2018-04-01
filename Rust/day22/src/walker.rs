@@ -31,7 +31,7 @@ impl FromStr for Grid {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Grid{ grid: s.lines().map(#[inline] |line| line.chars().convert_into_vec()).collect()})
+        Ok(Grid{ grid: s.lines().map(|line| line.chars().convert_into_vec()).collect()})
     }
 }
 
@@ -40,7 +40,7 @@ impl Grid {
     #[inline]
     fn node_at_pos<'m, 's: 'm>(&'s mut self, pos: &Position<usize>) -> Option<&'m mut Node> {
         let (x, y) = pos.to_tuple();
-        self.grid.get_mut(y).and_then(#[inline] |row| row.get_mut(x))
+        self.grid.get_mut(y).and_then(|row| row.get_mut(x))
     }
 
     #[inline]
@@ -136,7 +136,7 @@ impl Walker {
                         0
                     }
                     &mut Node::Flagged => {
-                        self.facing = self.facing.map(#[inline] |dir| dir.reverse());
+                        self.facing = self.facing.map(|dir| dir.reverse());
                         *n = Node::Clean;
                         0
                     }
@@ -148,12 +148,12 @@ impl Walker {
 
     #[inline]
     fn change_left(facing: Option<Direction>) -> Option<Direction> {
-        Some(facing.map_or(Direction::init_left(), #[inline] |dir| dir.turn_left()))
+        Some(facing.map_or(Direction::init_left(), |dir| dir.turn_left()))
     }
 
     #[inline]
     fn change_right(facing: Option<Direction>) -> Option<Direction> {
-        Some(facing.map_or(Direction::init_right(), #[inline] |dir| dir.turn_right()))
+        Some(facing.map_or(Direction::init_right(), |dir| dir.turn_right()))
     }
 }
 
