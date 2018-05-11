@@ -110,7 +110,6 @@ impl Walker {
                     None => self.direction = Direction::init_up(),
                 }
             },
-            _ => return,
         }
     }
 }

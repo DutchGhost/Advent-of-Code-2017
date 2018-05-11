@@ -1,5 +1,3 @@
-#![feature(slice_patterns)]
-
 mod statement;
 use statement::*;
 

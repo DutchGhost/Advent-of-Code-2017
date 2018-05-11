@@ -75,21 +75,21 @@ fn solve_with_collected_array() -> (u32, u32) {
 fn main() {
     use std::time::Instant;
 
-    let b = Instant::now();
-    for _ in 0..1_000_000 {
-        let (_, _) = solve_with_collected_array();
-    }
-    println!("{:?}", b.elapsed());
+    //let b = Instant::now();
+    //for _ in 0..1_000_000 {
+    //    let (_, _) = solve_with_collected_array();
+    //}
+    //println!("{:?}", b.elapsed());
 
 
 
-    let f = Instant::now();
-    for _ in 0..1_000_000 {
-        let (_, _) = solve();
-    }
-    println!("{:?}", f.elapsed());
+   // let f = Instant::now();
+   // for _ in 0..1_000_000 {
+   //     let (_, _) = solve();
+   // }
+   // println!("{:?}", f.elapsed());
 
-    let (p1, p2) = solve();
+    let (p1, p2) = solve_with_collected_array();
     println!("day 2.1: {}", p1);
     println!("day 2.2: {}", p2);
 }

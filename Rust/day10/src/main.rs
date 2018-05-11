@@ -52,24 +52,42 @@ fn parse_bytes(input: [u8; 49]) -> [usize; 49 + 5] {
 }
 
 //wrapper for the 'range' of nums that need to be changed.
-enum Wrapper {
-    Wrapped(Zip<Chain<Range<usize>, Range<usize>>, Rev<Chain<Range<usize>, Range<usize>>>>),
-    Nonwrapped(Zip<Range<usize>, Rev<Range<usize>>>),
+enum Wrapper<T, I1: Iterator<Item = T>, I2: Iterator<Item = T>> {
+    Wrapped(I1),
+    Nonwrapped(I2),
 }
 
+impl <T, I1: Iterator<Item = T>, I2: Iterator<Item = T>> Iterator for Wrapper<T, I1, I2> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            Wrapper::Nonwrapped(ref mut iter) => iter.next(),
+            Wrapper::Wrapped(ref mut iter) => iter.next(),
+        }
+    }
+}
 //'Wrapped' goes from cpos to numslenght, and then from 0 to (len - (numslenght - cpos))
 //'Nonwrapped' goes from cpos to cpos + len
 #[inline]
-fn wrapping(cpos: usize, len: usize, numslenght: usize) -> Wrapper {
+fn wrapping(cpos: usize, len: usize, numslenght: usize) -> impl Iterator<Item = (usize, usize)> {
     if cpos + len < numslenght {
-        Wrapper::Nonwrapped((cpos..cpos + len).zip((cpos..cpos + len).rev()))
+        Wrapper::Nonwrapped(
+            (cpos..cpos + len)
+                .zip((cpos..cpos + len).rev())
+                .take(len / 2)
+            )
     } else {
         
         let already_got = numslenght - cpos;
 
-        Wrapper::Wrapped((cpos..numslenght).chain(0..(len - already_got)).zip(
-            (cpos..numslenght).chain(0..(len - already_got)).rev(),
-        ))
+        Wrapper::Wrapped(
+            (cpos..numslenght)
+                .chain(0..(len - already_got))
+                .zip((cpos..numslenght)
+                    .chain(0..(len - already_got))
+                    .rev())
+                .take(len / 2),
+        )
     }
 }
 
@@ -81,13 +99,7 @@ fn solve(rounds: i64, nums: &mut [usize], lenghts: &[usize]) -> usize {
     for _ in 0..rounds {
         for len in lenghts.iter() {
 
-            let it = wrapping(cpos, *len, numslenght);
-
-            match it {
-                Wrapper::Wrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
-                Wrapper::Nonwrapped(iter) => iter.take(len / 2).for_each(|(n1, n2)| nums.swap(n1, n2)),
-            };
-
+            wrapping(cpos, *len, numslenght).for_each(|(n1, n2)| nums.swap(n1, n2));
             cpos += *len + skipsize;
             cpos = cpos % numslenght;
             skipsize += 1;

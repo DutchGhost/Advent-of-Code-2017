@@ -27,7 +27,7 @@ where
 
             let mut chars = word.chars().collect::<Vec<_>>();
             
-            transformer((&mut chars));
+            transformer(&mut chars);
             set.insert(chars);
             
             count += 1;

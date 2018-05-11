@@ -3,7 +3,7 @@ extern crate libaoc;
 use libaoc::convert::TryConvert;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
-use std::str::FromStr;
+
 mod state;
 use state::*;
 use state::Block;

@@ -1,4 +1,3 @@
-#![feature(conservative_impl_trait)]
 #![feature(generator_trait, generators)]
 
 extern crate libaoc;

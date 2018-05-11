@@ -1,5 +1,3 @@
-#![feature(slice_rotate)]
-
 extern crate libaoc;
 
 use libaoc::convert::TryConvert;
