@@ -1,14 +1,14 @@
 #![feature(test)]
 extern crate test;
 
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 const PUZZLE: &'static str = include_str!("Input.txt");
 const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
 const SUB: i8 = 48;
 
 fn main() {
-
-    let (ans, time) = measure_command(|| optimized_andpercent_unrolled(BPUZZLE, BPUZZLE.len() >> 1));
+    let (ans, time) =
+        measure_command(|| optimized_andpercent_unrolled(BPUZZLE, BPUZZLE.len() >> 1));
     println!("andpercent_unrolled: {}, {:?}", ans, time);
 
     // let (ans1, time1) = measure_command(|| summmenize_andpercent(BPUZZLE, 1));
@@ -63,12 +63,10 @@ fn summmenize_andpercent(input: &[u8; 2190], skip: usize) -> u32 {
 fn optimized_andpercent(input: &[u8; 2190], half: usize) -> u32 {
     let (head, tail) = input.split_at(half);
 
-    head
-        .iter()
+    head.iter()
         .zip(tail.iter())
         .map(|(c1, c2)| ((*c1 as i8 - 48) & -((c1 == c2) as i8)) as u32)
         .sum::<u32>() << 1
-
 }
 
 //JUST PART 1!
@@ -79,7 +77,13 @@ fn summenize(input: &str, skip: usize) -> u32 {
     input
         .chars()
         .zip(input.chars().cycle().skip(skip))
-        .filter_map(|(first, second)| if first == second { first.to_digit(10) } else { None })
+        .filter_map(|(first, second)| {
+            if first == second {
+                first.to_digit(10)
+            } else {
+                None
+            }
+        })
         .sum()
 }
 
@@ -90,10 +94,15 @@ fn summenize(input: &str, skip: usize) -> u32 {
 #[inline]
 fn optimized(input: &str, half: usize) -> u32 {
     let (head, tail) = input.split_at(half);
-    head
-        .chars()
+    head.chars()
         .zip(tail.chars())
-        .filter_map(|(first, second)| if first == second { first.to_digit(10)} else { None })
+        .filter_map(|(first, second)| {
+            if first == second {
+                first.to_digit(10)
+            } else {
+                None
+            }
+        })
         .sum::<u32>() << 1
 }
 
@@ -103,7 +112,13 @@ fn bytes_summenize(input: &[u8; 2190], skip: usize) -> u32 {
     input
         .iter()
         .zip(input.iter().cycle().skip(skip))
-        .filter_map(|(first, second)| if first == second { (*first as char).to_digit(10) } else { None })
+        .filter_map(|(first, second)| {
+            if first == second {
+                (*first as char).to_digit(10)
+            } else {
+                None
+            }
+        })
         .sum::<u32>()
 }
 
@@ -111,10 +126,15 @@ fn bytes_summenize(input: &[u8; 2190], skip: usize) -> u32 {
 #[inline]
 fn bytes_optimized(input: &[u8; 2190], half: usize) -> u32 {
     let (head, tail) = input.split_at(half);
-    head
-        .iter()
+    head.iter()
         .zip(tail.iter())
-        .filter_map(|(first, second)| if first == second { (*first as char).to_digit(10)} else { None })
+        .filter_map(|(first, second)| {
+            if first == second {
+                (*first as char).to_digit(10)
+            } else {
+                None
+            }
+        })
         .sum::<u32>() << 1
 }
 
@@ -126,25 +146,38 @@ fn optimized_andpercent_unrolled(input: &[u8; 2190], _: usize) -> u32 {
         let head = input.get_unchecked(0..1095);
         let tail = input.get_unchecked(1095..);
 
-        head.chunks(15).zip(tail.chunks(15)).for_each(|(lhs, rhs)|  {
-            totall +=
-                (
-                        ((*lhs.get_unchecked(0) as i8 - SUB) & -((*lhs.get_unchecked(0) == *rhs.get_unchecked(0)) as i8)) +
-                        ((*lhs.get_unchecked(1) as i8 - SUB) & -((*lhs.get_unchecked(1) == *rhs.get_unchecked(1)) as i8)) +
-                        ((*lhs.get_unchecked(2) as i8 - SUB) & -((*lhs.get_unchecked(2) == *rhs.get_unchecked(2)) as i8)) +
-                        ((*lhs.get_unchecked(3) as i8 - SUB) & -((*lhs.get_unchecked(3) == *rhs.get_unchecked(3)) as i8)) +
-                        ((*lhs.get_unchecked(4) as i8 - SUB) & -((*lhs.get_unchecked(4) == *rhs.get_unchecked(4)) as i8)) +
-                        ((*lhs.get_unchecked(5) as i8 - SUB) & -((*lhs.get_unchecked(5) == *rhs.get_unchecked(5)) as i8)) +
-                        ((*lhs.get_unchecked(6) as i8 - SUB) & -((*lhs.get_unchecked(6) == *rhs.get_unchecked(6)) as i8)) +
-                        ((*lhs.get_unchecked(7) as i8 - SUB) & -((*lhs.get_unchecked(7) == *rhs.get_unchecked(7)) as i8)) +
-                        ((*lhs.get_unchecked(8) as i8 - SUB) & -((*lhs.get_unchecked(8) == *rhs.get_unchecked(8)) as i8)) +
-                        ((*lhs.get_unchecked(9) as i8 - SUB) & -((*lhs.get_unchecked(9) == *rhs.get_unchecked(9)) as i8)) +
-                        ((*lhs.get_unchecked(10) as i8 - SUB) & -((*lhs.get_unchecked(10) == *rhs.get_unchecked(10)) as i8)) +
-                        ((*lhs.get_unchecked(11) as i8 - SUB) & -((*lhs.get_unchecked(11) == *rhs.get_unchecked(11)) as i8)) +
-                        ((*lhs.get_unchecked(12) as i8 - SUB) & -((*lhs.get_unchecked(12) == *rhs.get_unchecked(12)) as i8)) +
-                        ((*lhs.get_unchecked(13) as i8 - SUB) & -((*lhs.get_unchecked(13) == *rhs.get_unchecked(13)) as i8)) +
-                        ((*lhs.get_unchecked(14) as i8 - SUB) & -((*lhs.get_unchecked(14) == *rhs.get_unchecked(14)) as i8))
-                ) as u32;
+        head.chunks(15).zip(tail.chunks(15)).for_each(|(lhs, rhs)| {
+            totall += (((*lhs.get_unchecked(0) as i8 - SUB)
+                & -((*lhs.get_unchecked(0) == *rhs.get_unchecked(0)) as i8))
+                + ((*lhs.get_unchecked(1) as i8 - SUB)
+                    & -((*lhs.get_unchecked(1) == *rhs.get_unchecked(1)) as i8))
+                + ((*lhs.get_unchecked(2) as i8 - SUB)
+                    & -((*lhs.get_unchecked(2) == *rhs.get_unchecked(2)) as i8))
+                + ((*lhs.get_unchecked(3) as i8 - SUB)
+                    & -((*lhs.get_unchecked(3) == *rhs.get_unchecked(3)) as i8))
+                + ((*lhs.get_unchecked(4) as i8 - SUB)
+                    & -((*lhs.get_unchecked(4) == *rhs.get_unchecked(4)) as i8))
+                + ((*lhs.get_unchecked(5) as i8 - SUB)
+                    & -((*lhs.get_unchecked(5) == *rhs.get_unchecked(5)) as i8))
+                + ((*lhs.get_unchecked(6) as i8 - SUB)
+                    & -((*lhs.get_unchecked(6) == *rhs.get_unchecked(6)) as i8))
+                + ((*lhs.get_unchecked(7) as i8 - SUB)
+                    & -((*lhs.get_unchecked(7) == *rhs.get_unchecked(7)) as i8))
+                + ((*lhs.get_unchecked(8) as i8 - SUB)
+                    & -((*lhs.get_unchecked(8) == *rhs.get_unchecked(8)) as i8))
+                + ((*lhs.get_unchecked(9) as i8 - SUB)
+                    & -((*lhs.get_unchecked(9) == *rhs.get_unchecked(9)) as i8))
+                + ((*lhs.get_unchecked(10) as i8 - SUB)
+                    & -((*lhs.get_unchecked(10) == *rhs.get_unchecked(10)) as i8))
+                + ((*lhs.get_unchecked(11) as i8 - SUB)
+                    & -((*lhs.get_unchecked(11) == *rhs.get_unchecked(11)) as i8))
+                + ((*lhs.get_unchecked(12) as i8 - SUB)
+                    & -((*lhs.get_unchecked(12) == *rhs.get_unchecked(12)) as i8))
+                + ((*lhs.get_unchecked(13) as i8 - SUB)
+                    & -((*lhs.get_unchecked(13) == *rhs.get_unchecked(13)) as i8))
+                + ((*lhs.get_unchecked(14) as i8 - SUB)
+                    & -((*lhs.get_unchecked(14) == *rhs.get_unchecked(14)) as i8)))
+                as u32;
         });
     }
     totall << 1
@@ -159,21 +192,29 @@ fn testing(input: &[u8; 2190]) -> (u32, u32) {
 
     for (idx, chunk) in (&mut iter).enumerate().take(1095) {
         unsafe {
-            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB) & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8)) as u32;
-            part_2 += ((*chunk.get_unchecked(0) as i8 - SUB) & -((chunk.get_unchecked(0) == input.get_unchecked(idx + 1095)) as i8)) as u32;
+            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB)
+                & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8))
+                as u32;
+            part_2 += ((*chunk.get_unchecked(0) as i8 - SUB)
+                & -((chunk.get_unchecked(0) == input.get_unchecked(idx + 1095)) as i8))
+                as u32;
         }
     }
 
     for chunk in iter {
         unsafe {
-            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB) & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8)) as u32;
+            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB)
+                & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8))
+                as u32;
         }
     }
     unsafe {
-        part_1 += ((*input.get_unchecked(0) as i8 - SUB) & -((input.get_unchecked(0) == input.get_unchecked(2189)) as i8)) as u32;
+        part_1 += ((*input.get_unchecked(0) as i8 - SUB)
+            & -((input.get_unchecked(0) == input.get_unchecked(2189)) as i8))
+            as u32;
     }
 
-    (part_1, part_2 <<1)
+    (part_1, part_2 << 1)
 }
 
 //PART 1 AND 2 IN ONE!
@@ -188,24 +229,31 @@ fn more_rust(input: &[u8; 2190]) -> (u32, u32) {
         let mut part_1_iter = head.windows(2);
 
         for (half, chunk) in tail.iter().zip(&mut part_1_iter) {
-            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB) & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8)) as u32;
-            part_2 += ((*chunk.get_unchecked(0) as i8 - SUB) & -((chunk.get_unchecked(0) == half) as i8)) as u32;
+            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB)
+                & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8))
+                as u32;
+            part_2 += ((*chunk.get_unchecked(0) as i8 - SUB)
+                & -((chunk.get_unchecked(0) == half) as i8)) as u32;
             n += 1;
         }
         for chunk in part_1_iter {
-            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB) & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8)) as u32;
+            part_1 += ((*chunk.get_unchecked(0) as i8 - SUB)
+                & -((chunk.get_unchecked(0) == chunk.get_unchecked(1)) as i8))
+                as u32;
         }
     }
     unsafe {
-        part_1 += ((*input.get_unchecked(0) as i8 - SUB) & -((input.get_unchecked(0) == input.get_unchecked(2189)) as i8)) as u32;
+        part_1 += ((*input.get_unchecked(0) as i8 - SUB)
+            & -((input.get_unchecked(0) == input.get_unchecked(2189)) as i8))
+            as u32;
     }
     (part_1, part_2 << 1)
 }
 
 //PART 1 AND 2 IN ONE!
 fn c_like(input: &[u8; 2190]) -> (u32, u32) {
-    let mut part_1: u32= 0;
-    let mut part_2: u32= 0;
+    let mut part_1: u32 = 0;
+    let mut part_2: u32 = 0;
 
     let mut prv = 0;
     let mut nxt = 1;
@@ -213,17 +261,37 @@ fn c_like(input: &[u8; 2190]) -> (u32, u32) {
 
     while half != 2190 {
         unsafe {
-            part_1 += ((*input.get_unchecked(prv    ) as i8 - SUB) & -((input.get_unchecked(prv     ) == input.get_unchecked(nxt)) as i8)) as u32;
-            part_1 += ((*input.get_unchecked(prv + 1) as i8 - SUB) & -((input.get_unchecked(prv + 1) == input.get_unchecked(nxt + 1)) as i8)) as u32;
-            part_1 += ((*input.get_unchecked(prv + 2) as i8 - SUB) & -((input.get_unchecked(prv + 2) == input.get_unchecked(nxt + 2)) as i8)) as u32;
-            part_1 += ((*input.get_unchecked(prv + 3) as i8 - SUB) & -((input.get_unchecked(prv + 3) == input.get_unchecked(nxt + 3)) as i8)) as u32;
-            part_1 += ((*input.get_unchecked(prv + 4) as i8 - SUB) & -((input.get_unchecked(prv + 4) == input.get_unchecked(nxt + 4)) as i8)) as u32;
+            part_1 += ((*input.get_unchecked(prv) as i8 - SUB)
+                & -((input.get_unchecked(prv) == input.get_unchecked(nxt)) as i8))
+                as u32;
+            part_1 += ((*input.get_unchecked(prv + 1) as i8 - SUB)
+                & -((input.get_unchecked(prv + 1) == input.get_unchecked(nxt + 1)) as i8))
+                as u32;
+            part_1 += ((*input.get_unchecked(prv + 2) as i8 - SUB)
+                & -((input.get_unchecked(prv + 2) == input.get_unchecked(nxt + 2)) as i8))
+                as u32;
+            part_1 += ((*input.get_unchecked(prv + 3) as i8 - SUB)
+                & -((input.get_unchecked(prv + 3) == input.get_unchecked(nxt + 3)) as i8))
+                as u32;
+            part_1 += ((*input.get_unchecked(prv + 4) as i8 - SUB)
+                & -((input.get_unchecked(prv + 4) == input.get_unchecked(nxt + 4)) as i8))
+                as u32;
 
-            part_2 += ((*input.get_unchecked(prv    ) as i8 - SUB) & -((input.get_unchecked(prv    ) == input.get_unchecked(half    )) as i8)) as u32;
-            part_2 += ((*input.get_unchecked(prv + 1) as i8 - SUB) & -((input.get_unchecked(prv + 1) == input.get_unchecked(half + 1)) as i8)) as u32;
-            part_2 += ((*input.get_unchecked(prv + 2) as i8 - SUB) & -((input.get_unchecked(prv + 2) == input.get_unchecked(half + 2)) as i8)) as u32;
-            part_2 += ((*input.get_unchecked(prv + 3) as i8 - SUB) & -((input.get_unchecked(prv + 3) == input.get_unchecked(half + 3)) as i8)) as u32;
-            part_2 += ((*input.get_unchecked(prv + 4) as i8 - SUB) & -((input.get_unchecked(prv + 4) == input.get_unchecked(half + 4)) as i8)) as u32;
+            part_2 += ((*input.get_unchecked(prv) as i8 - SUB)
+                & -((input.get_unchecked(prv) == input.get_unchecked(half)) as i8))
+                as u32;
+            part_2 += ((*input.get_unchecked(prv + 1) as i8 - SUB)
+                & -((input.get_unchecked(prv + 1) == input.get_unchecked(half + 1)) as i8))
+                as u32;
+            part_2 += ((*input.get_unchecked(prv + 2) as i8 - SUB)
+                & -((input.get_unchecked(prv + 2) == input.get_unchecked(half + 2)) as i8))
+                as u32;
+            part_2 += ((*input.get_unchecked(prv + 3) as i8 - SUB)
+                & -((input.get_unchecked(prv + 3) == input.get_unchecked(half + 3)) as i8))
+                as u32;
+            part_2 += ((*input.get_unchecked(prv + 4) as i8 - SUB)
+                & -((input.get_unchecked(prv + 4) == input.get_unchecked(half + 4)) as i8))
+                as u32;
         }
 
         half += 5;
@@ -233,22 +301,28 @@ fn c_like(input: &[u8; 2190]) -> (u32, u32) {
 
     while nxt != 2190 {
         unsafe {
-            part_1 += ((*input.get_unchecked(prv    ) as i8 - SUB) & -((input.get_unchecked(prv    ) == input.get_unchecked(nxt    )) as i8)) as u32;
-            part_1 += ((*input.get_unchecked(prv + 1) as i8 - SUB) & -((input.get_unchecked(prv + 1) == input.get_unchecked(nxt + 1)) as i8)) as u32;
+            part_1 += ((*input.get_unchecked(prv) as i8 - SUB)
+                & -((input.get_unchecked(prv) == input.get_unchecked(nxt)) as i8))
+                as u32;
+            part_1 += ((*input.get_unchecked(prv + 1) as i8 - SUB)
+                & -((input.get_unchecked(prv + 1) == input.get_unchecked(nxt + 1)) as i8))
+                as u32;
         }
         nxt += 2;
         prv += 2;
     }
     unsafe {
-        part_1 += ((*input.get_unchecked(0) as i8 - SUB) & -((input.get_unchecked(0) == input.get_unchecked(2189)) as i8)) as u32;
+        part_1 += ((*input.get_unchecked(0) as i8 - SUB)
+            & -((input.get_unchecked(0) == input.get_unchecked(2189)) as i8))
+            as u32;
     }
 
     (part_1, part_2 << 1)
 }
 #[cfg(test)]
 mod tests {
-    use test::Bencher;
     use super::*;
+    use test::Bencher;
 
     #[bench]
     fn bytes_summenize_part1(b: &mut Bencher) {
