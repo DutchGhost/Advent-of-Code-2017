@@ -1,8 +1,8 @@
 extern crate regex;
 use regex::Regex;
 
-use std::collections::HashSet;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
 
@@ -10,13 +10,13 @@ const PUZZLE: &'static str = include_str!("Input.txt");
 struct Tower {
     name: String,
     weights: i64,
-    aboves: Vec<String>
+    aboves: Vec<String>,
 }
 
 impl Tower {
     fn new(name: &str, weights: &str, aboves: Vec<String>) -> Tower {
         Tower {
-            name: name.to_string(), 
+            name: name.to_string(),
             weights: weights.parse().expect("Could not parse weight"),
             aboves: aboves,
         }
@@ -25,13 +25,23 @@ impl Tower {
 
 fn parse(line: &str) -> Tower {
     let parts = line.split("->").collect::<Vec<_>>();
-    let aboves = if parts.len() == 1 { Vec::new() } else {parts[1].split(",").map(|word| word.trim().to_string()).collect::<Vec<_>>()};
+    let aboves = if parts.len() == 1 {
+        Vec::new()
+    } else {
+        parts[1]
+            .split(",")
+            .map(|word| word.trim().to_string())
+            .collect::<Vec<_>>()
+    };
     let re = Regex::new(r"([a-z]+) \(([0-9]+)\)").unwrap();
 
     let capts = re.captures(parts[0]).unwrap();
 
-    Tower::new(capts.get(1).map_or("", |m| m.as_str()), capts.get(2).map_or("", |m| m.as_str()), aboves)
-
+    Tower::new(
+        capts.get(1).map_or("", |m| m.as_str()),
+        capts.get(2).map_or("", |m| m.as_str()),
+        aboves,
+    )
 }
 
 fn find_bottem(towers: &Vec<Tower>) -> String {
@@ -46,21 +56,23 @@ fn find_bottem(towers: &Vec<Tower>) -> String {
             are_aboves.insert(above.clone());
         }
     }
-    
+
     let diff = have_aboves.difference(&are_aboves).next().unwrap();
     diff.clone()
 }
 
 fn balance_towers(towers: Vec<Tower>) {
-
-    let lookups = towers.iter().map(|tower| (tower.name.clone(), tower.clone())).collect::<HashMap<String, Tower>>();
+    let lookups = towers
+        .iter()
+        .map(|tower| (tower.name.clone(), tower.clone()))
+        .collect::<HashMap<String, Tower>>();
     let root = lookups.get(&find_bottem(&towers)).unwrap();
     check(&root, &lookups);
-    
 }
 
 fn check(tower: &Tower, lookup: &HashMap<String, Tower>) -> (i64, bool) {
-    let subchecks = tower.aboves
+    let subchecks = tower
+        .aboves
         .iter()
         .map(|name| (name.clone(), check(lookup.get(name).unwrap(), lookup)))
         .collect::<HashMap<String, (i64, bool)>>();
@@ -81,12 +93,9 @@ fn check(tower: &Tower, lookup: &HashMap<String, Tower>) -> (i64, bool) {
         let (w1, _) = list[0];
         let (w2, tw2) = list[1];
         println!("part 2: {}", tw2 + (w1 - w2));
-        
     }
-    return (weight, is_balanced)
+    return (weight, is_balanced);
 }
-
-
 
 fn main() {
     let towers = PUZZLE.lines().map(|line| parse(line)).collect::<Vec<_>>();
