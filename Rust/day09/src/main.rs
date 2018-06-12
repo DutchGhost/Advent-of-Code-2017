@@ -18,12 +18,24 @@ fn solve(input: &str) -> (i64, i64) {
 
     while let Some(c) = cs.next() {
         match c {
-            '!'             => { cs.next(); },
+            '!' => {
+                cs.next();
+            }
             '{' if !garbage => group += 1,
-            '}' if !garbage => { score += group; group -= 1; }
-            '<'             => { if garbage { gccount += 1; } garbage = true; }
-            '>'             => garbage = false,
-            _               => { gccount += 1; },
+            '}' if !garbage => {
+                score += group;
+                group -= 1;
+            }
+            '<' => {
+                if garbage {
+                    gccount += 1;
+                }
+                garbage = true;
+            }
+            '>' => garbage = false,
+            _ => {
+                gccount += 1;
+            }
         };
     }
     (score, gccount)
