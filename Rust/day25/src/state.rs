@@ -1,4 +1,4 @@
-use std::collections::{VecDeque, HashMap};
+use std::collections::{HashMap, VecDeque};
 use std::str::FromStr;
 
 #[derive(Debug, Hash, Clone, Copy)]
@@ -14,7 +14,7 @@ pub enum State {
     C,
     D,
     E,
-    F
+    F,
 }
 
 #[derive(Debug)]
@@ -25,7 +25,7 @@ pub struct Block {
 }
 
 fn parse<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> (i32, Direction, State) {
-    let write = match iter.next().unwrap().split_whitespace().last() {        
+    let write = match iter.next().unwrap().split_whitespace().last() {
         Some("0.") => 0,
         Some("1.") => 1,
         _ => panic!("I dont know how to parse this!"),
@@ -33,7 +33,6 @@ fn parse<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> (i32, Direction, Stat
 
     //the direction.
     let direction = match iter.next().unwrap().split_whitespace().last() {
-            
         Some("left.") => Direction::Left,
         Some("right.") => Direction::Right,
         _ => panic!("I dont know how to parse this!"),
@@ -48,7 +47,7 @@ fn parse<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> (i32, Direction, Stat
         Some("F.") => State::F,
         _ => panic!("cant parse this"),
     };
-    
+
     (write, direction, newstate)
 }
 impl Block {
@@ -76,7 +75,7 @@ impl FromStr for Block {
         };
         iter.next();
         //the last char
-        
+
         let onezero = parse(&mut iter);
         iter.next();
         let onone = parse(&mut iter);
@@ -93,13 +92,13 @@ pub struct CPU {
     state: State,
     tape: VecDeque<i32>,
     cursor: usize,
-    instruction: HashMap<(State, i32), (i32, Direction, State)>
+    instruction: HashMap<(State, i32), (i32, Direction, State)>,
 }
 
 impl CPU {
     pub fn new(transitions: [Block; 6]) -> CPU {
         let mut map = HashMap::new();
-        
+
         for transition in transitions.into_iter() {
             map.insert((transition.state, 0i32), transition.onzero);
             map.insert((transition.state, 1i32), transition.onone);
@@ -107,7 +106,7 @@ impl CPU {
 
         let mut deque = VecDeque::with_capacity(50_000);
         deque.push_front(0);
-        
+
         CPU {
             state: State::A,
             tape: deque,
@@ -117,8 +116,9 @@ impl CPU {
     }
     pub fn run(&mut self) {
         let current_value = *self.tape.get(self.cursor).unwrap();
-        let &(newvalue, direction, newstate) = self.instruction.get(&(self.state, current_value)).unwrap();
-        
+        let &(newvalue, direction, newstate) =
+            self.instruction.get(&(self.state, current_value)).unwrap();
+
         self.state = newstate;
         if let Some(n) = self.tape.get_mut(self.cursor) {
             *n = newvalue;
@@ -134,8 +134,7 @@ impl CPU {
     fn move_left(&mut self) {
         if self.cursor == 0 {
             self.tape.push_front(0);
-        }
-        else {
+        } else {
             self.cursor -= 1;
         }
     }
