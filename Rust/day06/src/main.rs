@@ -24,7 +24,7 @@ fn redistribute(memory: &mut [i32], idx: usize, value: i32) {
 /// max_by_key returns the last max value... using .rev() escapes from this,
 /// since the 'last' max is actually the first max in a tie this way!
 /// (in a list with [1, [3], 3, 2] it will return the item marked in parentheses
-/// because for the iterator it's the last max value) 
+/// because for the iterator it's the last max value)
 fn cycle(memory: &[i32]) -> (usize, i32) {
     memory
         .iter()
@@ -43,10 +43,10 @@ fn solve(input: &str) -> (i32, i32) {
     let mut n = 0;
     while !cache.contains_key(&memory) {
         cache.insert(memory.clone(), n);
-        
+
         let (idx, value) = cycle(&memory);
         redistribute(&mut memory, idx, value);
-        
+
         n += 1;
     }
     (n, n - cache.get(&memory).unwrap())
