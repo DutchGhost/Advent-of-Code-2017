@@ -65,7 +65,8 @@ fn solve_with_collected_array() -> (u32, u32) {
                     line.split_whitespace()
                         .try_convert_iter()
                         .map(|item| item.unwrap()) => [u32; 16]).unwrap()
-        ) => [[u32; 16]; 16]).unwrap();
+        ) => [[u32; 16]; 16])
+        .unwrap();
 
     let part1 = arr.iter().map(|nums| difference(nums)).sum::<u32>();
     let part2 = arr.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
@@ -81,13 +82,11 @@ fn main() {
     //}
     //println!("{:?}", b.elapsed());
 
-
-
-   // let f = Instant::now();
-   // for _ in 0..1_000_000 {
-   //     let (_, _) = solve();
-   // }
-   // println!("{:?}", f.elapsed());
+    // let f = Instant::now();
+    // for _ in 0..1_000_000 {
+    //     let (_, _) = solve();
+    // }
+    // println!("{:?}", f.elapsed());
 
     let (p1, p2) = solve_with_collected_array();
     println!("day 2.1: {}", p1);
