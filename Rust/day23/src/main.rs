@@ -35,7 +35,7 @@ impl ToIdx for [i64; 8] {
             "f" => &mut self[5],
             "g" => &mut self[6],
             "h" => &mut self[7],
-            _ => panic!()
+            _ => panic!(),
         }
     }
 }
@@ -53,8 +53,10 @@ fn main() {
             "mul" => {
                 *registers.to_idx(ins[1]) *= read(&ins[2], &mut registers);
                 muls += 1;
+            }
+            "jnz" => if read(&ins[1], &mut registers) != 0 {
+                ip += read(&ins[2], &mut registers) - 1;
             },
-            "jnz" => if read(&ins[1], &mut registers) != 0 {ip += read(&ins[2], &mut registers)-1;},
             _ => panic!(),
         }
         ip += 1;
@@ -62,7 +64,6 @@ fn main() {
     println!("part 1: {}", muls);
     println!("part 2: {}", main_2());
 }
-
 
 fn main_2() -> usize {
     // let (mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h) = (1, 0, 0, 0, 0, 0 , 0, 0);
@@ -105,7 +106,9 @@ fn main_2() -> usize {
     //     b += 17;
     // }
     // return h
-    StepBy::new(105700, 122700, 17).filter(|n| (2..*n).any(|d| n % d == 0)).count()
+    StepBy::new(105700, 122700, 17)
+        .filter(|n| (2..*n).any(|d| n % d == 0))
+        .count()
 }
 
 //An Iterator from <including>start to <including>end, with steps of `steps`. StepBy {0, 10, 2} will give 0, 2, 4, 6, 8, 10.
@@ -118,7 +121,7 @@ struct StepBy {
 impl StepBy {
     #[inline]
     fn new(start: usize, end: usize, steps: usize) -> StepBy {
-        StepBy {start, end, steps}
+        StepBy { start, end, steps }
     }
 }
 
@@ -130,7 +133,7 @@ impl Iterator for StepBy {
         let ret = self.start;
         if self.start <= self.end {
             self.start += self.steps;
-            return Some(ret)
+            return Some(ret);
         }
         None
     }
