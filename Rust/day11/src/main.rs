@@ -7,7 +7,8 @@ struct Hex<'look, 'split> {
 }
 
 impl<'look, 'split, 's> Hex<'look, 'split>
-where 's: 'split
+where
+    's: 'split,
 {
     fn new(input: &'s str) -> Hex<'look, 'split> {
         let mut map = HashMap::new();
@@ -44,14 +45,14 @@ fn dist(x: i64, y: i64) -> i64 {
 }
 fn solve<'s>(input: &'s str) -> (i64, i64, i64) {
     let hex = Hex::new(input);
-    hex.map(|(x, y)| (x, y)).fold((0, 0, 0), |(x, y, max), (newx, newy)| {
-        (x + newx, y + newy, std::cmp::max(max, dist(x, y)))
-    })
+    hex.map(|(x, y)| (x, y))
+        .fold((0, 0, 0), |(x, y, max), (newx, newy)| {
+            (x + newx, y + newy, std::cmp::max(max, dist(x, y)))
+        })
 }
 
 fn main() {
     let (x, y, part2) = solve(PUZZLE);
     println!("part 1: {}", dist(x, y));
     println!("part 2: {}", part2)
-
 }
