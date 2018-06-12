@@ -3,12 +3,15 @@ const PUZZLE: &'static str = include_str!("Input.txt");
 mod programm;
 
 mod prelude {
-    pub use std::collections::{HashMap, VecDeque};
     pub use programm::*;
+    pub use std::collections::{HashMap, VecDeque};
 }
 
 fn parse(input: &str) -> Vec<Vec<&str>> {
-    input.lines().map(|line| line.split(" ").collect()).collect()
+    input
+        .lines()
+        .map(|line| line.split(" ").collect())
+        .collect()
 }
 
 use prelude::*;
@@ -27,7 +30,9 @@ fn main() {
             "add" => *registers.entry(ins[1]).or_insert(0) += read(&ins[2], &mut registers),
             "mod" => *registers.entry(ins[1]).or_insert(0) %= read(ins[2], &mut registers),
             "mul" => *registers.entry(ins[1]).or_insert(0) *= read(&ins[2], &mut registers),
-            "jgz" => if read(&ins[1], &mut registers) > 0 {ip += read(&ins[2], &mut registers)-1;},
+            "jgz" => if read(&ins[1], &mut registers) > 0 {
+                ip += read(&ins[2], &mut registers) - 1;
+            },
 
             "snd" => snd = (ins[1], registers.get(ins[1]).cloned()),
             "rcv" => if ins[1] == snd.0 {
@@ -37,7 +42,7 @@ fn main() {
                         break 'outer;
                     }
                 }
-            }
+            },
             _ => panic!(),
         }
         ip += 1;

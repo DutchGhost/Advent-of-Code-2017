@@ -16,7 +16,7 @@ pub struct Programm<'a> {
     waiting: bool,
 }
 
-impl <'a>Programm<'a> {
+impl<'a> Programm<'a> {
     pub fn new(id: i64, instructions: &'a [Vec<&'a str>]) -> Programm<'a> {
         let mut registers = HashMap::new();
         registers.insert("p", id);
@@ -34,11 +34,21 @@ impl <'a>Programm<'a> {
         let mut ret = None;
         let ins = &self.instructions[self.ip as usize];
         match ins[0].as_ref() {
-            "set" => *self.registers.entry(ins[1]).or_insert(0) = read(&ins[2], &mut self.registers),
-            "sub" => *self.registers.entry(ins[1]).or_insert(0) -= read(&ins[2], &mut self.registers),
-            "add" => *self.registers.entry(ins[1]).or_insert(0) += read(&ins[2], &mut self.registers),
-            "mod" => *self.registers.entry(ins[1]).or_insert(0) %= read(ins[2], &mut self.registers),
-            "mul" => *self.registers.entry(ins[1]).or_insert(0) *= read(&ins[2], &mut self.registers),
+            "set" => {
+                *self.registers.entry(ins[1]).or_insert(0) = read(&ins[2], &mut self.registers)
+            }
+            "sub" => {
+                *self.registers.entry(ins[1]).or_insert(0) -= read(&ins[2], &mut self.registers)
+            }
+            "add" => {
+                *self.registers.entry(ins[1]).or_insert(0) += read(&ins[2], &mut self.registers)
+            }
+            "mod" => {
+                *self.registers.entry(ins[1]).or_insert(0) %= read(ins[2], &mut self.registers)
+            }
+            "mul" => {
+                *self.registers.entry(ins[1]).or_insert(0) *= read(&ins[2], &mut self.registers)
+            }
             "jgz" => if read(&ins[1], &mut self.registers) > 0 {
                 self.ip += read(&ins[2], &mut self.registers) - 1;
             },
@@ -46,7 +56,7 @@ impl <'a>Programm<'a> {
             "snd" => {
                 ret = self.registers.get(ins[1]).cloned();
                 self.sended += 1;
-            },
+            }
             "rcv" => {
                 if let Some(r) = rcv.pop_front() {
                     *self.registers.entry(ins[1]).or_insert(0) = r;
