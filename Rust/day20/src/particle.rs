@@ -2,14 +2,13 @@ use prelude::*;
 
 macro_rules! Struct3 {
     ($s:ident) => {
-
         #[derive(Debug, Eq, PartialEq, Clone)]
         struct $s {
             x: i64,
             y: i64,
             z: i64,
         }
-        
+
         impl FromStr for $s {
             type Err = ();
 
@@ -59,7 +58,6 @@ struct Particle {
 impl FromStr for Particle {
     type Err = ();
     fn from_str(s: &str) -> Result<Particle, Self::Err> {
-        
         let mut pos_vel_acc = s.split(", ");
 
         let p = pos_vel_acc.next().unwrap();
@@ -105,7 +103,7 @@ impl FromStr for GPU {
     type Err = ();
     fn from_str(s: &str) -> Result<GPU, Self::Err> {
         Ok(GPU {
-            particles: s.lines().try_convert().unwrap()
+            particles: s.lines().try_convert().unwrap(),
         })
     }
 }
@@ -122,7 +120,8 @@ impl GPU {
     pub fn collisionupdate(&mut self) {
         self.update();
 
-        let collided = self.particles
+        let collided = self
+            .particles
             .iter()
             .enumerate()
             .map(|(idx, p1)| {

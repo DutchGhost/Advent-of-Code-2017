@@ -4,9 +4,9 @@ extern crate libaoc;
 mod particle;
 
 mod prelude {
-    pub use std::str::FromStr;
-    pub use particle::GPU;
     pub use libaoc::convert::TryConvert;
+    pub use particle::GPU;
+    pub use std::str::FromStr;
 }
 
 use prelude::*;
