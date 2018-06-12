@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub struct Port {
-    pub front:i64,
+    pub front: i64,
     pub back: i64,
 }
 
@@ -12,7 +12,10 @@ impl FromStr for Port {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut it = s.split(r"/");
 
-        Ok(Port { front: it.next().unwrap().parse().unwrap(), back: it.next().unwrap().parse().unwrap()})
+        Ok(Port {
+            front: it.next().unwrap().parse().unwrap(),
+            back: it.next().unwrap().parse().unwrap(),
+        })
     }
 }
 
