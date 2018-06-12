@@ -8,5 +8,9 @@ if __name__ == '__main__':
             os.chdir(directory)
             run(["cargo", "clean"])
             run(["cargo", "update"])
+            run(["cargo", "fmt"])
             run(["cargo", "rustc", "--release", "--", "-C", "target-cpu=native", "-C", "lto"])
+
+            run(["git", "add", "src/*"])
+            run(["git", "commit", "-m", "Cargo fmt"])
             os.chdir('..')
