@@ -5,22 +5,7 @@ use std::str::FromStr;
 
 const PUZZLE: &'static str = include_str!("Input.txt");
 const PROGRAMMS: [u8; 16] = [
-    b'a',
-    b'b',
-    b'c',
-    b'd',
-    b'e',
-    b'f',
-    b'g',
-    b'h',
-    b'i',
-    b'j',
-    b'k',
-    b'l',
-    b'm',
-    b'n',
-    b'o',
-    b'p',
+    b'a', b'b', b'c', b'd', b'e', b'f', b'g', b'h', b'i', b'j', b'k', b'l', b'm', b'n', b'o', b'p',
 ];
 
 enum Move {
@@ -34,16 +19,20 @@ impl FromStr for Move {
     #[inline]
     fn from_str(s: &str) -> Result<Move, Self::Err> {
         match s.chars().next().unwrap() {
-            's' => {
-                Ok(Move::Spin(s[1..].parse::<usize>().unwrap()))
-            },
+            's' => Ok(Move::Spin(s[1..].parse::<usize>().unwrap())),
             'x' => {
                 let mut toswap = s[1..].split("/").map(|pos| pos.parse().unwrap());
-                Ok(Move::Exchange(toswap.next().unwrap(), toswap.next().unwrap()))
-            },
+                Ok(Move::Exchange(
+                    toswap.next().unwrap(),
+                    toswap.next().unwrap(),
+                ))
+            }
             _ => {
                 let mut partners = s[1..].bytes().filter(|c| *c != b'/');
-                Ok(Move::Partner(partners.next().unwrap(), partners.next().unwrap()))
+                Ok(Move::Partner(
+                    partners.next().unwrap(),
+                    partners.next().unwrap(),
+                ))
             }
         }
     }
@@ -83,7 +72,6 @@ fn run<'p, 'i>(programms: &'p mut [u8], instructions: &'i Instructions) {
 //returns after how many dances it repeats themself.
 #[inline]
 fn repeated<'p, 'i>(programms: &'p mut [u8], instructions: &'i Instructions) -> usize {
-
     let mut n = 0;
     while programms != PROGRAMMS || n == 0 {
         run(programms, instructions);
