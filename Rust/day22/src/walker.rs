@@ -1,7 +1,6 @@
-use std::str::FromStr;
-use libaoc::movement::{Direction, Position};
 use libaoc::convert::Convert;
-
+use libaoc::movement::{Direction, Position};
+use std::str::FromStr;
 
 #[derive(Clone)]
 pub enum Node {
@@ -12,31 +11,34 @@ pub enum Node {
 }
 
 impl From<char> for Node {
-
     #[inline]
     fn from(c: char) -> Node {
         match c {
             '.' => Node::Clean,
             '#' => Node::Infected,
-            _ => panic!("Invalid NodeType.")
+            _ => panic!("Invalid NodeType."),
         }
     }
 }
 
 struct Grid {
-    grid: Vec<Vec<Node>>
+    grid: Vec<Vec<Node>>,
 }
 
 impl FromStr for Grid {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Grid{ grid: s.lines().map(|line| line.chars().convert_into_vec()).collect()})
+        Ok(Grid {
+            grid: s
+                .lines()
+                .map(|line| line.chars().convert_into_vec())
+                .collect(),
+        })
     }
 }
 
 impl Grid {
-
     #[inline]
     fn node_at_pos<'m, 's: 'm>(&'s mut self, pos: &Position<usize>) -> Option<&'m mut Node> {
         let (x, y) = pos.to_tuple();
@@ -98,20 +100,18 @@ impl Walker {
 
     fn diagnostics(&mut self) -> i32 {
         match self.grid.node_at_pos(&self.pos) {
-            Some(n) => {
-                match n {
-                    &mut Node::Clean => {
-                        self.facing = Self::change_left(self.facing);
-                        *n = Node::Infected;
-                        1
-                    },
-                    &mut Node::Infected => {
-                        self.facing = Self::change_right(self.facing);
-                        *n = Node::Clean;
-                        0
-                    }
-                    _ => panic!("cant happen on part 1!")
+            Some(n) => match n {
+                &mut Node::Clean => {
+                    self.facing = Self::change_left(self.facing);
+                    *n = Node::Infected;
+                    1
                 }
+                &mut Node::Infected => {
+                    self.facing = Self::change_right(self.facing);
+                    *n = Node::Clean;
+                    0
+                }
+                _ => panic!("cant happen on part 1!"),
             },
             None => panic!("Something went terribly horribly wrong with part 1!"),
         }
@@ -119,27 +119,25 @@ impl Walker {
 
     fn advanced_diagnostics(&mut self) -> i32 {
         match self.grid.node_at_pos(&self.pos) {
-            Some(n) => {
-                match n {
-                    &mut Node::Clean => {
-                        self.facing = Self::change_left(self.facing);
-                        *n = Node::Weakened;
-                        0
-                    },
-                    &mut Node::Weakened => {
-                        *n = Node::Infected;
-                        1
-                    }
-                    &mut Node::Infected => {
-                        self.facing = Self::change_right(self.facing);
-                        *n = Node::Flagged;
-                        0
-                    }
-                    &mut Node::Flagged => {
-                        self.facing = self.facing.map(|dir| dir.reverse());
-                        *n = Node::Clean;
-                        0
-                    }
+            Some(n) => match n {
+                &mut Node::Clean => {
+                    self.facing = Self::change_left(self.facing);
+                    *n = Node::Weakened;
+                    0
+                }
+                &mut Node::Weakened => {
+                    *n = Node::Infected;
+                    1
+                }
+                &mut Node::Infected => {
+                    self.facing = Self::change_right(self.facing);
+                    *n = Node::Flagged;
+                    0
+                }
+                &mut Node::Flagged => {
+                    self.facing = self.facing.map(|dir| dir.reverse());
+                    *n = Node::Clean;
+                    0
                 }
             },
             None => panic!("Something went terribly horribly wrong with part 2!"),
