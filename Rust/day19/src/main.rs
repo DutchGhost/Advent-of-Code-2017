@@ -12,7 +12,7 @@ const COLUMS: usize = 202;
 
 fn parse(input: &str) -> [[Node; COLUMS]; ROWS] {
     let mut arr: [[Node; COLUMS]; ROWS] = [[Node::Void; COLUMS]; ROWS];
- 
+
     for (row, line) in arr.iter_mut().zip(input.lines()) {
         line.chars().convert_into_slice(row);
     }

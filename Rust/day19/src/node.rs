@@ -28,7 +28,7 @@ pub struct Walker {
     position: Position<usize>,
     direction: Direction,
     message: String,
-    nodes: [[Node; COLUMS]; ROWS]
+    nodes: [[Node; COLUMS]; ROWS],
 }
 
 impl Walker {
@@ -42,14 +42,14 @@ impl Walker {
             position: Position::from((x, 0)),
             direction: Direction::Down,
             message: String::new(),
-            nodes: nodes
+            nodes: nodes,
         }
     }
 
     pub fn getstr(self) -> String {
         self.message
     }
-    
+
     pub fn atvoidnode(&self) -> bool {
         let (x, y) = self.position.into();
         self.nodes[y][x] == Node::Void
@@ -80,35 +80,29 @@ impl Walker {
             "updown" => {
                 if x + 1 >= self.nodes[0].len() || self.nodes[y][x + 1] == Node::Void {
                     None
-                }
-                else {
+                } else {
                     Some(())
                 }
             }
             "leftright" => {
                 if y > self.nodes.len() || self.nodes[y + 1][x] == Node::Void {
                     None
-                }
-                else {
+                } else {
                     Some(())
                 }
             }
-            _ => panic!()
+            _ => panic!(),
         }
     }
     pub fn turn(&mut self) {
         match self.direction {
-            Direction::Up | Direction::Down => {
-                match self.node_at_pos("updown") {
-                    Some(_) => self.direction = Direction::init_right(),
-                    None => self.direction = Direction::init_left(),
-                }
+            Direction::Up | Direction::Down => match self.node_at_pos("updown") {
+                Some(_) => self.direction = Direction::init_right(),
+                None => self.direction = Direction::init_left(),
             },
-            Direction::Left | Direction::Right => {
-                match self.node_at_pos("leftright") {
-                    Some(_) => self.direction = Direction::init_down(),
-                    None => self.direction = Direction::init_up(),
-                }
+            Direction::Left | Direction::Right => match self.node_at_pos("leftright") {
+                Some(_) => self.direction = Direction::init_down(),
+                None => self.direction = Direction::init_up(),
             },
         }
     }
