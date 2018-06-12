@@ -1,16 +1,18 @@
-use std::collections::HashMap;
 use std::cmp::max;
+use std::collections::HashMap;
 
-pub trait FromStrAndHashMap<'r>
-{
+pub trait FromStrAndHashMap<'r> {
     type Err;
-    fn from_string_and_map<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, Self::Err>;
+    fn from_string_and_map<'a: 'r>(
+        s: &'a str,
+        map: &Registers<'r>,
+    ) -> Result<Statement<'r>, Self::Err>;
 }
 
 //A register
 #[derive(Eq, Hash, PartialEq, Clone)]
 pub struct Register<'r> {
-    name: &'r str
+    name: &'r str,
 }
 
 //Holds Registers, with their values
@@ -20,9 +22,8 @@ pub struct Registers<'r> {
 }
 
 //An Instruction. Increment(Register, Value) or Decrement(Register, Value).
-enum Instruction<'r>
-{
-    Operation(fn(i32) -> i32, Register<'r>, i32)
+enum Instruction<'r> {
+    Operation(fn(i32) -> i32, Register<'r>, i32),
 }
 
 //An operator, based on this a register's value is incremented or decremented
@@ -36,20 +37,18 @@ enum Operator {
 }
 
 //A statement. [instruction] [register] with [value] if [value of a register] [operator] [othervalue]
-pub struct Statement<'r>
-{
+pub struct Statement<'r> {
     instruction: Instruction<'r>,
     operator: Operator,
 }
 
-
-impl <'r>Register<'r> {
+impl<'r> Register<'r> {
     fn new(name: &'r str) -> Register<'r> {
         Register { name: name }
     }
 }
 
-impl <'i, 'r>Registers<'r> {
+impl<'i, 'r> Registers<'r> {
     pub fn new() -> Registers<'r> {
         Registers {
             max: 0,
@@ -62,8 +61,7 @@ impl <'i, 'r>Registers<'r> {
         self.registers.get(k)
     }
 
-    fn update(&mut self, operator: &Operator, instruction: Instruction<'r>)
-    {
+    fn update(&mut self, operator: &Operator, instruction: Instruction<'r>) {
         if operator.cmp() {
             match instruction {
                 Instruction::Operation(operation, register, value) => {
@@ -80,27 +78,38 @@ impl <'i, 'r>Registers<'r> {
     }
 }
 
-impl<'a, 'r, 'i> Instruction<'r>
-{
-    fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r>
-    {
+impl<'a, 'r, 'i> Instruction<'r> {
+    fn new(ins: &'a str, register: Register<'r>, value: &'a str) -> Instruction<'r> {
         match ins {
-            "inc" => Instruction::Operation(|value: i32| {value}, register, value.parse::<i32>().expect("Invalid incremental value")),
-            "dec" => Instruction::Operation(|value: i32| {-value}, register, value.parse::<i32>().expect("Invalid decremental value")),
+            "inc" => Instruction::Operation(
+                |value: i32| value,
+                register,
+                value.parse::<i32>().expect("Invalid incremental value"),
+            ),
+            "dec" => Instruction::Operation(
+                |value: i32| -value,
+                register,
+                value.parse::<i32>().expect("Invalid decremental value"),
+            ),
             _ => panic!("unknown instruction"),
         }
     }
 }
 
 impl Operator {
-    fn new<'r, 'a, 'rs>(cmpregister: Register<'r>, operator: &'a str, cmp: i32, registers: &Registers<'r>) -> Operator {
+    fn new<'r, 'a, 'rs>(
+        cmpregister: Register<'r>,
+        operator: &'a str,
+        cmp: i32,
+        registers: &Registers<'r>,
+    ) -> Operator {
         let n = *registers.get(&cmpregister).unwrap_or(&0i32);
 
         match &operator {
             &"==" => Operator::Equal(n, cmp),
             &"!=" => Operator::NotEqual(n, cmp),
-            &"<"  => Operator::Smallerthan(n, cmp),
-            &">"  => Operator::Greaterthan(n, cmp),
+            &"<" => Operator::Smallerthan(n, cmp),
+            &">" => Operator::Greaterthan(n, cmp),
             &"<=" => Operator::SmallerthanOrEqualto(n, cmp),
             &">=" => Operator::GreaterthanOrEqualto(n, cmp),
             _ => panic!("I don't know this operator!"),
@@ -120,24 +129,27 @@ impl Operator {
     }
 }
 
-impl<'r, 'b, 'm, 'a> Statement <'r>
+impl<'r, 'b, 'm, 'a> Statement<'r>
 where
     'a: 'b,
     'a: 'm,
 {
-    pub fn new(line: Vec<&'r str>, registers: &'b Registers) -> Result<Statement<'r>, StatementError> {
+    pub fn new(
+        line: Vec<&'r str>,
+        registers: &'b Registers,
+    ) -> Result<Statement<'r>, StatementError> {
         match line.as_slice() {
-            &[register, instruction, value, cmpregister, operator, otherval] => {
-                Ok(Statement {
-                    instruction: Instruction::new(instruction, Register::new(register), value),
-                    operator: Operator::new(
-                        Register::new(cmpregister),
-                        operator,
-                        otherval.parse::<i32>().expect("Failed to parse the number to compare with."),
-                        registers,
-                    ),
-                })
-            },
+            &[register, instruction, value, cmpregister, operator, otherval] => Ok(Statement {
+                instruction: Instruction::new(instruction, Register::new(register), value),
+                operator: Operator::new(
+                    Register::new(cmpregister),
+                    operator,
+                    otherval
+                        .parse::<i32>()
+                        .expect("Failed to parse the number to compare with."),
+                    registers,
+                ),
+            }),
             _ => Err(StatementError::new("Could not match on the slice.")),
         }
     }
@@ -157,17 +169,19 @@ impl StatementError {
             discription: String::from(s),
         }
     }
-    
+
     #[inline]
     pub fn discription(self) -> String {
         self.discription
     }
 }
-impl <'r>FromStrAndHashMap<'r> for Statement<'r>
-{
+impl<'r> FromStrAndHashMap<'r> for Statement<'r> {
     type Err = StatementError;
 
-    fn from_string_and_map<'a: 'r>(s: &'a str, map: &Registers<'r>) -> Result<Statement<'r>, StatementError> {
+    fn from_string_and_map<'a: 'r>(
+        s: &'a str,
+        map: &Registers<'r>,
+    ) -> Result<Statement<'r>, StatementError> {
         let v = s.split_whitespace().collect::<Vec<_>>();
         Statement::new(v, map)
     }
