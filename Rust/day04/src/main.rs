@@ -15,21 +15,20 @@ use std::collections::HashSet;
 fn solve<S, F>(input: S, mut transformer: F) -> i64
 where
     S: AsRef<str>,
-    F: FnMut(&mut [char])
+    F: FnMut(&mut [char]),
 {
     let mut valids = 0;
     let mut set = HashSet::with_capacity(11);
-    
+
     for line in input.as_ref().lines() {
         let mut count = 0;
-        
-        for mut word in line.split_whitespace() {
 
+        for mut word in line.split_whitespace() {
             let mut chars = word.chars().collect::<Vec<_>>();
-            
+
             transformer(&mut chars);
             set.insert(chars);
-            
+
             count += 1;
         }
 
@@ -42,8 +41,8 @@ where
 }
 
 fn main() {
-    let part2 = |chars: &mut [char]| { chars.sort() };
-    
+    let part2 = |chars: &mut [char]| chars.sort();
+
     println!("part 1: {}", solve(PUZZLE, noop!(&mut [char])));
     println!("part 2: {}", solve(PUZZLE, part2))
 }
