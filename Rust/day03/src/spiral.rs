@@ -2,13 +2,13 @@ use genitter::GeneratorAdaptor;
 
 use std::ops::Generator;
 
-use libaoc::movement::{Position, Direction, ManhattenDst};
+use libaoc::movement::{Direction, ManhattenDst, Position};
 
 //turn left, on dir::up,
 pub struct Spiral {
     point: Position<i64>,
     direction: Direction,
-    storage: Vec<(i64, Position<i64>)>
+    storage: Vec<(i64, Position<i64>)>,
 }
 
 impl Spiral {
@@ -18,7 +18,7 @@ impl Spiral {
         Spiral {
             point: Position::new(0, 0),
             direction: Direction::init_right(),
-            storage: vec
+            storage: vec,
         }
     }
     pub fn reset(&mut self) {
@@ -26,7 +26,10 @@ impl Spiral {
         self.direction = Direction::init_right();
     }
 
-    fn spiral<'g, 'a: 'g, F>(&'a mut self, next_value: F) -> impl Generator<Yield = (i64, Position<i64>), Return = ()> + 'a + 'g
+    fn spiral<'g, 'a: 'g, F>(
+        &'a mut self,
+        next_value: F,
+    ) -> impl Generator<Yield = (i64, Position<i64>), Return = ()> + 'a + 'g
     where
         F: Fn(&mut Self, i64) -> i64 + 'a,
     {
@@ -36,8 +39,7 @@ impl Spiral {
         move || {
             loop {
                 for _ in 0..2 {
-                    for _    in 1..number_of_steps {
-
+                    for _ in 1..number_of_steps {
                         //yield the value directly.
                         yield (value, self.point);
                         //update the coordinates.
@@ -58,8 +60,8 @@ impl Spiral {
     //returns the sum of the value's of the current point's adjecent point's.
     //also inserts the current value with the current coordinate to the storage.
     fn sum_of_adjecents(&mut self) -> i64 {
-
-        let value = self.storage
+        let value = self
+            .storage
             .iter()
             .filter(|&&(_, coordinate)| self.point.is_adjecent(&coordinate))
             .map(|&(value, _)| value)
@@ -86,9 +88,7 @@ impl Spiral {
     //this time the value of a coordinate is the sum of the value's of all of it's neighboors.
     //return the first value that is bigger than the input.
     pub fn part2(&mut self, input: i64) -> i64 {
-        let spiral = self.spiral(|ref mut spiral, _| {
-            spiral.sum_of_adjecents()
-        });
+        let spiral = self.spiral(|ref mut spiral, _| spiral.sum_of_adjecents());
 
         let mut spiralizer = GeneratorAdaptor::new(spiral);
 

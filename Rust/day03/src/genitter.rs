@@ -1,13 +1,13 @@
 use std::ops::{Generator, GeneratorState};
 
 pub struct GeneratorAdaptor<G, Y, R>(G)
-where G:
-    Generator<Yield = Y, Return = R>;
+where
+    G: Generator<Yield = Y, Return = R>;
 
-impl <G, Y, R>GeneratorAdaptor<G, Y, R>
-where G: Generator<Yield = Y, Return = R>
+impl<G, Y, R> GeneratorAdaptor<G, Y, R>
+where
+    G: Generator<Yield = Y, Return = R>,
 {
-
     #[inline]
     pub fn new(g: G) -> GeneratorAdaptor<G, Y, R> {
         GeneratorAdaptor(g)
@@ -24,9 +24,9 @@ where G: Generator<Yield = Y, Return = R>
     }
 }
 
-
-impl <G, Y, R> Iterator for GeneratorAdaptor<G, Y, R>
-where G: Generator<Yield = Y, Return = R>
+impl<G, Y, R> Iterator for GeneratorAdaptor<G, Y, R>
+where
+    G: Generator<Yield = Y, Return = R>,
 {
     type Item = G::Yield;
 
@@ -41,8 +41,9 @@ where G: Generator<Yield = Y, Return = R>
     }
 }
 
-impl <G, Y, R>::std::convert::AsRef<G> for GeneratorAdaptor<G, Y, R>
-where G: Generator<Yield = Y, Return = R>
+impl<G, Y, R> ::std::convert::AsRef<G> for GeneratorAdaptor<G, Y, R>
+where
+    G: Generator<Yield = Y, Return = R>,
 {
     fn as_ref<'a>(&'a self) -> &G {
         &(*self).0
