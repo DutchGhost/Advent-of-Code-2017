@@ -8,7 +8,7 @@ const INPUT_SIZE: usize = 1097;
 #[inline]
 fn run<F>(mut jumps: [i64; INPUT_SIZE], updater: F) -> i64
 where
-    F: Fn(i64) -> i64
+    F: Fn(i64) -> i64,
 {
     let mut n = 0;
     let mut pc: i64 = 0;
@@ -24,7 +24,7 @@ where
 #[inline]
 fn fast_run_with_get_mut<F>(mut jumps: [i64; INPUT_SIZE], updater: F) -> i64
 where
-    F: Fn(i64) -> i64
+    F: Fn(i64) -> i64,
 {
     let mut n = 0;
     let mut pc = 0;
@@ -33,16 +33,14 @@ where
         if let Some(offset) = jumps.get_mut(pc as usize) {
             pc += *offset;
             *offset += updater(*offset);
-        }
-        else {
+        } else {
             return n;
         }
 
         if let Some(offset) = jumps.get_mut(pc as usize) {
             pc += *offset;
             *offset += updater(*offset);
-        }
-        else {
+        } else {
             return n + 1;
         }
 
@@ -66,7 +64,7 @@ macro_rules! __unroll {
 #[inline]
 fn fast_run<F>(mut jumps: [i64; INPUT_SIZE], updater: F) -> i64
 where
-    F: Fn(i64) -> i64
+    F: Fn(i64) -> i64,
 {
     let mut n = 0;
     let mut idx = 0;
@@ -80,10 +78,14 @@ where
 }
 
 #[inline(always)]
-fn one(_: i64) -> i64 { 1 }
+fn one(_: i64) -> i64 {
+    1
+}
 
 #[inline(always)]
-fn TWO_UGLY_VERSION(n: i64) -> i64 { -(( n >= 3) as i64) | 1 }
+fn TWO_UGLY_VERSION(n: i64) -> i64 {
+    -((n >= 3) as i64) | 1
+}
 /*
     push rbp
     mov rbp, rsp
@@ -96,7 +98,13 @@ fn TWO_UGLY_VERSION(n: i64) -> i64 { -(( n >= 3) as i64) | 1 }
 */
 
 #[inline(always)]
-fn two(n: i64) -> i64 {if n >= 3 { -1 } else { 1 }}
+fn two(n: i64) -> i64 {
+    if n >= 3 {
+        -1
+    } else {
+        1
+    }
+}
 /*
     push rbp
     mov rbp, rsp
@@ -112,11 +120,9 @@ fn main() {
     let mut arr: [i64; INPUT_SIZE] = [0; INPUT_SIZE];
     let _ = PUZZLE.lines().try_convert_into_slice(&mut arr);
 
-
     println!("day 5.1: {}", fast_run(arr, one));
     println!("day 5.2: {}", fast_run(arr, two));
 
     println!("day 5.1: {}", fast_run_with_get_mut(arr, one));
     println!("day 5.2: {}", fast_run_with_get_mut(arr, two));
-
 }
