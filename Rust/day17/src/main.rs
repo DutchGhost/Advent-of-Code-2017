@@ -23,18 +23,23 @@ intrusive_adapter!(Linker = Box<Node>: Node{link: Link});
 
 //we already have a pointer to a position, so why not keep it? :)
 fn main() {
-
     let mut vec_of_nodes = Vec::with_capacity(50_000_000);
 
     for i in 1..ITERATIONS {
-        vec_of_nodes.push(Box::new(Node{link: Link::new(), value: i}));
+        vec_of_nodes.push(Box::new(Node {
+            link: Link::new(),
+            value: i,
+        }));
     }
 
     let mut iter_of_nodes = vec_of_nodes.into_iter();
 
     let mut buff = LinkedList::new(Linker::new());
     let mut buff_ptr: *mut LinkedList<Linker> = &mut buff as *mut _;
-    let first = Box::new(Node {link: Link::new(), value: 0});
+    let first = Box::new(Node {
+        link: Link::new(),
+        value: 0,
+    });
     buff.push_front(first);
     let time = Instant::now();
     {
@@ -58,7 +63,6 @@ fn main() {
                         }
                         c.move_next();
 
-
                         while idx > current_pos {
                             current_pos += 1;
                             c.move_next();
@@ -72,7 +76,6 @@ fn main() {
 
                 c.insert_after(iter_of_nodes.next().unwrap());
                 c.move_next();
-
             }
             current_pos = idx + 1;
 
