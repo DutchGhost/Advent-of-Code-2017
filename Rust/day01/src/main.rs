@@ -319,6 +319,128 @@ fn c_like(input: &[u8; 2190]) -> (u32, u32) {
 
     (part_1, part_2 << 1)
 }
+
+fn solve_simd(bytes: &[u8]) -> (u32, u32) {
+    use std::arch::x86_64::{_mm_loadu_si128, __m128i, _mm_cmpeq_epi8, _mm_set1_epi8, _mm_sub_epi8, _mm_and_si128};
+    use std::mem;
+
+    const SIMD_SIZE: usize = 128 / 8;
+    const SUB: i8 = 48;
+
+    
+    let mut part1: u32 = 0;
+    let mut part2: u32 = 0;
+
+    // parts 1 is looking 1 ahead
+    let mut prv = 0;
+    let mut nxt = 1;
+
+    // need to check so we do not overrun the slice
+    let len = bytes.len();
+    let cap = len - SIMD_SIZE;
+
+    // for part 2, start in the middle
+    let mut middle = len >> 1;
+
+    // set up a max, and a way to get back to raw i8's.
+    let max_m128_epi8 = unsafe { _mm_set1_epi8(127) };
+    let const_ascii_m128_epi8 = unsafe { _mm_set1_epi8(127 - SUB) };
+
+    let base_ptr = bytes.as_ptr();
+
+    unsafe {
+
+        // first loop. Finishes half of part 1, and almost part 2
+        while middle <= cap {
+            let first = _mm_loadu_si128(base_ptr.offset(prv as isize) as *const __m128i);
+            let second = _mm_loadu_si128(base_ptr.offset(nxt as isize) as *const __m128i);
+            let half = _mm_loadu_si128(base_ptr.offset(middle as isize) as *const __m128i);
+
+            let mask = _mm_sub_epi8(max_m128_epi8, first);
+
+            let compared_part1 = _mm_cmpeq_epi8(first, second);
+            let compared_part2 = _mm_cmpeq_epi8(first, half);
+
+            let valids_part1 = _mm_and_si128(mask, compared_part1);
+            let valids_part2 = _mm_and_si128(mask, compared_part2);
+
+            let result_part1 = _mm_sub_epi8(const_ascii_m128_epi8, valids_part1);
+            let result_part2 = _mm_sub_epi8(const_ascii_m128_epi8, valids_part2);
+
+            let array_part1: [u8; SIMD_SIZE] = mem::transmute(result_part1);
+            let array_part2: [u8; SIMD_SIZE] = mem::transmute(result_part2);
+
+            let tmp_result_part1 = array_part1.iter().filter(|n| *n < &10).cloned().map(|n| n as u32).sum::<u32>();
+            let tmp_result_part2 = array_part2.iter().filter(|n| *n < &10).cloned().map(|n| n as u32).sum::<u32>();
+
+            part1 += tmp_result_part1;
+            part2 += tmp_result_part2;
+
+            prv += SIMD_SIZE;
+            nxt += SIMD_SIZE;
+            middle += SIMD_SIZE;
+        }
+
+        let fixup = len - middle;
+
+        // Fixup loop for part 2, also continues part 1
+        for offset in 0..fixup {
+            let prv_unchecked = *bytes.get_unchecked(prv + offset) as i8;
+            let nxt_unchecked = -((prv_unchecked == *bytes.get_unchecked(nxt + offset) as i8) as i8);
+            let middle_unchecked = -((prv_unchecked == *bytes.get_unchecked(middle + offset) as i8) as i8);
+            
+            part1 += (prv_unchecked - SUB & nxt_unchecked) as u32;
+            part2 += (prv_unchecked - SUB & middle_unchecked) as u32;
+
+        }
+
+        prv += fixup + 1;
+        nxt += fixup + 1;
+
+        // almost finish part 1
+        while nxt <= cap {
+            let first = _mm_loadu_si128(base_ptr.offset(prv as isize) as *const __m128i);
+            let second = _mm_loadu_si128(base_ptr.offset(nxt as isize) as *const __m128i);
+
+            let mask = _mm_sub_epi8(max_m128_epi8, first);
+
+            let compared = _mm_cmpeq_epi8(first, second);
+            let valids = _mm_and_si128(mask, compared);
+
+            let results = _mm_sub_epi8(const_ascii_m128_epi8, valids);
+
+            let array: [u8; SIMD_SIZE] = mem::transmute(results);
+
+            let tmp_result = array.iter().filter(|n| *n < &10).cloned().map(|n| n as u32).sum::<u32>();
+
+            part1 += tmp_result;
+
+            prv += SIMD_SIZE;
+            nxt += SIMD_SIZE;
+        }
+
+        let fixup = len - nxt;
+
+        // fixup loop part 1
+        for offset in 0..fixup {
+            let prv_unchecked = *bytes.get_unchecked(prv + offset) as i8;
+            let nxt_unchecked = -((prv_unchecked == *bytes.get_unchecked(nxt + offset) as i8) as i8);
+            
+            part1 += (prv_unchecked - SUB & nxt_unchecked) as u32;
+        }
+        
+        // check begin and end for part 1
+        let begin_unchecked = *bytes.get_unchecked(0) as i8;
+        let end_unchecked = -((begin_unchecked == *bytes.get_unchecked(len - 1) as i8) as i8);
+
+        part1 += (begin_unchecked - SUB & end_unchecked) as u32;
+
+    } 
+
+    (part1, part2 << 1)
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -382,5 +504,15 @@ mod tests {
     #[bench]
     fn bench_testing(b: &mut Bencher) {
         b.iter(|| testing(BPUZZLE));
+    }
+
+    #[bench]
+    fn bench_simd_solve(b: &mut Bencher) {
+        b.iter(|| solve_simd(BPUZZLE));
+    }
+
+    #[test]
+    fn is_ok() {
+        assert_eq!(solve_simd(BPUZZLE), (1144, 1194));
     }
 }
