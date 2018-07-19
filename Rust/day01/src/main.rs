@@ -321,13 +321,13 @@ fn c_like(input: &[u8; 2190]) -> (u32, u32) {
 }
 
 fn solve_simd(bytes: &[u8]) -> (u32, u32) {
-    use std::arch::x86_64::{_mm_loadu_si128, __m128i, _mm_cmpeq_epi8, _mm_set1_epi8, _mm_sub_epi8, _mm_and_si128};
+    use std::arch::x86_64::{_mm_loadu_si128, __m128i, _mm_cmpeq_epi8, _mm_set1_epi8, _mm_sub_epi8, _mm_and_si128, _mm_sad_epu8, _mm_setzero_si128, _mm_extract_epi16};
     use std::mem;
 
     const SIMD_SIZE: usize = 128 / 8;
     const SUB: i8 = 48;
 
-    
+
     let mut part1: u32 = 0;
     let mut part2: u32 = 0;
 
@@ -345,7 +345,7 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
     // set up a max, and a way to get back to raw i8's.
     let max_m128_epi8 = unsafe { _mm_set1_epi8(127) };
     let const_ascii_m128_epi8 = unsafe { _mm_set1_epi8(127 - SUB) };
-
+    let const_zero = unsafe { _mm_set1_epi8(0) };
     let base_ptr = bytes.as_ptr();
 
     unsafe {
@@ -367,14 +367,23 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
             let result_part1 = _mm_sub_epi8(const_ascii_m128_epi8, valids_part1);
             let result_part2 = _mm_sub_epi8(const_ascii_m128_epi8, valids_part2);
 
-            let array_part1: [u8; SIMD_SIZE] = mem::transmute(result_part1);
-            let array_part2: [u8; SIMD_SIZE] = mem::transmute(result_part2);
+            // horizontal sum
+            let sum_part1 = _mm_sad_epu8(result_part1, _mm_setzero_si128());
+            let mut tmp = _mm_extract_epi16(sum_part1, 0);
+            let mut tmp2 = _mm_extract_epi16(sum_part1, 4);
+            let sum_row_p1 = 16 * 79 - tmp - tmp2;
+            let modded = sum_row_p1 % 79;
+            let final_sum_part1 = if modded == 0 { 0 } else { 79 - modded };
+            part1 += final_sum_part1 as u32;
 
-            let tmp_result_part1 = array_part1.iter().filter(|n| *n < &10).cloned().map(|n| n as u32).sum::<u32>();
-            let tmp_result_part2 = array_part2.iter().filter(|n| *n < &10).cloned().map(|n| n as u32).sum::<u32>();
-
-            part1 += tmp_result_part1;
-            part2 += tmp_result_part2;
+            // horizontal sum
+            let sum_part2 = _mm_sad_epu8(result_part2, _mm_setzero_si128());
+            let mut tmp = _mm_extract_epi16(sum_part2, 0);
+            let mut tmp2 = _mm_extract_epi16(sum_part2, 4);
+            let sum_row_p2 = 16 * 79 - tmp - tmp2;
+            let modded = sum_row_p2 % 79;
+            let final_sum_part2 = if modded == 0 { 0 } else { 79 - modded };
+            part2 += final_sum_part2 as u32;
 
             prv += SIMD_SIZE;
             nxt += SIMD_SIZE;
@@ -388,7 +397,7 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
             let prv_unchecked = *bytes.get_unchecked(prv + offset) as i8;
             let nxt_unchecked = -((prv_unchecked == *bytes.get_unchecked(nxt + offset) as i8) as i8);
             let middle_unchecked = -((prv_unchecked == *bytes.get_unchecked(middle + offset) as i8) as i8);
-            
+
             part1 += (prv_unchecked - SUB & nxt_unchecked) as u32;
             part2 += (prv_unchecked - SUB & middle_unchecked) as u32;
 
@@ -409,11 +418,14 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
 
             let results = _mm_sub_epi8(const_ascii_m128_epi8, valids);
 
-            let array: [u8; SIMD_SIZE] = mem::transmute(results);
-
-            let tmp_result = array.iter().filter(|n| *n < &10).cloned().map(|n| n as u32).sum::<u32>();
-
-            part1 += tmp_result;
+            // horizontal sum
+            let sum_part1 = _mm_sad_epu8(results, _mm_setzero_si128());
+            let mut tmp = _mm_extract_epi16(sum_part1, 0);
+            let mut tmp2 = _mm_extract_epi16(sum_part1, 4);
+            let sum_row_p1 = 16 * 79 - tmp - tmp2;
+            let modded = sum_row_p1 % 79;
+            let final_sum_part1 = if modded == 0 { 0 } else { 79 - modded };
+            part1 += final_sum_part1 as u32;
 
             prv += SIMD_SIZE;
             nxt += SIMD_SIZE;
@@ -425,17 +437,17 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
         for offset in 0..fixup {
             let prv_unchecked = *bytes.get_unchecked(prv + offset) as i8;
             let nxt_unchecked = -((prv_unchecked == *bytes.get_unchecked(nxt + offset) as i8) as i8);
-            
+
             part1 += (prv_unchecked - SUB & nxt_unchecked) as u32;
         }
-        
+
         // check begin and end for part 1
         let begin_unchecked = *bytes.get_unchecked(0) as i8;
         let end_unchecked = -((begin_unchecked == *bytes.get_unchecked(len - 1) as i8) as i8);
 
         part1 += (begin_unchecked - SUB & end_unchecked) as u32;
 
-    } 
+    }
 
     (part1, part2 << 1)
 }
