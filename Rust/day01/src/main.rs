@@ -2,15 +2,13 @@
 extern crate test;
 
 use std::time::{Duration, Instant};
-const PUZZLE: &'static str = include_str!("Input.txt");
-const BPUZZLE: &'static [u8] = include_bytes!("bigfile.txt");
+const BPUZZLE: &'static [u8] = include_bytes!("Input.txt");
 const SUB: i8 = 48;
 
 use std::arch::x86_64::{
     __m128i, _mm_and_si128, _mm_cmpeq_epi8, _mm_extract_epi16, _mm_loadu_si128, _mm_sad_epu8,
     _mm_set1_epi8, _mm_setzero_si128, _mm_sub_epi8,
 };
-use std::mem;
 
 fn main() {
     let (ans6, time6) = measure_command(|| solve_simd(BPUZZLE));
@@ -31,7 +29,7 @@ fn measure_command<T, F: Fn() -> T>(f: F) -> (F::Output, Duration) {
     let start = Instant::now();
 
     //let mut v = Vec::new();
-    for _ in 0..50_000 {
+    for _ in 0..5_000_000 {
         let mut i = f();
         // v.push(i);
     }
