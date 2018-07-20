@@ -6,6 +6,10 @@ const PUZZLE: &'static str = include_str!("Input.txt");
 const BPUZZLE: &'static [u8; 2190] = include_bytes!("Input.txt");
 const SUB: i8 = 48;
 
+use std::arch::x86_64::{_mm_loadu_si128, __m128i, _mm_cmpeq_epi8, _mm_set1_epi8, _mm_sub_epi8, _mm_and_si128, _mm_sad_epu8, _mm_setzero_si128, _mm_extract_epi16};
+use std::mem;
+
+
 fn main() {
     let (ans, time) =
         measure_command(|| optimized_andpercent_unrolled(BPUZZLE, BPUZZLE.len() >> 1));
@@ -320,13 +324,17 @@ fn c_like(input: &[u8; 2190]) -> (u32, u32) {
     (part_1, part_2 << 1)
 }
 
+//use std::arch::x86_64::{_mm_loadu_si128, __m128i, _mm_cmpeq_epi8, _mm_set1_epi8, _mm_sub_epi8, _mm_and_si128, _mm_sad_epu8, _mm_setzero_si128, _mm_extract_epi16};
+
+#[inline(always)]
+unsafe fn _mm_sum_epi8(vec: __m128i) -> i32 {
+    let tmp = _mm_sad_epu8(vec, _mm_setzero_si128());
+    _mm_extract_epi16(tmp, 0) + _mm_extract_epi16(tmp, 4)
+}
+
 fn solve_simd(bytes: &[u8]) -> (u32, u32) {
-    use std::arch::x86_64::{_mm_loadu_si128, __m128i, _mm_cmpeq_epi8, _mm_set1_epi8, _mm_sub_epi8, _mm_and_si128, _mm_sad_epu8, _mm_setzero_si128, _mm_extract_epi16};
-    use std::mem;
 
     const SIMD_SIZE: usize = 128 / 8;
-    const SUB: i8 = 48;
-
 
     let mut part1: u32 = 0;
     let mut part2: u32 = 0;
@@ -342,10 +350,7 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
     // for part 2, start in the middle
     let mut middle = len >> 1;
 
-    // set up a max, and a way to get back to raw i8's.
-    let max_m128_epi8 = unsafe { _mm_set1_epi8(127) };
-    let const_ascii_m128_epi8 = unsafe { _mm_set1_epi8(127 - SUB) };
-    let const_zero = unsafe { _mm_set1_epi8(0) };
+    let const_ascii_m128_epi8 = unsafe { _mm_set1_epi8(48) };
     let base_ptr = bytes.as_ptr();
 
     unsafe {
@@ -356,34 +361,19 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
             let second = _mm_loadu_si128(base_ptr.offset(nxt as isize) as *const __m128i);
             let half = _mm_loadu_si128(base_ptr.offset(middle as isize) as *const __m128i);
 
-            let mask = _mm_sub_epi8(max_m128_epi8, first);
-
             let compared_part1 = _mm_cmpeq_epi8(first, second);
             let compared_part2 = _mm_cmpeq_epi8(first, half);
 
-            let valids_part1 = _mm_and_si128(mask, compared_part1);
-            let valids_part2 = _mm_and_si128(mask, compared_part2);
+            // convert ascii to nums
+            let nums = _mm_sub_epi8(first, const_ascii_m128_epi8);
 
-            let result_part1 = _mm_sub_epi8(const_ascii_m128_epi8, valids_part1);
-            let result_part2 = _mm_sub_epi8(const_ascii_m128_epi8, valids_part2);
+            // the comparison gave a __m128i with 0's and 255's. 255 is true, 0 false.
+            // any u8 AND 255 is itself again, any u8 AND 0 is 0, so the nums that where not equal are set to 0.
+            let valids_part1 = _mm_and_si128(compared_part1, nums);
+            let valids_part2 = _mm_and_si128(compared_part2, nums);
 
-            // horizontal sum
-            let sum_part1 = _mm_sad_epu8(result_part1, _mm_setzero_si128());
-            let mut tmp = _mm_extract_epi16(sum_part1, 0);
-            let mut tmp2 = _mm_extract_epi16(sum_part1, 4);
-            let sum_row_p1 = 16 * 79 - tmp - tmp2;
-            let modded = sum_row_p1 % 79;
-            let final_sum_part1 = if modded == 0 { 0 } else { 79 - modded };
-            part1 += final_sum_part1 as u32;
-
-            // horizontal sum
-            let sum_part2 = _mm_sad_epu8(result_part2, _mm_setzero_si128());
-            let mut tmp = _mm_extract_epi16(sum_part2, 0);
-            let mut tmp2 = _mm_extract_epi16(sum_part2, 4);
-            let sum_row_p2 = 16 * 79 - tmp - tmp2;
-            let modded = sum_row_p2 % 79;
-            let final_sum_part2 = if modded == 0 { 0 } else { 79 - modded };
-            part2 += final_sum_part2 as u32;
+            part1 += _mm_sum_epi8(valids_part1) as u32;
+            part2 += _mm_sum_epi8(valids_part2) as u32;
 
             prv += SIMD_SIZE;
             nxt += SIMD_SIZE;
@@ -411,21 +401,13 @@ fn solve_simd(bytes: &[u8]) -> (u32, u32) {
             let first = _mm_loadu_si128(base_ptr.offset(prv as isize) as *const __m128i);
             let second = _mm_loadu_si128(base_ptr.offset(nxt as isize) as *const __m128i);
 
-            let mask = _mm_sub_epi8(max_m128_epi8, first);
-
             let compared = _mm_cmpeq_epi8(first, second);
-            let valids = _mm_and_si128(mask, compared);
 
-            let results = _mm_sub_epi8(const_ascii_m128_epi8, valids);
+            let nums = _mm_sub_epi8(first, const_ascii_m128_epi8);
 
-            // horizontal sum
-            let sum_part1 = _mm_sad_epu8(results, _mm_setzero_si128());
-            let mut tmp = _mm_extract_epi16(sum_part1, 0);
-            let mut tmp2 = _mm_extract_epi16(sum_part1, 4);
-            let sum_row_p1 = 16 * 79 - tmp - tmp2;
-            let modded = sum_row_p1 % 79;
-            let final_sum_part1 = if modded == 0 { 0 } else { 79 - modded };
-            part1 += final_sum_part1 as u32;
+            let valids = _mm_and_si128(compared, nums);
+
+            part1 += _mm_sum_epi8(valids) as u32;
 
             prv += SIMD_SIZE;
             nxt += SIMD_SIZE;
