@@ -2,7 +2,7 @@
 extern crate test;
 
 use std::time::{Duration, Instant};
-const BPUZZLE: &'static [u8] = include_bytes!("Input.txt");
+const BPUZZLE: &'static [u8] = include_bytes!("bigfile.txt");
 const SUB: i8 = 48;
 
 use std::arch::x86_64::{
@@ -212,28 +212,13 @@ mod tests {
     use test::Bencher;
 
     #[bench]
-    fn str_summenize_part1(b: &mut Bencher) {
-        b.iter(|| summenize(PUZZLE, 1));
-    }
-
-    #[bench]
-    fn str_summenize_part2(b: &mut Bencher) {
-        b.iter(|| summenize(PUZZLE, PUZZLE.len() >> 1));
-    }
-
-    #[bench]
-    fn str_fast_part2(b: &mut Bencher) {
-        b.iter(|| optimized(PUZZLE, PUZZLE.len() >> 1));
-    }
-
-    #[bench]
     fn bytes_summenize_part1_andpercent(b: &mut Bencher) {
         b.iter(|| summmenize_andpercent(BPUZZLE, 1));
     }
 
     #[bench]
     fn bytes_optimized_part2_andpercent(b: &mut Bencher) {
-        b.iter(|| optimized_andpercent(BPUZZLE, PUZZLE.len() >> 1));
+        b.iter(|| optimized_andpercent(BPUZZLE, BPUZZLE.len() >> 1));
     }
 
     #[bench]
