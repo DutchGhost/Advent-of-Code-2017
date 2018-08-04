@@ -13,6 +13,9 @@ const BPUZZLE: &'static [u8] = include_bytes!("Input.txt");
 
 const INPUT_LEN: usize = 16;
 
+use std::mem;
+use std::ptr;
+
 use std::arch::x86_64::*;
 
 /// gets the biggest out of the nums.
@@ -63,7 +66,7 @@ fn solve() -> (u32, u32) {
     (part1, part2)
 }
 
-fn solve_with_collected_array() -> (u32, u32) {
+fn solve_with_collected_array() -> u32 {
     let arr = arraycollect!(
         PUZZLE
             .lines()
@@ -76,80 +79,10 @@ fn solve_with_collected_array() -> (u32, u32) {
         .unwrap();
 
     let part1 = arr.iter().map(|nums| difference(nums)).sum::<u32>();
-    let part2 = arr.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
+    //let part2 = arr.iter().filter_map(|nums| evenly(nums)).sum::<u32>();
 
-    (part1, part2)
+    part1
 }
-
-// #[inline(always)]
-// unsafe fn _mm_smax_epi16(vec: __m128i) -> i32 {
-//     let mut vmax = vec;
-//     // let mut l = _mm_unpacklo_epi16(vec, _mm_setzero_si128());
-//     // let mut h = _mm_unpackhi_epi16(vec, _mm_setzero_si128());
-//     //
-//     // let arr: [u16; 8] = std::mem::transmute(l);
-//     // let arr2: [u16; 8] = std::mem::transmute(h);
-//     // println!("{:?} {:?}", arr, arr2);
-//     //
-//     // l = _mm_minpos_epu16(l);
-//     // h = _mm_minpos_epu16(h);
-//     //
-//     //  let arr: [u16; 8] = std::mem::transmute(l);
-//     // // let arr2: [u16; 8] = std::mem::transmute(h);
-//     //  println!("{:?} {:?}", arr, ());
-//     // _mm_extract_epi16(_mm_min_epu16(l, h), 0)
-
-//     // vmax = _mm_max_epi8(vmax, _mm_alignr_epi8(vmax, vmax, 1));
-//     // vmax = _mm_max_epi8(vmax, _mm_alignr_epi8(vmax, vmax, 4));
-//     // vmax = _mm_max_epi8(vmax, _mm_alignr_epi8(vmax, vmax, 8));
-//     // vmax = _mm_max_epi8(vmax, _mm_alignr_epi8(vmax, vmax, 16));
-//     //
-//     // let arr: [u16; 8] = std::mem::transmute(vmax);
-//     // println!("{:?}", arr);
-//     // _mm_extract_epi16(vmax, 0)
-
-//     let max1 = _mm_shufflehi_epi16(vec, _MM_SHUFFLE(0,0,3,2) as i32);
-//     let max2 = _mm_max_epi32(vec ,max1);
-//     let max3 = _mm_shufflelo_epi16(max2, _MM_SHUFFLE(0,0,0,1) as i32);
-//     let max4 = _mm_max_epi16(max2,max3);
-
-//     let arr: [u16; 8] = std::mem::transmute(max4);
-
-//     println!("{:?}", arr);
-
-//     _mm_cvtsi128_si32(max4)
-// }
-// fn solve_simd(bytes: &[u8]) -> (u32, u32) {
-
-//     let mut buffer: [u16; 16] = [0; 16];
-
-//     for line in bytes.split(|b| b == &b'\n') {
-//         for (num, buff) in line.split(|b| b == &b'\t').zip(buffer.iter_mut()) {
-
-//             // filter trailing '\r'
-//             let parsed = if num.last().filter(|b| b == &&b'\r').is_some() {
-//                 u16::atoi(&num[..num.len() - 1])
-//             } else {
-//                 u16::atoi(num)
-//             };
-//             *buff = parsed.unwrap();
-//         }
-
-//         unsafe {
-//             let base_ptr = buffer.as_ptr();
-
-//             let first = _mm_loadu_si128(base_ptr as *const __m128i);
-//             let second = _mm_loadu_si128(base_ptr.offset(8) as *const __m128i);
-
-//             let max_vec = _mm_max_epi16(first, second);
-//             let max = _mm_smax_epi16(max_vec);
-
-//             //let arr: [u16; 8] = std::mem::transmute(max);
-//             println!("{:?}", max);
-//         }
-//     }
-//     (0, 0)
-// }
 
 const SIZE: usize = 16;
 pub type COLUMN = [u32; SIZE];
@@ -174,22 +107,16 @@ struct Layout {
     c16: COLUMN,
 }
 
-use std::mem;
-use std::ptr;
-
 impl Layout {
     fn load(bytes: &[u8]) -> Self {
         let mut me: Self = unsafe { mem::uninitialized() };
         for (idx, row) in bytes.split(|b| b == &b'\n').enumerate() {
-            let mut iter = row
-                .split(|b| b == &b'\t')
-                .map(|b| {
-                    if b.last().filter(|b| b == &&b'\r').is_some() {
-                        u32::atoi(&b[..b.len() - 1]).unwrap()
-                    }
-                    else {
-                        u32::atoi(b).unwrap()
-                    }
+            let mut iter = row.split(|b| b == &b'\t').map(|b| {
+                if b.last().filter(|b| b == &&b'\r').is_some() {
+                    u32::atoi(&b[..b.len() - 1]).unwrap()
+                } else {
+                    u32::atoi(b).unwrap()
+                }
             });
 
             unsafe {
@@ -216,7 +143,11 @@ impl Layout {
 }
 
 #[inline(always)]
-unsafe fn apply(ptr: *const u32, other: __m128i, f: impl Fn(__m128i, __m128i) -> __m128i) -> __m128i {
+unsafe fn apply<F: Fn(__m128i, __m128i) -> __m128i>(
+    ptr: *const u32,
+    other: __m128i,
+    f: F,
+) -> __m128i {
     let load = _mm_loadu_si128(ptr as *const __m128i);
     f(load, other)
 }
@@ -227,7 +158,11 @@ unsafe fn blocks<T>(slice: &[T], blocksize: isize) -> *const T {
 }
 
 #[inline(always)]
-unsafe fn compute(layout: &Layout, blocksize: isize, f: impl Fn(__m128i, __m128i) -> __m128i) -> __m128i {
+unsafe fn compute<F: Fn(__m128i, __m128i) -> __m128i + Copy>(
+    layout: &Layout,
+    blocksize: isize,
+    f: F,
+) -> __m128i {
     let block_c1 = blocks(&layout.c1, blocksize);
     let block_c2 = blocks(&layout.c2, blocksize);
     let block_c3 = blocks(&layout.c3, blocksize);
@@ -245,7 +180,6 @@ unsafe fn compute(layout: &Layout, blocksize: isize, f: impl Fn(__m128i, __m128i
     let block_c15 = blocks(&layout.c15, blocksize);
     let block_c16 = blocks(&layout.c16, blocksize);
 
-    
     let simd_c1 = _mm_loadu_si128(block_c1 as *const __m128i);
     let simd_c2 = _mm_loadu_si128(block_c2 as *const __m128i);
 
@@ -266,37 +200,62 @@ unsafe fn compute(layout: &Layout, blocksize: isize, f: impl Fn(__m128i, __m128i
     max = apply(block_c15, max, f);
     max = apply(block_c16, max, f);
 
-    let arr: [u32; 4] = mem::transmute(max);
-    println!("max = {:?}", arr);
-    println!("");
-
     max
+}
+
+#[inline(always)]
+unsafe fn _mm_sum_epi32(mut v: __m128i) -> i32 {
+    v = _mm_add_epi32(v, _mm_srli_si128(v, 8));
+    v = _mm_add_epi32(v, _mm_srli_si128(v, 4));
+
+    _mm_cvtsi128_si32(v)
+}
+
+fn solve_simd() -> i32 {
+    let max = |a, b| unsafe { _mm_max_epi32(a, b) };
+    let min = |a, b| unsafe { _mm_min_epi32(a, b) };
+
+    let layout = Layout::load(BPUZZLE);
+
+    unsafe {
+        let max_block_1 = compute(&layout, 0, max);
+        let max_block_2 = compute(&layout, 4, max);
+        let max_block_3 = compute(&layout, 8, max);
+        let max_block_4 = compute(&layout, 12, max);
+
+        let min_block_1 = compute(&layout, 0, min);
+        let min_block_2 = compute(&layout, 4, min);
+        let min_block_3 = compute(&layout, 8, min);
+        let min_block_4 = compute(&layout, 12, min);
+
+        let diff_block_1 = _mm_sub_epi32(max_block_1, min_block_1);
+        let diff_block_2 = _mm_sub_epi32(max_block_2, min_block_2);
+        let diff_block_3 = _mm_sub_epi32(max_block_3, min_block_3);
+        let diff_block_4 = _mm_sub_epi32(max_block_4, min_block_4);
+
+        let sum_block_1 = _mm_sum_epi32(diff_block_1);
+        let sum_block_2 = _mm_sum_epi32(diff_block_2);
+        let sum_block_3 = _mm_sum_epi32(diff_block_3);
+        let sum_block_4 = _mm_sum_epi32(diff_block_4);
+
+        sum_block_1 + sum_block_2 + sum_block_3 + sum_block_4
+    }
 }
 fn main() {
     use std::time::Instant;
-    let (p1, p2) = solve_with_collected_array();
-    println!("day 2.1: {}", p1);
-    println!("day 2.2: {}", p2);
-
-    let layout = Layout::load(BPUZZLE);
-    
-    unsafe {
-        let max_block_1 = compute(&layout, 0, _mm_max_epi32);
-        let max_block_2 = compute(&layout, 4, _mm_max_epi32);
-        let max_block_3 = compute(&layout, 8, _mm_max_epi32);
-        let max_block_4 = compute(&layout, 12, _mm_max_epi32);
-
-        let arr1: [u32; 4] = mem::transmute(max_block_1);
-        let arr2: [u32; 4] = mem::transmute(max_block_2);
-        let arr3: [u32; 4] = mem::transmute(max_block_3);
-        let arr4: [u32; 4] = mem::transmute(max_block_4);
-
-        println!("{:?}", arr1);
-        println!("{:?}", arr2);
-        println!("{:?}", arr3);
-        println!("{:?}", arr4);
-
+    let start = Instant::now();
+    for _ in 0..1_000_000 {
+        let p1 = solve_with_collected_array();
     }
+    //println!("day 2.1: {}", p1);
+    println!("{:?}", start.elapsed());
+
+    let start = Instant::now();
+    for _ in 0..1_000_000 {
+        let s = solve_simd();
+    }
+    //println!("day 2.1: {}", s);
+    println!("{:?}", start.elapsed());
 }
 
 trait Sub<T>
