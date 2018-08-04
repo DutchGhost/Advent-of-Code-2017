@@ -88,6 +88,7 @@ const SIZE: usize = 16;
 pub type COLUMN = [u32; SIZE];
 
 #[derive(Debug)]
+#[repr(align(16))]
 struct Layout {
     c1: COLUMN,
     c2: COLUMN,
@@ -148,40 +149,40 @@ unsafe fn apply<F: Fn(__m128i, __m128i) -> __m128i>(
     other: __m128i,
     f: F,
 ) -> __m128i {
-    let load = _mm_loadu_si128(ptr as *const __m128i);
+    let load = _mm_load_si128(ptr as *const __m128i);
     f(load, other)
 }
 
 #[inline(always)]
-unsafe fn blocks<T>(slice: &[T], blocksize: isize) -> *const T {
-    slice.as_ptr().offset(blocksize)
+unsafe fn blocks<T>(slice: &[T], offset: isize) -> *const T {
+    slice.as_ptr().offset(offset)
 }
 
 #[inline(always)]
 unsafe fn compute<F: Fn(__m128i, __m128i) -> __m128i + Copy>(
     layout: &Layout,
-    blocksize: isize,
+    offset: isize,
     f: F,
 ) -> __m128i {
-    let block_c1 = blocks(&layout.c1, blocksize);
-    let block_c2 = blocks(&layout.c2, blocksize);
-    let block_c3 = blocks(&layout.c3, blocksize);
-    let block_c4 = blocks(&layout.c4, blocksize);
-    let block_c5 = blocks(&layout.c5, blocksize);
-    let block_c6 = blocks(&layout.c6, blocksize);
-    let block_c7 = blocks(&layout.c7, blocksize);
-    let block_c8 = blocks(&layout.c8, blocksize);
-    let block_c9 = blocks(&layout.c9, blocksize);
-    let block_c10 = blocks(&layout.c10, blocksize);
-    let block_c11 = blocks(&layout.c11, blocksize);
-    let block_c12 = blocks(&layout.c12, blocksize);
-    let block_c13 = blocks(&layout.c13, blocksize);
-    let block_c14 = blocks(&layout.c14, blocksize);
-    let block_c15 = blocks(&layout.c15, blocksize);
-    let block_c16 = blocks(&layout.c16, blocksize);
+    let block_c1 = blocks(&layout.c1, offset);
+    let block_c2 = blocks(&layout.c2, offset);
+    let block_c3 = blocks(&layout.c3, offset);
+    let block_c4 = blocks(&layout.c4, offset);
+    let block_c5 = blocks(&layout.c5, offset);
+    let block_c6 = blocks(&layout.c6, offset);
+    let block_c7 = blocks(&layout.c7, offset);
+    let block_c8 = blocks(&layout.c8, offset);
+    let block_c9 = blocks(&layout.c9, offset);
+    let block_c10 = blocks(&layout.c10, offset);
+    let block_c11 = blocks(&layout.c11, offset);
+    let block_c12 = blocks(&layout.c12, offset);
+    let block_c13 = blocks(&layout.c13, offset);
+    let block_c14 = blocks(&layout.c14, offset);
+    let block_c15 = blocks(&layout.c15, offset);
+    let block_c16 = blocks(&layout.c16, offset);
 
-    let simd_c1 = _mm_loadu_si128(block_c1 as *const __m128i);
-    let simd_c2 = _mm_loadu_si128(block_c2 as *const __m128i);
+    let simd_c1 = _mm_load_si128(block_c1 as *const __m128i);
+    let simd_c2 = _mm_load_si128(block_c2 as *const __m128i);
 
     let mut result = f(simd_c1, simd_c2);
 
@@ -217,6 +218,8 @@ fn solve_simd() -> i32 {
 
     let layout = Layout::load(BPUZZLE);
 
+    //println!("{}", mem::align_of_val(&layout.c1));
+
     unsafe {
         let max_block_1 = compute(&layout, 0, max);
         let max_block_2 = compute(&layout, 4, max);
@@ -241,6 +244,7 @@ fn solve_simd() -> i32 {
         sum_block_1 + sum_block_2 + sum_block_3 + sum_block_4
     }
 }
+
 fn main() {
     use std::time::Instant;
     let start = Instant::now();
@@ -255,6 +259,9 @@ fn main() {
         let s = solve_simd();
     }
     //println!("day 2.1: {}", s);
+    let s = solve_simd();
+    println!("day 2.1: {}", s);
+ 
     println!("{:?}", start.elapsed());
 }
 
