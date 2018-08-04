@@ -183,24 +183,24 @@ unsafe fn compute<F: Fn(__m128i, __m128i) -> __m128i + Copy>(
     let simd_c1 = _mm_loadu_si128(block_c1 as *const __m128i);
     let simd_c2 = _mm_loadu_si128(block_c2 as *const __m128i);
 
-    let mut max = f(simd_c1, simd_c2);
+    let mut result = f(simd_c1, simd_c2);
 
-    max = apply(block_c3, max, f);
-    max = apply(block_c4, max, f);
-    max = apply(block_c5, max, f);
-    max = apply(block_c6, max, f);
-    max = apply(block_c7, max, f);
-    max = apply(block_c8, max, f);
-    max = apply(block_c9, max, f);
-    max = apply(block_c10, max, f);
-    max = apply(block_c11, max, f);
-    max = apply(block_c12, max, f);
-    max = apply(block_c13, max, f);
-    max = apply(block_c14, max, f);
-    max = apply(block_c15, max, f);
-    max = apply(block_c16, max, f);
+    result = apply(block_c3, result, f);
+    result = apply(block_c4, result, f);
+    result = apply(block_c5, result, f);
+    result = apply(block_c6, result, f);
+    result = apply(block_c7, result, f);
+    result = apply(block_c8, result, f);
+    result = apply(block_c9, result, f);
+    result = apply(block_c10, result, f);
+    result = apply(block_c11, result, f);
+    result = apply(block_c12, result, f);
+    result = apply(block_c13, result, f);
+    result = apply(block_c14, result, f);
+    result = apply(block_c15, result, f);
+    result = apply(block_c16, result, f);
 
-    max
+    result
 }
 
 #[inline(always)]
