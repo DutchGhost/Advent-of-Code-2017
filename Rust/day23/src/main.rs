@@ -63,6 +63,12 @@ fn main() {
     }
     println!("part 1: {}", muls);
     println!("part 2: {}", main_2());
+
+    let part2 = (105700..=122700)
+        .step_by(17)
+        .filter(|n| (2..*n).any(|d| n % d == 0))
+        .count();
+    println!("{}", part2);
 }
 
 fn main_2() -> usize {
