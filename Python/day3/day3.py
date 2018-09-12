@@ -7,7 +7,7 @@ class Direction(Enum):
     DOWN = 1
     RIGHT = 2
     LEFT = 3
-    
+
     '''Turn to the right'''
     def turn_right(self):
         return {
@@ -16,7 +16,7 @@ class Direction(Enum):
             Direction.DOWN    : Direction.LEFT,
             Direction.LEFT    : Direction.UP,
         }[self]
-    
+
     '''Turn to the left'''
     def turn_left(self):
         return {
@@ -30,7 +30,7 @@ class Position():
     def __init__(self):
         self.x = 0
         self.y = 0
-    
+
     '''Y is decremented when going up, incremented when going down'''
     def change(self, direction, n):
         if direction == Direction.UP:
@@ -55,20 +55,20 @@ class Spiral():
     def __init__(self):
         self.direction = Direction.RIGHT
         self.position = Position()
-    
+
     '''Lazy Iterator, yielding positions of a sprial, spiraling to the right'''
     def spiral(self):
         number_of_steps = 1
         while True:
             for _ in range(2):
                 for _ in range(1, number_of_steps):
-                    
+
                     yield self.position.to_tuple()
                     self.position.rev_change(self.direction, 1)
 
                 self.direction = self.direction.turn_left()
             number_of_steps += 1
-    
+
     '''Resets the direction and position, to start over'''
     def reset(self):
         self.direction = Direction.RIGHT
@@ -78,11 +78,11 @@ class Solver():
     def __init__(self):
         self.spiralizer = Spiral()
         self.storage = [(1, (0, 0))]
-    
+
     def part1(self):
         (x, y) = next((x, y) for (value, (x, y)) in enumerate(self.spiralizer.spiral(), start = 1) if value == INPUT)
         return abs(x) + abs(y)
-    
+
     def reset(self):
         self.spiralizer.reset()
 
@@ -108,4 +108,3 @@ if __name__ == '__main__':
     print("Part 1: {}".format(solver.part1()))
     solver.reset()
     print("Part 2: {}".format(solver.part2()))
-    

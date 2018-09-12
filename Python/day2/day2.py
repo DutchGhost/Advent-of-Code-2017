@@ -1,15 +1,29 @@
 from itertools import islice
-def parse():
-        return [[int(word) for word in row.strip().split("\t")] for row in open('Input.txt', 'r').readlines()]
+from functools import partial
+import re
 
-def part2(row):
-    for (idx, n) in enumerate(row):
-        for n2 in islice(row, idx):
+def clamp(xs):
+    return max(xs) - min(xs)
+
+def yank(match):
+    return int(match.group(1))
+
+def convert(line, reg):
+    return map(yank, reg.finditer(line))
+
+def deviding(xs):
+    for (idx, n) in enumerate(xs):
+        for n2 in islice(xs, idx):
             [num1, num2] = list(reversed(sorted([n, n2])))
+
             if num1 % num2 == 0:
                 return num1 // num2
-            
+
 if __name__ == '__main__':
-    parsed = parse()
-    print("part 1: {}".format(sum(map(lambda row: max(row) - min(row), parsed))))
-    print("part 2: {}".format(sum(map(lambda row: part2(row), parsed))))
+    matcher = re.compile(r'(\d+)')
+    parser = partial(convert, reg = matcher)
+
+    with open("Input.txt", 'r') as f:
+        lines = f.readlines()
+        print(sum(map(clamp, map(list, map(parser, lines)))))
+        print(sum(map(deviding, map(list, map(parser, lines)))))
