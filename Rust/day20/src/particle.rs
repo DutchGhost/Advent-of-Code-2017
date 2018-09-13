@@ -131,7 +131,7 @@ impl GPU {
                     .collect::<Vec<_>>()
             })
             .filter(|v| v.len() > 1)
-            .flat_map(|v| v)
+            .flatten()
             .cloned()
             .collect::<Vec<_>>();
 
